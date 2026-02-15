@@ -1,12 +1,12 @@
 """
-Ported from mpyez on Feb 15 09:28:37 2026
+PlotEZ - Mundane plotting made easy.
 
-Created on Jul 23 23:41:18 2024.
+This module provides simplified plotting functions for common visualization tasks.
 """
 
 __all__ = ["plot_two_column_file", "plot_xy", "plot_xyy", "plot_with_dual_axes", "two_subplots", "n_plotter"]
 
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -262,7 +262,7 @@ def plot_with_dual_axes(
     x2y1_label: Optional[str] = None,
     use_twin_x: bool = False,
     auto_label: bool = False,
-    axis_labels: List[str] = None,
+    axis_labels: Optional[List[str]] = None,
     plot_title: Optional[str] = None,
     is_scatter: bool = False,
     plot_dictionary: plot_dictionary_type = None,
@@ -396,7 +396,7 @@ def two_subplots(
     is_scatter: bool = False,
     subplot_dictionary: Optional[uPl.SubPlots] = None,
     plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
-) -> Union[plt.figure, Axes]:
+) -> Tuple[plt.Figure, np.ndarray]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
     Parameters
@@ -469,16 +469,16 @@ def n_plotter(
     y_data: List[np.ndarray],
     n_rows: int,
     n_cols: int,
-    x_labels=None,
-    y_labels=None,
-    data_labels=None,
-    plot_title=None,
-    subplot_title=None,
+    x_labels: Optional[List[str]] = None,
+    y_labels: Optional[List[str]] = None,
+    data_labels: Optional[List[str]] = None,
+    plot_title: Optional[str] = None,
+    subplot_title: Optional[List[str]] = None,
     auto_label: bool = False,
     is_scatter: bool = False,
     subplot_dictionary: Optional[uPl.SubPlots] = None,
     plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
-) -> Union[plt.figure, Axes]:
+) -> Tuple[plt.Figure, np.ndarray]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
 

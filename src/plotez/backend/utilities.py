@@ -1,7 +1,7 @@
 """
-Ported from mpyez on Feb 15 09:28:37 2026
+PlotEZ Backend Utilities.
 
-Created on Oct 29 09:33:06 2024
+Utility classes and functions for plot parameter management and data validation.
 """
 
 __all__ = [
@@ -202,7 +202,13 @@ class LinePlot(_PlotParams):
 
     def __hash__(self):
         # Hash based on the tuple of sorted key-value pairs in the dictionary
-        return hash(tuple(sorted(self.to_dict().items())))
+        # Convert lists to tuples for hashing
+        items = []
+        for key, value in sorted(self.to_dict().items()):
+            if isinstance(value, list):
+                value = tuple(value)
+            items.append((key, value))
+        return hash(tuple(items))
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "LinePlot":
@@ -279,7 +285,14 @@ class ScatterPlot(_PlotParams):
         return self.to_dict() == other.to_dict()
 
     def __hash__(self):
-        return hash(tuple(sorted(self.to_dict().items())))
+        # Hash based on the tuple of sorted key-value pairs in the dictionary
+        # Convert lists to tuples for hashing
+        items = []
+        for key, value in sorted(self.to_dict().items()):
+            if isinstance(value, list):
+                value = tuple(value)
+            items.append((key, value))
+        return hash(tuple(items))
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "ScatterPlot":
@@ -412,7 +425,7 @@ def dual_axes_data_validation(
     y1_data: np.ndarray,
     y2_data: Optional[np.ndarray],
     use_twin_x: bool,
-    axis_labels: Union[List[str], str],
+    axis_labels: List[str],
 ) -> None:
     """
     Validates the data and parameters for dual-axes plotting.

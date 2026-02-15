@@ -1,7 +1,7 @@
 """
-Ported from mpyez on Feb 15 09:28:37 2026
+PlotEZ Error Handling.
 
-Created on Oct 21 00:12:02 2024
+Custom exceptions for plotting operations.
 """
 
 
