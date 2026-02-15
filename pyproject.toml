@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plotez"
+description = "Mundane plotting done easy."
+authors = [{ name = "Syed Ali Mohsin Bukhari", email = "ali.mohsin@ist.edu.pk" }]
+
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license-files = ["LICENSE"]
+dynamic = ["version"]
+dependencies = ["matplotlib"]
+keywords = ["plotting", "visualization", "data visualization", "matplotlib", "python plotting"]
+
+[tool.setuptools.dynamic]
+version = { attr = "plotez.version.__version__" }
+
+[tool.your_package.contacts]
+emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
+
+[project.optional-dependencies]
+dev = []
+
+[project.urls]
+#Homepage = "https://readthedocs.pymultifit.com"
+Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
+Repository = "https://github.com/syedalimohsinbukhari/plotez/"
+
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+#exclude = ["examples", "*tests*"]
