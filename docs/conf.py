@@ -54,12 +54,12 @@ autodoc_default_options = {
     'exclude-members': '__weakref__'
 }
 
-# Intersphinx mapping
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
-    'matplotlib': ('https://matplotlib.org/stable/', None),
-}
+# No need for intersphinx mapping for now
+# intersphinx_mapping = {
+#     'python': ('https://docs.python.org/3', None),
+#     'numpy': ('https://numpy.org/doc/stable/', None),
+#     'matplotlib': ('https://matplotlib.org/stable/', None),
+# }
 
 # Autosummary settings
 autosummary_generate = True

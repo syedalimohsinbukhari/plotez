@@ -23,20 +23,60 @@ from matplotlib.axes import Axes
 from .backend import error_handling as ePl, utilities as uPl
 
 # safeguard
-plot_dictionary_type = Optional[Union[uPl.LinePlot, uPl.ScatterPlot]]
+plot_dictionary_type = Union[uPl.LinePlot, uPl.ScatterPlot, uPl.ErrorPlot]
 axis_return = Union[Tuple[Axes, Axes], Axes]
 
 
-def plot_errorbars(x, y, x_err=None, y_err=None, plot_dictionary=None):
+def plot_errorbars(
+    x,
+    y,
+    x_err=None,
+    y_err=None,
+    plot_dictionary: plot_dictionary_type = None,
+    subplot_dictionary=None,
+    auto_label=False,
+    axis=None,
+):
+    """
+    Plots data with optional error bars.
+
+    Parameters
+    ----------
+    x : array-like
+        The x-coordinates of the data points.
+    y : array-like
+        The y-coordinates of the data points.
+    x_err : array-like, optional
+        The error for the x-coordinates. Must have the same length as `x`.
+    y_err : array-like, optional
+        The error for the y-coordinates. Must have the same length as `y`.
+    plot_dictionary :
+        A dictionary specifying plot style options for the error bars, see LinePlot, ErrorPlot.
+    subplot_dictionary : SubPlots instance, optional
+        An object containing configuration options for creating subplots.
+        If not provided, the default configuration from `uPl.SubPlots` will be used.
+    axis : Matplotlib axis, optional
+        The axis on which to plot the data.
+        If not provided, a new figure and axis will be created, based on the `subplot_dictionary` configuration.
+    """
     x, y = np.asarray(x), np.asarray(y)
     if x_err is not None:
         x_err = np.asarray(x_err)
     if y_err is not None:
         y_err = np.asarray(y_err)
-
+    sp_dict = subplot_dictionary.get_dict() if subplot_dictionary else uPl.SubPlots().get_dict()
     plot_dict_items = uPl.plot_dictionary_handler(plot_dictionary=plot_dictionary)
-    plt.errorbar(x, y, xerr=x_err, yerr=y_err, **plot_dict_items)
+
+    if not axis:
+        fig, axis = plt.subplots(**sp_dict, squeeze=False)
+        axis = axis.flatten()
+        if isinstance(axis, np.ndarray):
+            axis = axis[0]
+
+    axis.errorbar(x, y, xerr=x_err, yerr=y_err, **plot_dict_items)
     plt.tight_layout()
+
+    return axis
 
 
 def plot_two_column_file(

@@ -22,6 +22,16 @@ Parameter Classes
    :undoc-members:
    :show-inheritance:
 
+.. autoclass:: plotez.backend.utilities.ErrorPlot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+   .. note::
+      ErrorPlot inherits from LinePlot, providing all line plot styling options
+      (line_style, line_width, color, alpha, marker properties) plus additional
+      error bar styling parameters (capsize, elinewidth, ecolor, capthick).
+
 .. autoclass:: plotez.backend.utilities.ScatterPlot
    :members:
    :undoc-members:
@@ -34,8 +44,6 @@ Parameter Classes
 
 Utility Functions
 ~~~~~~~~~~~~~~~~~
-
-.. autofunction:: plotez.backend.utilities.get_color
 
 .. autofunction:: plotez.backend.utilities.plot_or_scatter
 

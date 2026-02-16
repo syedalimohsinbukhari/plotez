@@ -504,7 +504,7 @@ class SubPlots(_PlotParams):
     share_y : bool, optional
         Whether to share the y-axis across subplots. Default is False.
     fig_size : tuple, optional
-        The size of the figure, in inches. Default is (12, 8).
+        The size of the figure, in inches. Default is (6.4, 4.8).
     """
 
     def __init__(self, share_x=None, share_y=None, fig_size=None):
