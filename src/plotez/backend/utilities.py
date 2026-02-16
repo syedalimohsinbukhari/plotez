@@ -95,9 +95,6 @@ class _PlotParams:
         size=None,
         cmap=None,
         face_color=None,
-        share_x=None,
-        share_y=None,
-        subplot_fig_size=None,
     ):
 
         self.line_style = line_style
@@ -114,11 +111,6 @@ class _PlotParams:
         self.size = size
         self.cmap = cmap
         self.face_color = face_color
-
-        # Additional keywords for subplots
-        self.share_x = share_x
-        self.share_y = share_y
-        self.fig_size = subplot_fig_size
 
     def to_dict(self) -> dict:
         """
@@ -280,7 +272,7 @@ class ScatterPlot(_PlotParams):
         return f"{self.__class__.__name__}({param_str})"
 
     def __eq__(self, other):
-        if not isinstance(other, LinePlot):
+        if not isinstance(other, ScatterPlot):
             return NotImplemented
         return self.to_dict() == other.to_dict()
 
@@ -334,7 +326,10 @@ class ScatterPlot(_PlotParams):
 class SubPlots(_PlotParams):
 
     def __init__(self, share_x=None, share_y=None, fig_size=None):
-        super().__init__(share_x=share_x, share_y=share_y, subplot_fig_size=fig_size)
+        super().__init__()
+        self.share_x = share_x
+        self.share_y = share_y
+        self.fig_size = fig_size
 
     def _all_labels(self):
         return ["sharex", "sharey", "figsize"]

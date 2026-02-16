@@ -2,6 +2,16 @@
 
 **Mundane plotting made easy.**
 
+![GitHub Release](https://img.shields.io/github/v/release/syedalimohsinbukhari/plotez?color=magenta)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/plotez?)
+![GitHub-licence](https://img.shields.io/github/license/syedalimohsinbukhari/plotez?color=darkblue)
+![GiHub-CodeCoverage](https://img.shields.io/codecov/c/github/syedalimohsinbukhari/plotez?color=cyan)
+![GitHub top language](https://img.shields.io/github/languages/top/syedalimohsinbukhari/plotez?color=lightgreen)
+![GitHub contributors](https://img.shields.io/github/contributors/syedalimohsinbukhari/plotez?color=gold)
+![Github Issues](https://img.shields.io/github/issues/syedalimohsinbukhari/plotez?color=orange)
+![GitHub OPEN PRs](https://img.shields.io/github/issues-pr/syedalimohsinbukhari/plotez?color=darkred)
+![GitHub CLOSED PRs](https://img.shields.io/github/issues-pr-closed/syedalimohsinbukhari/plotez?color=darkgreen)
+
 `plotez` is a Python library that simplifies common matplotlib plotting tasks with an intuitive API. Create complex plots
 with minimal boilerplate code.
 
@@ -51,7 +61,7 @@ y = np.sin(x)
 plot_xy(x, y, auto_label=True)
 ```
 
-![Example1 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examplesNimages/README_example1.png)
+![Example1 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example1.png)
 
 ## Examples
 
@@ -76,7 +86,7 @@ plot_xyy(
 )
 ```
 
-![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examplesNimages/README_example2.png)
+![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2.png)
 
 ### Multi-Panel Plots
 
@@ -100,7 +110,7 @@ fig, axs = n_plotter(
 )
 ```
 
-![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examplesNimages/README_example3.png)
+![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example3.png)
 
 ### Custom Styling
 
@@ -124,7 +134,7 @@ line_params = LinePlot(
 plot_xy(x, y, plot_dictionary=line_params)
 ```
 
-![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examplesNimages/README_example4.png)
+![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
 ## Development
 

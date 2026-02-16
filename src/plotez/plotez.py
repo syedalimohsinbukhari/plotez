@@ -268,7 +268,7 @@ def plot_with_dual_axes(
     plot_dictionary: plot_dictionary_type = None,
     subplot_dictionary: Optional[uPl.SubPlots] = None,
     axis: Optional[Axes] = None,
-) -> axis_return:
+) -> Union[Tuple[Axes, Axes], Axes]:
     """Plot the data with options for dual axes (x or y) or single axis.
 
     Parameters
@@ -554,9 +554,7 @@ def n_plotter(
     shared_x1 = sp_dict.get("sharex")
     shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
 
-    # use column stack instead of zip
-    zipped = np.column_stack([range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title])
-    for index, ax, x_, y_, sp_ in zipped:
+    for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title):
         label = f"{x_labels[index]} vs {y_labels[index]}" if data_labels is None else data_labels[index]
         uPl.plot_or_scatter(axes=ax, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
         if shared_x1:

@@ -21,5 +21,5 @@ fig, axs = n_plotter(
 )
 
 # plt.show()
-plt.savefig("./README_example3.png")
+plt.savefig("./images/README_example3.png")
 plt.close()

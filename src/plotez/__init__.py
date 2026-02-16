@@ -4,14 +4,7 @@ PlotEZ - Mundane plotting made easy.
 A Python library for simplified matplotlib plotting.
 """
 
-from .plotez import (
-    n_plotter,
-    plot_two_column_file,
-    plot_with_dual_axes,
-    plot_xy,
-    plot_xyy,
-    two_subplots,
-)
+from .plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
 from .version import __version__
 
 __all__ = [

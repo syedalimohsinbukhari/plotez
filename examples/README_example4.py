@@ -21,5 +21,5 @@ line_params = LinePlot(
 plot_xy(x, y, plot_dictionary=line_params)
 
 # plt.show()
-plt.savefig("./README_example4.png")
+plt.savefig("./images/README_example4.png")
 plt.close()

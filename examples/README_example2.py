@@ -20,5 +20,5 @@ plot_xyy(
 )
 
 # plt.show()
-plt.savefig("./README_example2.png")
+plt.savefig("./images/README_example2.png")
 plt.close()

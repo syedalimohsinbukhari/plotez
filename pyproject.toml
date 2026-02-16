@@ -13,6 +13,12 @@ license-files = ["LICENSE"]
 dynamic = ["version"]
 dependencies = ["matplotlib"]
 keywords = ["plotting", "visualization", "data visualization", "matplotlib", "python plotting"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Intended Audience :: Science/Research",
+]
 
 [tool.setuptools.dynamic]
 version = { attr = "plotez.version.__version__" }
@@ -24,7 +30,6 @@ emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
 dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black"]
 
 [project.urls]
-#Homepage = "https://readthedocs.pymultifit.com"
 Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
 Repository = "https://github.com/syedalimohsinbukhari/plotez/"
 
@@ -34,4 +39,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["examplesNimages", "examples", "*tests*"]
+exclude = ["examples", "*tests*"]
