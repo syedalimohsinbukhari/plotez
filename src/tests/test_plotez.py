@@ -41,17 +41,17 @@ class TestPlotTwoColumnFile:
         assert isinstance(result, Axes) or isinstance(result, tuple)
 
     def test_plot_two_column_file_auto_label(self, temp_csv_file):
-        """Test file plotting with auto labeling."""
+        """Test file plotting with auto-labeling."""
         result = plot_two_column_file(temp_csv_file, auto_label=True)
         assert isinstance(result, Axes) or isinstance(result, tuple)
 
     def test_plot_two_column_file_scatter(self, temp_csv_file):
-        """Test file plotting as scatter plot."""
+        """Test file plotting as a scatter plot."""
         result = plot_two_column_file(temp_csv_file, is_scatter=True)
         assert isinstance(result, Axes) or isinstance(result, tuple)
 
     def test_plot_two_column_file_invalid_columns(self, tmp_path):
-        """Test that invalid file raises ValueError."""
+        """Test that an invalid file raises ValueError."""
         # Create file with 3 columns
         invalid_file = tmp_path / "invalid.csv"
         invalid_file.write_text("1,2,3\n4,5,6\n")
@@ -80,7 +80,7 @@ class TestPlotXY:
         assert isinstance(result, Axes)
 
     def test_plot_xy_auto_label(self, sample_x_data, sample_y_data):
-        """Test plotting with auto labeling."""
+        """Test plotting with auto-labeling."""
         result = plot_xy(sample_x_data, sample_y_data, auto_label=True)
         assert isinstance(result, Axes)
 
