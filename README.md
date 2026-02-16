@@ -61,7 +61,7 @@ y = np.sin(x)
 plot_xy(x, y, auto_label=True)
 ```
 
-![Example1 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/README_example1.png)
+![Example1 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example1.png)
 
 ## Examples
 
@@ -86,7 +86,7 @@ plot_xyy(
 )
 ```
 
-![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/README_example2.png)
+![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2.png)
 
 ### Multi-Panel Plots
 
@@ -110,7 +110,7 @@ fig, axs = n_plotter(
 )
 ```
 
-![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/README_example3.png)
+![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example3.png)
 
 ### Custom Styling
 
@@ -134,7 +134,7 @@ line_params = LinePlot(
 plot_xy(x, y, plot_dictionary=line_params)
 ```
 
-![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/README_example4.png)
+![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
 ## Development
 
