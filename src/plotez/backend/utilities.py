@@ -168,7 +168,6 @@ class LinePlot(_PlotParams):
         marker_edge_color=None,
         marker_face_color=None,
         marker_edge_width=None,
-        _fixed: int = 0,
     ):
         super().__init__(
             line_style=line_style,

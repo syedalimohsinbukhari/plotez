@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 from matplotlib.axes import Axes
 
-from ..plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
-from ..plotez.backend.error_handling import OrientationError
-from ..plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
+from plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
+from plotez.backend.error_handling import OrientationError
+from plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
 
 
 class TestPlotTwoColumnFile:

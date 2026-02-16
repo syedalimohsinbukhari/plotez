@@ -12,9 +12,11 @@ requires-python = ">=3.10"
 license-files = ["LICENSE"]
 dynamic = ["version"]
 dependencies = ["matplotlib"]
-keywords = ["plotting", "visualization", "data visualization", "matplotlib", "python plotting"]
+keywords = ["plotting", "visualization", "data visualization", "python plotting"]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering :: Visualization",
     "Intended Audience :: Science/Research",
@@ -33,6 +35,8 @@ dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black"]
 Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
 Repository = "https://github.com/syedalimohsinbukhari/plotez/"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.setuptools]
 package-dir = { "" = "src" }
