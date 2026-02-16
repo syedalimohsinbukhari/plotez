@@ -21,6 +21,20 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 from matplotlib import rcParams
 
+LINE_ATTRS = {
+    "ls": "line_style",
+    "lw": "line_width",
+    "color": "color",
+    "alpha": "alpha",
+    "marker": "marker",
+    "ms": "marker_size",
+    "mec": "marker_edge_color",
+    "mfc": "marker_face_color",
+    "mew": "marker_edge_width",
+}
+SCATTER_ATTRS = {"c": "color", "alpha": "alpha", "marker": "marker", "s": "size", "cmap": "cmap", "fc": "face_color"}
+SUBPLOT_ATTRS = {"sharex": "share_x", "sharey": "share_y", "figsize": "fig_size"}
+
 
 def get_color():
     """
@@ -220,17 +234,7 @@ class LinePlot(_PlotParams):
         """
         instance = cls()
         for key, value in dictionary.items():
-            attr_name = {
-                "ls": "line_style",
-                "lw": "line_width",
-                "color": "color",
-                "alpha": "alpha",
-                "marker": "marker",
-                "ms": "marker_size",
-                "mec": "marker_edge_color",
-                "mfc": "marker_face_color",
-                "mew": "marker_edge_width",
-            }.get(key, key)
+            attr_name = LINE_ATTRS.get(key, key)
             setattr(instance, attr_name, value)
 
         return instance
@@ -375,23 +379,9 @@ class ErrorPlot(LinePlot):
             An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
         """
         instance = cls()
+        error_attrs = LINE_ATTRS | {"elinewidth": "elinewidth", "ecolor": "ecolor", "capthick": "capthick"}
         for key, value in dictionary.items():
-            attr_name = {
-                "ls": "line_style",
-                "lw": "line_width",
-                "color": "color",
-                "alpha": "alpha",
-                "marker": "marker",
-                "ms": "marker_size",
-                "markersize": "marker_size",
-                "mec": "marker_edge_color",
-                "mfc": "marker_face_color",
-                "mew": "marker_edge_width",
-                "capsize": "capsize",
-                "elinewidth": "elinewidth",
-                "ecolor": "ecolor",
-                "capthick": "capthick",
-            }.get(key, key)
+            attr_name = error_attrs.get(key, key)
             setattr(instance, attr_name, value)
 
         return instance
@@ -474,14 +464,7 @@ class ScatterPlot(_PlotParams):
         """
         instance = cls()
         for key, value in dictionary.items():
-            attr_name = {
-                "c": "color",
-                "alpha": "alpha",
-                "marker": "marker",
-                "s": "size",
-                "cmap": "cmap",
-                "fc": "face_color",
-            }.get(key, key)
+            attr_name = SCATTER_ATTRS.get(key, key)
             setattr(instance, attr_name, value)
 
         return instance
@@ -529,6 +512,29 @@ class SubPlots(_PlotParams):
         self.share_x = share_x
         self.share_y = share_y
         self.fig_size = rcParams["figure.figsize"] if fig_size is None else fig_size
+
+    @classmethod
+    def populate(cls, dictionary: Dict[str, Any]) -> "SubPlots":
+        """
+        Create an instance of `SubPlots` from a dictionary of parameters.
+
+        Parameters
+        ----------
+        dictionary : dict
+            A dictionary where keys represent parameter labels (e.g., 's' for size, 'c' for color),
+            and values represent the corresponding values for each parameter.
+
+        Returns
+        -------
+        SubPlots
+            An instance of `SubPlots` with attributes populated based on the provided dictionary.
+        """
+        instance = cls()
+        for key, value in dictionary.items():
+            attr_name = SUBPLOT_ATTRS.get(key, key)
+            setattr(instance, attr_name, value)
+
+        return instance
 
     def _all_labels(self):
         return ["sharex", "sharey", "figsize"]
