@@ -1,0 +1,7 @@
+matplotlib
+pytest
+pytest-cov
+mypy
+sphinx
+sphinx-rtd-theme
+black
