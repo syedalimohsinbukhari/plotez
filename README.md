@@ -1,18 +1,19 @@
-# PlotEZ
+# plotEZ
 
 **Mundane plotting made easy.**
 
-PlotEZ is a Python library that simplifies common matplotlib plotting tasks with an intuitive API. Create complex plots with minimal boilerplate code.
+`plotez` is a Python library that simplifies common matplotlib plotting tasks with an intuitive API. Create complex plots
+with minimal boilerplate code.
 
 ## Features
 
-- 🎨 **Simple API**: Create complex plots with just a few lines of code
-- 📊 **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
-- 📐 **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
-- 📁 **File Integration**: Direct plotting from CSV files
-- 🎛️ **Extensive Customization**: Full control over plot appearance via parameter classes
-- 🔍 **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
-- ✅ **Well Tested**: Comprehensive test suite with 96% coverage
+- **Simple API**: Create complex plots with just a few lines of code
+- **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
+- **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
+- **File Integration**: Direct plotting from CSV files
+- **Extensive Customization**: Full control over plot appearance via parameter classes
+- **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
+- **Well Tested**: Comprehensive test suite with 85%+ coverage
 
 ## Installation
 
@@ -46,15 +47,18 @@ from plotez import plot_xy
 x = np.linspace(0, 10, 100)
 y = np.sin(x)
 
-# Create plot with automatic labeling
+# Create a plot with automatic labeling
 plot_xy(x, y, auto_label=True)
 ```
+
+![Example1 Plot](examplesNimages/README_example1.png)
 
 ## Examples
 
 ### Dual Y-Axis Plot
 
 ```python
+import numpy as np
 from plotez import plot_xyy
 
 x = np.linspace(0, 10, 100)
@@ -72,9 +76,12 @@ plot_xyy(
 )
 ```
 
+![Example2 Plot](examplesNimages/README_example2.png)
+
 ### Multi-Panel Plots
 
 ```python
+import numpy as np
 from plotez import n_plotter
 
 # Create 2×2 grid
@@ -93,11 +100,17 @@ fig, axs = n_plotter(
 )
 ```
 
+![Example3 Plot](examplesNimages/README_example3.png)
+
 ### Custom Styling
 
 ```python
+import numpy as np
 from plotez import plot_xy
 from plotez.backend.utilities import LinePlot
+
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
 
 # Create custom line plot parameters
 line_params = LinePlot(
@@ -110,6 +123,8 @@ line_params = LinePlot(
 
 plot_xy(x, y, plot_dictionary=line_params)
 ```
+
+![Example4 Plot](examplesNimages/README_example4.png)
 
 ## Development
 
@@ -140,11 +155,11 @@ make html
 
 ## Project Status
 
-- ✅ Type hints corrected throughout codebase
-- ✅ Test suite implemented (96% coverage)
-- ✅ Documentation structure created
-- ✅ Development tools configured (pytest, mypy, sphinx)
-- ✅ PEP 561 compliance (py.typed marker)
+- Type hints are corrected throughout the codebase
+- Test suite implemented (80%+ coverage)
+- Documentation structure created
+- Development tools configured (pytest, mypy, sphinx)
+- PEP 561 compliance (py.typed marker)
 
 ## Contributing
 
@@ -152,7 +167,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License – see [LICENSE](LICENSE) file for details.
 
 ## Authors
 
