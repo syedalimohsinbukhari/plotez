@@ -312,7 +312,7 @@ def plot_with_dual_axes(
     if use_twin_x:
         ax2 = ax1.twinx()
         if y2_data is not None:
-            dict2 = {key: (value[1] if len(value) > 1 else None) for key, value in plot_items}
+            dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_items}
             uPl.plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(axis_labels[2])
 

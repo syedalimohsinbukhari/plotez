@@ -323,12 +323,24 @@ class ScatterPlot(_PlotParams):
 
 
 class SubPlots(_PlotParams):
+    """
+    Class for subplot layouts.
+
+    Parameters
+    ----------
+    share_x : bool, optional
+        Whether to share the x-axis across subplots. Default is False.
+    share_y : bool, optional
+        Whether to share the y-axis across subplots. Default is False.
+    fig_size : tuple, optional
+        The size of the figure, in inches. Default is (12, 8).
+    """
 
     def __init__(self, share_x=None, share_y=None, fig_size=None):
         super().__init__()
         self.share_x = share_x
         self.share_y = share_y
-        self.fig_size = fig_size
+        self.fig_size = rcParams["figure.figsize"] if fig_size is None else fig_size
 
     def _all_labels(self):
         return ["sharex", "sharey", "figsize"]
