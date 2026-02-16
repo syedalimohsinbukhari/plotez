@@ -280,7 +280,7 @@ class ScatterPlot(_PlotParams):
         return f"{self.__class__.__name__}({param_str})"
 
     def __eq__(self, other):
-        if not isinstance(other, LinePlot):
+        if not isinstance(other, ScatterPlot):
             return NotImplemented
         return self.to_dict() == other.to_dict()
 

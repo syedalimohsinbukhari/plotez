@@ -20,18 +20,18 @@ axis_return = Union[List[Axes], Axes]
 
 
 def plot_two_column_file(
-    file_name: str,
-    delimiter: str = ",",
-    skip_header: bool = False,
-    x_label: Optional[str] = None,
-    y_label: Optional[str] = None,
-    data_label: Optional[str] = None,
-    plot_title: Optional[str] = None,
-    auto_label: bool = False,
-    is_scatter: bool = False,
-    plot_dictionary: plot_dictionary_type = None,
-    subplot_dictionary: uPl.SubPlots = None,
-    axis: Optional[Axes] = None,
+        file_name: str,
+        delimiter: str = ",",
+        skip_header: bool = False,
+        x_label: Optional[str] = None,
+        y_label: Optional[str] = None,
+        data_label: Optional[str] = None,
+        plot_title: Optional[str] = None,
+        auto_label: bool = False,
+        is_scatter: bool = False,
+        plot_dictionary: plot_dictionary_type = None,
+        subplot_dictionary: uPl.SubPlots = None,
+        axis: Optional[Axes] = None,
 ) -> axis_return:
     """Read a two-column file (x, y) and plot the data.
 
@@ -95,17 +95,17 @@ def plot_two_column_file(
 
 
 def plot_xy(
-    x_data: np.ndarray,
-    y_data: np.ndarray,
-    x_label: Optional[str] = None,
-    y_label: Optional[str] = None,
-    plot_title: Optional[str] = None,
-    data_label: Optional[str] = None,
-    auto_label: bool = False,
-    is_scatter: bool = False,
-    plot_dictionary: plot_dictionary_type = None,
-    subplot_dictionary: Optional[uPl.SubPlots] = None,
-    axis: Optional[Axes] = None,
+        x_data: np.ndarray,
+        y_data: np.ndarray,
+        x_label: Optional[str] = None,
+        y_label: Optional[str] = None,
+        plot_title: Optional[str] = None,
+        data_label: Optional[str] = None,
+        auto_label: bool = False,
+        is_scatter: bool = False,
+        plot_dictionary: plot_dictionary_type = None,
+        subplot_dictionary: Optional[uPl.SubPlots] = None,
+        axis: Optional[Axes] = None,
 ) -> axis_return:
     """Plot the x_data against y_data with customizable options.
 
@@ -168,20 +168,20 @@ def plot_xy(
 
 
 def plot_xyy(
-    x_data: np.ndarray,
-    y1_data: np.ndarray,
-    y2_data: np.ndarray,
-    x_label: Optional[str] = None,
-    y1_label: Optional[str] = None,
-    y2_label: Optional[str] = None,
-    plot_title: Optional[str] = None,
-    data_labels: Optional[List[str]] = (None, None),
-    use_twin_x: bool = True,
-    auto_label: bool = False,
-    is_scatter: bool = False,
-    plot_dictionary: plot_dictionary_type = None,
-    subplot_dictionary: Optional[uPl.SubPlots] = None,
-    axis=None,
+        x_data: np.ndarray,
+        y1_data: np.ndarray,
+        y2_data: np.ndarray,
+        x_label: Optional[str] = None,
+        y1_label: Optional[str] = None,
+        y2_label: Optional[str] = None,
+        plot_title: Optional[str] = None,
+        data_labels: Optional[List[str]] = (None, None),
+        use_twin_x: bool = True,
+        auto_label: bool = False,
+        is_scatter: bool = False,
+        plot_dictionary: plot_dictionary_type = None,
+        subplot_dictionary: Optional[uPl.SubPlots] = None,
+        axis=None,
 ) -> Axes:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
 
@@ -253,21 +253,21 @@ def plot_xyy(
 
 
 def plot_with_dual_axes(
-    x1_data: np.ndarray,
-    y1_data: np.ndarray,
-    x2_data: np.ndarray = None,
-    y2_data: np.ndarray = None,
-    x1y1_label: Optional[str] = None,
-    x1y2_label: Optional[str] = None,
-    x2y1_label: Optional[str] = None,
-    use_twin_x: bool = False,
-    auto_label: bool = False,
-    axis_labels: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
-    is_scatter: bool = False,
-    plot_dictionary: plot_dictionary_type = None,
-    subplot_dictionary: Optional[uPl.SubPlots] = None,
-    axis: Optional[Axes] = None,
+        x1_data: np.ndarray,
+        y1_data: np.ndarray,
+        x2_data: np.ndarray = None,
+        y2_data: np.ndarray = None,
+        x1y1_label: Optional[str] = None,
+        x1y2_label: Optional[str] = None,
+        x2y1_label: Optional[str] = None,
+        use_twin_x: bool = False,
+        auto_label: bool = False,
+        axis_labels: Optional[List[str]] = None,
+        plot_title: Optional[str] = None,
+        is_scatter: bool = False,
+        plot_dictionary: plot_dictionary_type = None,
+        subplot_dictionary: Optional[uPl.SubPlots] = None,
+        axis: Optional[Axes] = None,
 ) -> axis_return:
     """Plot the data with options for dual axes (x or y) or single axis.
 
@@ -384,18 +384,18 @@ def plot_with_dual_axes(
 
 
 def two_subplots(
-    x_data: List[np.ndarray],
-    y_data: List[np.ndarray],
-    x_labels: Optional[List[str]] = None,
-    y_labels: Optional[List[str]] = None,
-    data_labels: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
-    subplot_title: Optional[List[str]] = None,
-    orientation: str = "h",
-    auto_label: bool = False,
-    is_scatter: bool = False,
-    subplot_dictionary: Optional[uPl.SubPlots] = None,
-    plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
+        x_data: List[np.ndarray],
+        y_data: List[np.ndarray],
+        x_labels: Optional[List[str]] = None,
+        y_labels: Optional[List[str]] = None,
+        data_labels: Optional[List[str]] = None,
+        plot_title: Optional[str] = None,
+        subplot_title: Optional[List[str]] = None,
+        orientation: str = "h",
+        auto_label: bool = False,
+        is_scatter: bool = False,
+        subplot_dictionary: Optional[uPl.SubPlots] = None,
+        plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
 ) -> Tuple[plt.Figure, np.ndarray]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
@@ -465,19 +465,19 @@ def two_subplots(
 
 
 def n_plotter(
-    x_data: List[np.ndarray],
-    y_data: List[np.ndarray],
-    n_rows: int,
-    n_cols: int,
-    x_labels: Optional[List[str]] = None,
-    y_labels: Optional[List[str]] = None,
-    data_labels: Optional[List[str]] = None,
-    plot_title: Optional[str] = None,
-    subplot_title: Optional[List[str]] = None,
-    auto_label: bool = False,
-    is_scatter: bool = False,
-    subplot_dictionary: Optional[uPl.SubPlots] = None,
-    plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
+        x_data: List[np.ndarray],
+        y_data: List[np.ndarray],
+        n_rows: int,
+        n_cols: int,
+        x_labels: Optional[List[str]] = None,
+        y_labels: Optional[List[str]] = None,
+        data_labels: Optional[List[str]] = None,
+        plot_title: Optional[str] = None,
+        subplot_title: Optional[List[str]] = None,
+        auto_label: bool = False,
+        is_scatter: bool = False,
+        subplot_dictionary: Optional[uPl.SubPlots] = None,
+        plot_dictionary: Optional[Union[uPl.LinePlot, uPl.ScatterPlot]] = None,
 ) -> Tuple[plt.Figure, np.ndarray]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
@@ -554,9 +554,7 @@ def n_plotter(
     shared_x1 = sp_dict.get("sharex")
     shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
 
-    # use column stack instead of zip
-    zipped = np.column_stack([range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title])
-    for index, ax, x_, y_, sp_ in zipped:
+    for index, ax, x_, y_, sp_ in zip([range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title]):
         label = f"{x_labels[index]} vs {y_labels[index]}" if data_labels is None else data_labels[index]
         uPl.plot_or_scatter(axes=ax, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
         if shared_x1:

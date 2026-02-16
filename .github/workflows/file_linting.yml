@@ -27,7 +27,7 @@ jobs:
 
             -   name: Linting the code with Black
                 run: |
-                    black src/plotez/ -C -l 120
+                    black --check src/plotez/ -C -l 120
 
             -   name: Analysing the code with Pylint
                 run: |
