@@ -83,19 +83,19 @@ class _PlotParams:
     """
 
     def __init__(
-            self,
-            line_style=None,
-            line_width=None,
-            color=None,
-            alpha=None,
-            marker=None,
-            marker_size=None,
-            marker_edge_color=None,
-            marker_face_color=None,
-            marker_edge_width=None,
-            size=None,
-            cmap=None,
-            face_color=None,
+        self,
+        line_style=None,
+        line_width=None,
+        color=None,
+        alpha=None,
+        marker=None,
+        marker_size=None,
+        marker_edge_color=None,
+        marker_face_color=None,
+        marker_edge_width=None,
+        size=None,
+        cmap=None,
+        face_color=None,
     ):
 
         self.line_style = line_style
@@ -159,16 +159,16 @@ class LinePlot(_PlotParams):
     """
 
     def __init__(
-            self,
-            line_style=None,
-            line_width=None,
-            color=None,
-            alpha=None,
-            marker=None,
-            marker_size=None,
-            marker_edge_color=None,
-            marker_face_color=None,
-            marker_edge_width=None,
+        self,
+        line_style=None,
+        line_width=None,
+        color=None,
+        alpha=None,
+        marker=None,
+        marker_size=None,
+        marker_edge_color=None,
+        marker_face_color=None,
+        marker_edge_width=None,
     ):
         super().__init__(
             line_style=line_style,
@@ -307,20 +307,20 @@ class ErrorPlot(LinePlot):
     """
 
     def __init__(
-            self,
-            line_style=None,
-            line_width=None,
-            color=None,
-            capsize=None,
-            alpha=None,
-            marker=None,
-            marker_size=None,
-            marker_edge_color=None,
-            marker_face_color=None,
-            marker_edge_width=None,
-            elinewidth=None,
-            ecolor=None,
-            capthick=None,
+        self,
+        line_style=None,
+        line_width=None,
+        color=None,
+        capsize=None,
+        alpha=None,
+        marker=None,
+        marker_size=None,
+        marker_edge_color=None,
+        marker_face_color=None,
+        marker_edge_width=None,
+        elinewidth=None,
+        ecolor=None,
+        capthick=None,
     ):
         super().__init__(
             line_style=line_style,
@@ -633,12 +633,12 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> 
 
 
 def dual_axes_data_validation(
-        x1_data: np.ndarray,
-        x2_data: Optional[np.ndarray],
-        y1_data: np.ndarray,
-        y2_data: Optional[np.ndarray],
-        use_twin_x: bool,
-        axis_labels: List[str],
+    x1_data: np.ndarray,
+    x2_data: Optional[np.ndarray],
+    y1_data: np.ndarray,
+    y2_data: Optional[np.ndarray],
+    use_twin_x: bool,
+    axis_labels: List[str],
 ) -> None:
     """
     Validates the data and parameters for dual-axes plotting.
@@ -681,13 +681,13 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-        x1y1_label: Optional[str],
-        x1y2_label: Optional[str],
-        x2y1_label: Optional[str],
-        auto_label: bool,
-        axis_labels: Optional[List[str]],
-        plot_title: Optional[str],
-        use_twin_x: bool,
+    x1y1_label: Optional[str],
+    x1y2_label: Optional[str],
+    x2y1_label: Optional[str],
+    auto_label: bool,
+    axis_labels: Optional[List[str]],
+    plot_title: Optional[str],
+    use_twin_x: bool,
 ) -> label_management:
     """
     Manages labels and titles for dual-axes plots, with options for automatic labeling.
