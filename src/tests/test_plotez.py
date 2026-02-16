@@ -5,20 +5,13 @@ import numpy as np
 import pytest
 from matplotlib.axes import Axes
 
-from plotez import (
-    n_plotter,
-    plot_two_column_file,
-    plot_with_dual_axes,
-    plot_xy,
-    plot_xyy,
-    two_subplots,
-)
-from plotez.backend.error_handling import OrientationError
-from plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
+from ..plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
+from ..plotez.backend.error_handling import OrientationError
+from ..plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
 
 
 class TestPlotTwoColumnFile:
-    """Test plot_two_column_file function."""
+    """Test the plot_two_column_file function."""
 
     def test_plot_two_column_file_basic(self, temp_csv_file):
         """Test basic file plotting."""
@@ -108,7 +101,7 @@ class TestPlotXY:
         assert isinstance(result, Axes)
 
     def test_plot_xy_on_existing_axis(self, sample_x_data, sample_y_data):
-        """Test plotting on existing axis."""
+        """Test plotting on the existing axis."""
         fig, ax = plt.subplots()
         result = plot_xy(sample_x_data, sample_y_data, axis=ax)
         assert result == ax
@@ -372,4 +365,3 @@ class TestNPlotter:
             subplot_dictionary=sp
         )
         assert isinstance(fig, plt.Figure)
-
