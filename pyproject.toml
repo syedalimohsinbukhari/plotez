@@ -21,13 +21,7 @@ version = { attr = "plotez.version.__version__" }
 emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "mypy>=1.0.0",
-    "sphinx>=7.0.0",
-    "sphinx-rtd-theme>=2.0.0",
-]
+dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black"]
 
 [project.urls]
 #Homepage = "https://readthedocs.pymultifit.com"
@@ -40,4 +34,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["examples", "*tests*"]
+exclude = ["examplesNimages", "examples", "*tests*"]
