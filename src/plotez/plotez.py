@@ -268,7 +268,7 @@ def plot_with_dual_axes(
     plot_dictionary: plot_dictionary_type = None,
     subplot_dictionary: Optional[uPl.SubPlots] = None,
     axis: Optional[Axes] = None,
-) -> axis_return:
+) -> Optional[Tuple[Axes, Axes], Axes]:
     """Plot the data with options for dual axes (x or y) or single axis.
 
     Parameters
