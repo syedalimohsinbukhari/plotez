@@ -7,6 +7,7 @@ Utility classes and functions for plot parameter management and data validation.
 __all__ = [
     "LinePlot",
     "ScatterPlot",
+    "ErrorPlot",
     "SubPlots",
     "plot_or_scatter",
     "plot_dictionary_handler",
@@ -45,7 +46,7 @@ def get_color():
 
 
 # SAFEGUARDS:
-_split = Tuple[Union["LinePlot", "ScatterPlot"], Union["LinePlot", "ScatterPlot"]]
+_split = Tuple[Union["LinePlot", "ScatterPlot", "ErrorPlot"], Union["LinePlot", "ScatterPlot", "ErrorPlot"]]
 label_management = Tuple[str, str, str, str, List[str]]
 
 
@@ -82,19 +83,19 @@ class _PlotParams:
     """
 
     def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-        size=None,
-        cmap=None,
-        face_color=None,
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
+            size=None,
+            cmap=None,
+            face_color=None,
     ):
 
         self.line_style = line_style
@@ -124,7 +125,7 @@ class _PlotParams:
         """
         return {label: param for label, param in zip(self._all_labels(), self._all_parameters())}
 
-    def get(self):
+    def get_dict(self):
         """
         Get the dictionary of plot parameters, excluding None values.
 
@@ -158,16 +159,16 @@ class LinePlot(_PlotParams):
     """
 
     def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
     ):
         super().__init__(
             line_style=line_style,
@@ -250,6 +251,176 @@ class LinePlot(_PlotParams):
     def _all_labels(self):
         return ["ls", "lw", "color", "alpha", "marker", "ms", "mec", "mfc", "mew"]
 
+    def get_dict(self):
+        """
+        Get the dictionary of plot parameters, excluding None values.
+
+        Returns
+        -------
+        dict
+            Dictionary containing non-None parameters for the plot.
+        """
+        param_dict = {}
+
+        for param, label in zip(self._all_parameters(), self._all_labels()):
+            if param is not None:
+                param_dict[f"{label}"] = param
+
+        return param_dict
+
+
+class ErrorPlot(LinePlot):
+    """
+    Class for error bar plot parameters.
+
+    This class extends LinePlot to add error bar-specific parameters like capsize,
+    while inheriting all line plot styling options.
+
+    Parameters
+    ----------
+    line_style : list(str), optional
+        Line style for the plot. Default is None.
+    line_width : list(float), optional
+        Width of the lines. Default is None.
+    color : list(str), optional
+        Color for the error bars and line. Default is None (uses matplotlib default color cycle).
+    capsize : float, optional
+        Length of the error bar caps in points. Default is None.
+    alpha : list(float), optional
+        Opacity of the plot elements. Default is None.
+    marker : list(str), optional
+        Marker style for the plot. Default is None.
+    marker_size : list(float), optional
+        Size of the markers. Default is None.
+    marker_edge_color : list(str), optional
+        Color of the marker edges. Default is None.
+    marker_face_color : list(str), optional
+        Color of the marker faces. Default is None.
+    marker_edge_width : list(float), optional
+        Width of the marker edges. Default is None.
+    elinewidth : float, optional
+        Width of the error bar lines. Default is None.
+    ecolor : str, optional
+        Color of the error bar lines. Default is None.
+    capthick : float, optional
+        Thickness of the error bar caps. Default is None.
+    """
+
+    def __init__(
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            capsize=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
+            elinewidth=None,
+            ecolor=None,
+            capthick=None,
+    ):
+        super().__init__(
+            line_style=line_style,
+            line_width=line_width,
+            color=color,
+            alpha=alpha,
+            marker=marker,
+            marker_size=marker_size,
+            marker_edge_color=marker_edge_color,
+            marker_face_color=marker_face_color,
+            marker_edge_width=marker_edge_width,
+        )
+        self.capsize = capsize
+        self.elinewidth = elinewidth
+        self.ecolor = ecolor
+        self.capthick = capthick
+
+    def __repr__(self):
+        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
+        return f"{self.__class__.__name__}({param_str})"
+
+    def __eq__(self, other):
+        if not isinstance(other, ErrorPlot):
+            return NotImplemented
+        return self.to_dict() == other.to_dict()
+
+    def __hash__(self):
+        # Hash based on the tuple of sorted key-value pairs in the dictionary
+        # Convert lists to tuples for hashing
+        items = []
+        for key, value in sorted(self.to_dict().items()):
+            if isinstance(value, list):
+                value = tuple(value)
+            items.append((key, value))
+        return hash(tuple(items))
+
+    @classmethod
+    def populate(cls, dictionary: Dict[str, Any]) -> "ErrorPlot":
+        """
+        Create an instance of `ErrorPlot` from a dictionary of parameters.
+
+        Parameters
+        ----------
+        dictionary : dict
+            A dictionary where keys represent parameter labels (e.g., 'ls' for line style,
+            'capsize' for error bar cap size), and values represent the corresponding
+            values for each parameter.
+
+        Returns
+        -------
+        ErrorPlot
+            An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
+        """
+        instance = cls()
+        for key, value in dictionary.items():
+            attr_name = {
+                "ls": "line_style",
+                "lw": "line_width",
+                "color": "color",
+                "alpha": "alpha",
+                "marker": "marker",
+                "ms": "marker_size",
+                "markersize": "marker_size",
+                "mec": "marker_edge_color",
+                "mfc": "marker_face_color",
+                "mew": "marker_edge_width",
+                "capsize": "capsize",
+                "elinewidth": "elinewidth",
+                "ecolor": "ecolor",
+                "capthick": "capthick",
+            }.get(key, key)
+            setattr(instance, attr_name, value)
+
+        return instance
+
+    def _all_parameters(self):
+        # Extend parent parameters with error bar specific parameters
+        return super()._all_parameters() + [self.capsize, self.elinewidth, self.ecolor, self.capthick]
+
+    def _all_labels(self):
+        # Extend parent labels with error bar specific labels
+        return super()._all_labels() + ["capsize", "elinewidth", "ecolor", "capthick"]
+
+    def get_dict(self):
+        """
+        Get the dictionary of plot parameters, excluding None values.
+
+        Returns
+        -------
+        dict
+            Dictionary containing non-None parameters for the plot.
+        """
+        param_dict = {}
+
+        for param, label in zip(self._all_parameters(), self._all_labels()):
+            if param is not None:
+                param_dict[f"{label}"] = param
+
+        return param_dict
+
 
 class ScatterPlot(_PlotParams):
     """
@@ -321,6 +492,23 @@ class ScatterPlot(_PlotParams):
     def _all_labels(self):
         return ["c", "alpha", "marker", "s", "cmap", "fc"]
 
+    def get_dict(self):
+        """
+        Get the dictionary of plot parameters, excluding None values.
+
+        Returns
+        -------
+        dict
+            Dictionary containing non-None parameters for the plot.
+        """
+        param_dict = {}
+
+        for param, label in zip(self._all_parameters(), self._all_labels()):
+            if param is not None:
+                param_dict[f"{label}"] = param
+
+        return param_dict
+
 
 class SubPlots(_PlotParams):
     """
@@ -348,6 +536,23 @@ class SubPlots(_PlotParams):
     def _all_parameters(self):
         return [self.share_x, self.share_y, self.fig_size]
 
+    def get_dict(self):
+        """
+        Get the dictionary of plot parameters, excluding None values.
+
+        Returns
+        -------
+        dict
+            Dictionary containing non-None parameters for the plot.
+        """
+        param_dict = {}
+
+        for param, label in zip(self._all_parameters(), self._all_labels()):
+            if param is not None:
+                param_dict[f"{label}"] = param
+
+        return param_dict
+
 
 def plot_or_scatter(axes, scatter: bool):
     """
@@ -368,40 +573,42 @@ def plot_or_scatter(axes, scatter: bool):
     return axes.scatter if scatter else axes.plot
 
 
-def plot_dictionary_handler(plot_dictionary: Union[LinePlot, ScatterPlot]):
+def plot_dictionary_handler(plot_dictionary: Union[LinePlot, ScatterPlot, ErrorPlot]):
     """
     Handles plot dictionary configuration, retrieving items from the specified plot dictionary.
 
-    If no dictionary is provided, returns items from a default LinePlot instance.
+    If no dictionary is provided, returns an empty dictionary.
 
     Parameters
     ----------
-    plot_dictionary : Union[LinePlot, ScatterPlot]
-        The plot dictionary to retrieve items from. If None, defaults to a LinePlot instance.
+    plot_dictionary : Union[LinePlot, ScatterPlot, ErrorPlot], optional
+        The plot dictionary to retrieve items from. If None, returns an empty dictionary.
 
     Returns
     -------
-    Iterable
-        An iterable of items (key-value pairs) from the specified or default plot dictionary.
+    dict
+        Dictionary containing plot parameters, or empty dict if plot_dictionary is None.
     """
-    return plot_dictionary.get().items() if plot_dictionary else LinePlot().get().items()
+    if plot_dictionary is None:
+        return {}
+    return plot_dictionary.get_dict()
 
 
-def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot]) -> _split:
+def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> _split:
     """
-    Split a `LinePlot` or `ScatterPlot` instance's parameters into two separate instances of the same type.
+    Split a `LinePlot`, `ScatterPlot`, or `ErrorPlot` instance's parameters into two separate instances of the same type.
 
     Parameters
     ----------
-    plot_instance : Union[LinePlot, ScatterPlot]
-        An instance of `LinePlot` or `ScatterPlot` with parameters stored as lists or tuples of two elements.
+    plot_instance : Union[LinePlot, ScatterPlot, ErrorPlot]
+        An instance of `LinePlot`, `ScatterPlot`, or `ErrorPlot` with parameters stored as lists or tuples of two elements.
         Each parameter should be a list or tuple containing exactly two values, corresponding to settings
         for the two resulting instances.
 
     Returns
     -------
-    Tuple[Union[LinePlot, ScatterPlot], Union[LinePlot, ScatterPlot]]
-        Two instances of the same type as `plot_instance` (either `LinePlot` or `ScatterPlot`),
+    Tuple[Union[LinePlot, ScatterPlot, ErrorPlot], Union[LinePlot, ScatterPlot, ErrorPlot]]
+        Two instances of the same type as `plot_instance` (either `LinePlot`, `ScatterPlot`, or `ErrorPlot`),
         with parameters split based on the values in `plot_instance`. The first instance (`instance1`)
         and second instance (`instance2`) will have their attributes set according to the first and second
         elements, respectively, from each list or tuple in `plot_instance`.
@@ -412,7 +619,7 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot]) -> _split:
         If any parameter in `plot_instance` is not a list or tuple with exactly two elements.
     """
     # Flatten the parameters from the input plot instance
-    parameters = plot_instance.get()
+    parameters = plot_instance.get_dict()
     params_instance1, params_instance2 = {}, {}
 
     # Split each parameter into two separate dictionaries for the two instances
@@ -426,12 +633,12 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot]) -> _split:
 
 
 def dual_axes_data_validation(
-    x1_data: np.ndarray,
-    x2_data: Optional[np.ndarray],
-    y1_data: np.ndarray,
-    y2_data: Optional[np.ndarray],
-    use_twin_x: bool,
-    axis_labels: List[str],
+        x1_data: np.ndarray,
+        x2_data: Optional[np.ndarray],
+        y1_data: np.ndarray,
+        y2_data: Optional[np.ndarray],
+        use_twin_x: bool,
+        axis_labels: List[str],
 ) -> None:
     """
     Validates the data and parameters for dual-axes plotting.
@@ -474,13 +681,13 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-    x1y1_label: Optional[str],
-    x1y2_label: Optional[str],
-    x2y1_label: Optional[str],
-    auto_label: bool,
-    axis_labels: Optional[List[str]],
-    plot_title: Optional[str],
-    use_twin_x: bool,
+        x1y1_label: Optional[str],
+        x1y2_label: Optional[str],
+        x2y1_label: Optional[str],
+        auto_label: bool,
+        axis_labels: Optional[List[str]],
+        plot_title: Optional[str],
+        use_twin_x: bool,
 ) -> label_management:
     """
     Manages labels and titles for dual-axes plots, with options for automatic labeling.
