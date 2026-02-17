@@ -11,7 +11,7 @@ __all__ = [
     "plot_with_dual_axes",
     "two_subplots",
     "n_plotter",
-    "plot_errorbars",
+    "plot_errorbar",
 ]
 
 from typing import List, Optional, Tuple, Union
@@ -27,14 +27,19 @@ plot_dictionary_type = Union[uPl.LinePlot, uPl.ScatterPlot, uPl.ErrorPlot]
 axis_return = Union[Tuple[Axes, Axes], Axes]
 
 
-def plot_errorbars(
-    x,
-    y,
-    x_err=None,
-    y_err=None,
-    plot_dictionary: plot_dictionary_type = None,
-    subplot_dictionary=None,
+def plot_errorbar(
+    x_data,
+    y_data,
+    x_err=None,  # symmetric x errors, or [lower, upper] for asymmetric
+    y_err=None,  # symmetric y errors, or [lower, upper] for asymmetric
+    x_label=None,
+    y_label=None,
+    plot_title=None,
+    data_label=None,
     auto_label=False,
+    plot_dictionary=None,  # reuse LinePlot for line/marker styling
+    errorbar_dictionary=None,  # new ErrorBar class for cap size, cap color, error line width
+    subplot_dictionary=None,
     axis=None,
 ):
     """
@@ -42,9 +47,9 @@ def plot_errorbars(
 
     Parameters
     ----------
-    x : array-like
+    x_data : array-like
         The x-coordinates of the data points.
-    y : array-like
+    y_data : array-like
         The y-coordinates of the data points.
     x_err : array-like, optional
         The error for the x-coordinates. Must have the same length as `x`.
@@ -59,7 +64,7 @@ def plot_errorbars(
         The axis on which to plot the data.
         If not provided, a new figure and axis will be created, based on the `subplot_dictionary` configuration.
     """
-    x, y = np.asarray(x), np.asarray(y)
+    x, y = np.asarray(x_data), np.asarray(y_data)
     if x_err is not None:
         x_err = np.asarray(x_err)
     if y_err is not None:

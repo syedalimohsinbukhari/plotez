@@ -6,7 +6,7 @@ A Python library for simplified matplotlib plotting.
 
 from .plotez import (
     n_plotter,
-    plot_errorbars,
+    plot_errorbar,
     plot_two_column_file,
     plot_with_dual_axes,
     plot_xy,
@@ -22,6 +22,6 @@ __all__ = [
     "plot_with_dual_axes",
     "two_subplots",
     "n_plotter",
-    "plot_errorbars",
+    "plot_errorbar",
     "__version__",
 ]

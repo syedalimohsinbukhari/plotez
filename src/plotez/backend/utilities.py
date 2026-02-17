@@ -97,19 +97,19 @@ class _PlotParams:
     """
 
     def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-        size=None,
-        cmap=None,
-        face_color=None,
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
+            size=None,
+            cmap=None,
+            face_color=None,
     ):
 
         self.line_style = line_style
@@ -126,6 +126,25 @@ class _PlotParams:
         self.size = size
         self.cmap = cmap
         self.face_color = face_color
+
+    def __repr__(self):
+        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
+        return f"{self.__class__.__name__}({param_str})"
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.to_dict() == other.to_dict()
+
+    def __hash__(self):
+        # Hash based on the tuple of sorted key-value pairs in the dictionary
+        # Convert lists to tuples for hashing
+        items = []
+        for key, value in sorted(self.to_dict().items()):
+            if isinstance(value, list):
+                value = tuple(value)
+            items.append((key, value))
+        return hash(tuple(items))
 
     def to_dict(self) -> dict:
         """
@@ -173,16 +192,16 @@ class LinePlot(_PlotParams):
     """
 
     def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
     ):
         super().__init__(
             line_style=line_style,
@@ -196,25 +215,6 @@ class LinePlot(_PlotParams):
             marker_edge_width=marker_edge_width,
         )
         self.color = color or get_color()
-
-    def __repr__(self):
-        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
-        return f"{self.__class__.__name__}({param_str})"
-
-    def __eq__(self, other):
-        if not isinstance(other, LinePlot):
-            return NotImplemented
-        return self.to_dict() == other.to_dict()
-
-    def __hash__(self):
-        # Hash based on the tuple of sorted key-value pairs in the dictionary
-        # Convert lists to tuples for hashing
-        items = []
-        for key, value in sorted(self.to_dict().items()):
-            if isinstance(value, list):
-                value = tuple(value)
-            items.append((key, value))
-        return hash(tuple(items))
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "LinePlot":
@@ -255,23 +255,6 @@ class LinePlot(_PlotParams):
     def _all_labels(self):
         return ["ls", "lw", "color", "alpha", "marker", "ms", "mec", "mfc", "mew"]
 
-    def get_dict(self):
-        """
-        Get the dictionary of plot parameters, excluding None values.
-
-        Returns
-        -------
-        dict
-            Dictionary containing non-None parameters for the plot.
-        """
-        param_dict = {}
-
-        for param, label in zip(self._all_parameters(), self._all_labels()):
-            if param is not None:
-                param_dict[f"{label}"] = param
-
-        return param_dict
-
 
 class ErrorPlot(LinePlot):
     """
@@ -311,20 +294,20 @@ class ErrorPlot(LinePlot):
     """
 
     def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        capsize=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-        elinewidth=None,
-        ecolor=None,
-        capthick=None,
+            self,
+            line_style=None,
+            line_width=None,
+            color=None,
+            capsize=None,
+            alpha=None,
+            marker=None,
+            marker_size=None,
+            marker_edge_color=None,
+            marker_face_color=None,
+            marker_edge_width=None,
+            elinewidth=None,
+            ecolor=None,
+            capthick=None,
     ):
         super().__init__(
             line_style=line_style,
@@ -341,25 +324,6 @@ class ErrorPlot(LinePlot):
         self.elinewidth = elinewidth
         self.ecolor = ecolor
         self.capthick = capthick
-
-    def __repr__(self):
-        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
-        return f"{self.__class__.__name__}({param_str})"
-
-    def __eq__(self, other):
-        if not isinstance(other, ErrorPlot):
-            return NotImplemented
-        return self.to_dict() == other.to_dict()
-
-    def __hash__(self):
-        # Hash based on the tuple of sorted key-value pairs in the dictionary
-        # Convert lists to tuples for hashing
-        items = []
-        for key, value in sorted(self.to_dict().items()):
-            if isinstance(value, list):
-                value = tuple(value)
-            items.append((key, value))
-        return hash(tuple(items))
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "ErrorPlot":
@@ -379,7 +343,10 @@ class ErrorPlot(LinePlot):
             An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
         """
         instance = cls()
-        error_attrs = LINE_ATTRS | {"elinewidth": "elinewidth", "ecolor": "ecolor", "capthick": "capthick"}
+        error_attrs = LINE_ATTRS | {"capsize": "capsize",
+                                    "elinewidth": "elinewidth",
+                                    "ecolor": "ecolor",
+                                    "capthick": "capthick"}
         for key, value in dictionary.items():
             attr_name = error_attrs.get(key, key)
             setattr(instance, attr_name, value)
@@ -393,23 +360,6 @@ class ErrorPlot(LinePlot):
     def _all_labels(self):
         # Extend parent labels with error bar specific labels
         return super()._all_labels() + ["capsize", "elinewidth", "ecolor", "capthick"]
-
-    def get_dict(self):
-        """
-        Get the dictionary of plot parameters, excluding None values.
-
-        Returns
-        -------
-        dict
-            Dictionary containing non-None parameters for the plot.
-        """
-        param_dict = {}
-
-        for param, label in zip(self._all_parameters(), self._all_labels()):
-            if param is not None:
-                param_dict[f"{label}"] = param
-
-        return param_dict
 
 
 class ScatterPlot(_PlotParams):
@@ -426,25 +376,6 @@ class ScatterPlot(_PlotParams):
 
         if self.color is None:
             self.color = color or get_color()
-
-    def __repr__(self):
-        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
-        return f"{self.__class__.__name__}({param_str})"
-
-    def __eq__(self, other):
-        if not isinstance(other, ScatterPlot):
-            return NotImplemented
-        return self.to_dict() == other.to_dict()
-
-    def __hash__(self):
-        # Hash based on the tuple of sorted key-value pairs in the dictionary
-        # Convert lists to tuples for hashing
-        items = []
-        for key, value in sorted(self.to_dict().items()):
-            if isinstance(value, list):
-                value = tuple(value)
-            items.append((key, value))
-        return hash(tuple(items))
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "ScatterPlot":
@@ -542,23 +473,6 @@ class SubPlots(_PlotParams):
     def _all_parameters(self):
         return [self.share_x, self.share_y, self.fig_size]
 
-    def get_dict(self):
-        """
-        Get the dictionary of plot parameters, excluding None values.
-
-        Returns
-        -------
-        dict
-            Dictionary containing non-None parameters for the plot.
-        """
-        param_dict = {}
-
-        for param, label in zip(self._all_parameters(), self._all_labels()):
-            if param is not None:
-                param_dict[f"{label}"] = param
-
-        return param_dict
-
 
 def plot_or_scatter(axes, scatter: bool):
     """
@@ -624,7 +538,6 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> 
     ValueError
         If any parameter in `plot_instance` is not a list or tuple with exactly two elements.
     """
-    # Flatten the parameters from the input plot instance
     parameters = plot_instance.get_dict()
     params_instance1, params_instance2 = {}, {}
 
@@ -639,12 +552,12 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> 
 
 
 def dual_axes_data_validation(
-    x1_data: np.ndarray,
-    x2_data: Optional[np.ndarray],
-    y1_data: np.ndarray,
-    y2_data: Optional[np.ndarray],
-    use_twin_x: bool,
-    axis_labels: List[str],
+        x1_data: np.ndarray,
+        x2_data: Optional[np.ndarray],
+        y1_data: np.ndarray,
+        y2_data: Optional[np.ndarray],
+        use_twin_x: bool,
+        axis_labels: List[str],
 ) -> None:
     """
     Validates the data and parameters for dual-axes plotting.
@@ -687,13 +600,13 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-    x1y1_label: Optional[str],
-    x1y2_label: Optional[str],
-    x2y1_label: Optional[str],
-    auto_label: bool,
-    axis_labels: Optional[List[str]],
-    plot_title: Optional[str],
-    use_twin_x: bool,
+        x1y1_label: Optional[str],
+        x1y2_label: Optional[str],
+        x2y1_label: Optional[str],
+        auto_label: bool,
+        axis_labels: Optional[List[str]],
+        plot_title: Optional[str],
+        use_twin_x: bool,
 ) -> label_management:
     """
     Manages labels and titles for dual-axes plots, with options for automatic labeling.
