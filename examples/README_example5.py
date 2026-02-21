@@ -13,7 +13,7 @@ y = np.sin(x)
 y_err = 0.1 * np.random.rand(len(y))
 
 # Enhanced error bar styling
-ep = ErrorPlot(capsize=8, cap_thickness=2, error_line_width=2, error_color='red', line_style=':', line_width=2,
+ep = ErrorPlot(error_color='red', error_line_width=2, capsize=8, cap_thickness=2, line_style=':', line_width=2,
                color='darkblue', marker='d', marker_size=6)
 plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_dictionary=ep)
 # plt.show()

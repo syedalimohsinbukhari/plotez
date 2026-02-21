@@ -22,7 +22,9 @@ import numpy as np
 from matplotlib import rcParams
 
 # SAFEGUARDS:
-_split = Tuple[Union["LinePlot", "ScatterPlot", "ErrorPlot"], Union["LinePlot", "ScatterPlot", "ErrorPlot"]]
+LSE = Union["LinePlot", "ScatterPlot", "ErrorPlot"]
+_split = Tuple[LSE, LSE]
+
 label_management = Tuple[str, str, str, str, List[str]]
 
 LINE_ATTRS = {
@@ -167,7 +169,11 @@ class _PlotParams:
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "_PlotParams":
         """Create an instance of the `_PlotParams` class."""
-        raise NotImplementedError("This method should be implemented by subclasses.")
+        instance = cls()
+        for key in dictionary.keys():
+            setattr(instance, key, key)
+
+        return instance
 
     def _all_parameters(self):
         raise NotImplementedError("This method should be implemented by subclasses.")
@@ -210,29 +216,6 @@ class LinePlot(_PlotParams):
         )
         self.color = color or get_color()
 
-    @classmethod
-    def populate(cls, dictionary: Dict[str, Any]) -> "LinePlot":
-        """
-        Create an instance of `LinePlot` from a dictionary of parameters.
-
-        Parameters
-        ----------
-        dictionary : dict
-            A dictionary where keys represent parameter labels (e.g., 'ls' for line style, 'lw' for line width),
-            and values represent the corresponding values for each parameter.
-
-        Returns
-        -------
-        LinePlot
-            An instance of `LinePlot` with attributes populated based on the provided dictionary.
-        """
-        instance = cls()
-        for key, value in dictionary.items():
-            attr_name = LINE_ATTRS.get(key, key)
-            setattr(instance, attr_name, value)
-
-        return instance
-
     def _all_parameters(self):
         return [
             self.line_style,
@@ -267,36 +250,6 @@ class ScatterPlot(_PlotParams):
 
         if self.color is None:
             self.color = color or get_color()
-
-    @classmethod
-    def populate(cls, dictionary: Dict[str, Any]) -> "ScatterPlot":
-        """
-        Create an instance of `ScatterPlot` from a dictionary of parameters.
-
-        Parameters
-        ----------
-        dictionary : dict
-            A dictionary where keys represent parameter labels (e.g., 's' for size, 'c' for color),
-            and values represent the corresponding values for each parameter.
-
-        Returns
-        -------
-        ScatterPlot
-            An instance of `ScatterPlot` with attributes populated based on the provided dictionary.
-        """
-        instance = cls()
-        for key, value in dictionary.items():
-            attr_name = {
-                "c": "color",
-                "alpha": "alpha",
-                "marker": "marker",
-                "s": "size",
-                "cmap": "cmap",
-                "fc": "face_color",
-            }.get(key, key)
-            setattr(instance, attr_name, value)
-
-        return instance
 
     def _all_parameters(self):
         return [self.color, self.alpha, self.marker, self.size, self.cmap, self.face_color]
@@ -341,10 +294,16 @@ class ErrorPlot(LinePlot):
 
     def __init__(
         self,
+        error_color=None,
+        error_line_width=None,
         capsize=None,
         cap_thickness=None,
-        error_line_width=None,
-        error_color=None,
+        bars_above: bool = None,
+        low_lims: bool = False,
+        up_lims: bool = False,
+        x_low_lims: bool = False,
+        x_up_lims: bool = False,
+        error_every_y: int = None,
         line_style=None,
         line_width=None,
         color=None,
@@ -366,40 +325,16 @@ class ErrorPlot(LinePlot):
             marker_face_color=marker_face_color,
             marker_edge_width=marker_edge_width,
         )
-        self.capsize = capsize
-        self.elinewidth = error_line_width
         self.ecolor = error_color
+        self.elinewidth = error_line_width
+        self.capsize = capsize
         self.capthick = cap_thickness
-
-    @classmethod
-    def populate(cls, dictionary: Dict[str, Any]) -> "ErrorPlot":
-        """
-        Create an instance of `ErrorPlot` from a dictionary of parameters.
-
-        Parameters
-        ----------
-        dictionary : dict
-            A dictionary where keys represent parameter labels (e.g., 'ls' for line style,
-            'capsize' for error bar cap size), and values represent the corresponding
-            values for each parameter.
-
-        Returns
-        -------
-        ErrorPlot
-            An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
-        """
-        instance = cls()
-        error_attrs = LINE_ATTRS | {
-            "capsize": "capsize",
-            "elinewidth": "elinewidth",
-            "ecolor": "ecolor",
-            "capthick": "capthick",
-        }
-        for key, value in dictionary.items():
-            attr_name = error_attrs.get(key, key)
-            setattr(instance, attr_name, value)
-
-        return instance
+        self.bars_above = bars_above
+        self.lolims = low_lims
+        self.uplims = up_lims
+        self.x_lolims = x_low_lims
+        self.x_uplims = x_up_lims
+        self.error_every_y = error_every_y
 
     def _all_parameters(self):
         # Extend parent parameters with error bar specific parameters
@@ -429,29 +364,6 @@ class SubPlots(_PlotParams):
         self.share_x = share_x
         self.share_y = share_y
         self.fig_size = rcParams["figure.figsize"] if fig_size is None else fig_size
-
-    @classmethod
-    def populate(cls, dictionary: Dict[str, Any]) -> "SubPlots":
-        """
-        Create an instance of `SubPlots` from a dictionary of parameters.
-
-        Parameters
-        ----------
-        dictionary : dict
-            A dictionary where keys represent parameter labels (e.g., 's' for size, 'c' for color),
-            and values represent the corresponding values for each parameter.
-
-        Returns
-        -------
-        SubPlots
-            An instance of `SubPlots` with attributes populated based on the provided dictionary.
-        """
-        instance = cls()
-        for key, value in dictionary.items():
-            attr_name = {"sharex": "share_x", "sharey": "share_y", "figsize": "fig_size"}.get(key, key)
-            setattr(instance, attr_name, value)
-
-        return instance
 
     def _all_labels(self):
         return ["sharex", "sharey", "figsize"]
@@ -538,29 +450,29 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> 
 
 
 def dual_axes_data_validation(
-    x1_data: np.ndarray,
-    x2_data: Optional[np.ndarray],
-    y1_data: np.ndarray,
-    y2_data: Optional[np.ndarray],
-    use_twin_x: bool,
-    axis_labels: List[str],
+    x1_data,
+    x2_data,
+    y1_data,
+    y2_data,
+    use_twin_x,
+    axis_labels,
 ) -> None:
     """
     Validates the data and parameters for dual-axes plotting.
 
     Parameters
     ----------
-    x1_data : np.ndarray
+    x1_data
         Data for the primary x-axis.
-    x2_data : Optional[np.ndarray]
+    x2_data
         Data for the secondary x-axis (used in dual x-axis plots). Should be `None` if `use_twin_x` is True.
-    y1_data : np.ndarray
+    y1_data
         Data for the primary y-axis.
-    y2_data : Optional[np.ndarray]
+    y2_data
         Data for the secondary y-axis (used in dual y-axis plots). Should be `None` if `use_twin_x` is False.
-    use_twin_x : bool
+    use_twin_x
         If True, a dual y-axis plot is expected; otherwise, a dual x-axis plot is expected.
-    axis_labels : List[str]
+    axis_labels
         List of axis labels. Must have exactly three elements:
         - Label for the x-axis of the primary plot.
         - Label for the y-axis of the primary plot.
@@ -586,34 +498,34 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-    x1y1_label: Optional[str],
-    x1y2_label: Optional[str],
-    x2y1_label: Optional[str],
-    auto_label: bool,
-    axis_labels: Optional[List[str]],
-    plot_title: Optional[str],
-    use_twin_x: bool,
+    x1y1_label,
+    x1y2_label,
+    x2y1_label,
+    auto_label,
+    axis_labels,
+    plot_title,
+    use_twin_x,
 ) -> label_management:
     """
     Manages labels and titles for dual-axes plots, with options for automatic labeling.
 
     Parameters
     ----------
-    x1y1_label : Optional[str]
+    x1y1_label
         Label for the primary plot (X1 vs. Y1).
-    x1y2_label : Optional[str]
+    x1y2_label
         Label for the secondary Y-axis plot (X1 vs. Y2), used if `use_twin_x` is True.
-    x2y1_label : Optional[str]
+    x2y1_label
         Label for the secondary X-axis plot (X2 vs. Y1), used if `use_twin_x` is False.
-    auto_label : bool
+    auto_label
         If True, automatically fills in missing labels and title with defaults.
-    axis_labels : Optional[List[str]]
+    axis_labels
         A list of axis labels. If provided, it must contain three strings.
         - For dual Y-axis: [primary x-axis label, primary y-axis label, secondary y-axis label].
         - For dual X-axis: [primary x-axis label, primary y-axis label, secondary x-axis label].
-    plot_title : Optional[str]
+    plot_title
         Title of the plot. If None and `auto_label` is True, a default title will be used.
-    use_twin_x : bool
+    use_twin_x
         If True, indicates a dual Y-axis plot (X1 vs. Y1 and X1 vs. Y2).
         If False, indicates a dual X-axis plot (X1 vs. Y1 and X2 vs. Y1).
 

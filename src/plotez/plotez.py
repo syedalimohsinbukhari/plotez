@@ -15,6 +15,7 @@ __all__ = [
 ]
 
 from typing import List, Optional, Tuple, Union
+from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,26 +42,6 @@ def plot_errorbar(
         subplot_dictionary=None,
         axis=None,
 ):
-    """
-    Plots data with optional error bars.
-
-    Parameters
-    ----------
-    x_data : array-like
-        The x-coordinates of the data points.
-    y_data : array-like
-        The y-coordinates of the data points.
-    x_err : array-like, optional
-        The error for the x-coordinates. Must have the same length as `x`.
-    y_err : array-like, optional
-        The error for the y-coordinates. Must have the same length as `y`.
-    subplot_dictionary : SubPlots instance, optional
-        An object containing configuration options for creating subplots.
-        If not provided, the default configuration from `uPl.SubPlots` will be used.
-    axis : Matplotlib axis, optional
-        The axis on which to plot the data.
-        If not provided, a new figure and axis will be created, based on the `subplot_dictionary` configuration.
-    """
     x, y = np.asarray(x_data), np.asarray(y_data)
     if x_err is not None:
         x_err = np.asarray(x_err)
@@ -78,9 +59,9 @@ def plot_errorbar(
 
     axis.errorbar(x, y, xerr=x_err, yerr=y_err, **error_dict_items)
 
-    if auto_label:
-        axis.set_xlabel("X")
-        axis.set_ylabel("Y")
+    x_label, y_label = x_label if x_label else "X", y_label if y_label else "Y"
+    axis.set_xlabel("X" if auto_label else x_label)
+    axis.set_ylabel("Y" if auto_label else y_label)
 
     plt.tight_layout()
 
@@ -128,7 +109,7 @@ def plot_two_column_file(
          If None, a default plot type will be used.
     subplot_dictionary
         Dictionary of parameters for subplot configuration.
-    axis: Optional[Axes]
+    axis: Axes, optional
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
     """
     data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)
@@ -190,7 +171,7 @@ def plot_xy(
         If None, a default plot type will be used.
     subplot_dictionary: SubPlots, optional
         Dictionary of parameters for subplot configuration.
-    axis: Optional[Axes]
+    axis: Axes, optional
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
     """
     if auto_label:
@@ -249,9 +230,9 @@ def plot_xyy(
     plot_title: str
         The title for the plot.
     data_labels : list of str, optional
-        The labels for the two datasets. Default is `['X vs Y1', 'X vs Y2']`.
+        The labels for the two datasets. Default is `['X vs. Y1', 'X vs Y2']`.
     use_twin_x : bool, optional
-        If True, creates dual y-axis plot. If False, creates dual x-axis plot. Default is True.
+        If True, creates a dual y-axis plot. If False, creates a duala1` x-axis plot. Default is True.
     auto_label : bool, optional
         Whether to automatically label the plot. Default is `False`.
     is_scatter : bool, optional
@@ -317,9 +298,9 @@ def plot_with_dual_axes(
     y2_data : np.ndarray, optional
         Data for the secondary y-axis (used for dual y-axis plots).
     x1y1_label : str, optional
-        Label for the plot of X1 vs Y1. If None and `auto_label` is True, defaults to 'X1 vs Y1'.
+        Label for the plot of X1 vs. Y1. If None and `auto_label` is True, defaults to 'X1 vs Y1'.
     x1y2_label : str, optional
-        Label for the plot of X1 vs Y2 (when using dual Y-axes). If None and `auto_label` is True, defaults to 'X1 vs Y2'.
+        Label for the plot of X1 vs. Y2 (when using dual Y-axes). If None and `auto_label` is True, defaults to 'X1 vs Y2'.
     x2y1_label : str, optional
         Label for the plot of X2 vs Y1 (when using dual X-axes). If None and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x : bool, optional
@@ -337,7 +318,7 @@ def plot_with_dual_axes(
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to the matplotlib plotting library.
     subplot_dictionary: SubPlots
         Dictionary of parameters for subplot configuration.
-    axis: Optional[Axis]
+    axis: Axis, optional
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
     """
     labels = uPl.dual_axes_label_management(
@@ -421,9 +402,9 @@ def two_subplots(
 
     Parameters
     ----------
-    x_data : list of np.ndarray
+    x_data : np.ndarray
         List containing x-axis data arrays for each subplot.
-    y_data : list of np.ndarray
+    y_data : np.ndarray
         List containing y-axis data arrays for each subplot.
     x_labels : list of str
         List of labels for the x-axes in each subplot.
@@ -490,9 +471,9 @@ def n_plotter(
 
     Parameters
     ----------
-    x_data : list of np.ndarray
+    x_data : np.ndarray
         List of x-axis data arrays for each subplot.
-    y_data : list of np.ndarray
+    y_data : np.ndarray
         List of y-axis data arrays for each subplot.
     n_rows : int
         Number of rows in the subplot grid.
@@ -509,20 +490,20 @@ def n_plotter(
     subplot_title: list of str, optional
         Titles for the subplots, if required.
     auto_label : bool, default False
-        Automatically assigns labels to subplots if `True`. If `True`, it overwrites user provided labels. Defaults to False.
+        Automatically assigns labels to subplots if `True`. If `True`, it overwrites user-provided labels.
+        Defaults to False.
     is_scatter : bool, default False
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    subplot_dictionary : dict, optional
+    subplot_dictionary : SubPlots
         Dictionary of parameters for subplot configuration.
-    plot_dictionary : LinePlot or ScatterPlot, optional
+    plot_dictionary : Union[LinePlot, ScatterPlot]
         Object containing plot styling parameters. Defaults to `LinePlot`.
     """
     sp_dict = subplot_dictionary.get_dict() if subplot_dictionary else uPl.SubPlots().get_dict()
+    plot_items = plot_dictionary_type.get_dict() if plot_dictionary else uPl.LinePlot().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
     axs = axs.flatten()
-
-    plot_items = uPl.plot_dictionary_handler(plot_dictionary=plot_dictionary)
 
     main_dict = [{key: value[c % len(value)] for key, value in plot_items.items()} for c in range(n_cols * n_rows)]
 
@@ -531,7 +512,7 @@ def n_plotter(
         y_labels = [rf"Y$_{i + 1}$" for i in range(n_cols * n_rows)]
 
         data_labels = [f"{i} vs {j}" for i, j in zip(x_labels, y_labels)]
-        subplot_title = [f"Subplot {i}" for i in range(n_cols * n_rows)]
+        subplot_title = [f"Subplot {i + 1}" for i in range(n_cols * n_rows)]
         plot_title = f"{n_cols * n_rows} Plotter"
     # safeguard from `None` iterations in case if no label is provided and auto_label is false
     else:
@@ -545,6 +526,17 @@ def n_plotter(
     shared_y = sp_dict.get("sharey")
     shared_x1 = sp_dict.get("sharex")
     shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
+
+    if len(x_labels) != len(y_labels):
+        sm = min(len(x_labels), len(y_labels))
+        lg = max(len(x_labels), len(y_labels))
+        empty_ = [''] * (lg - sm)
+        x_labels.extend(empty_) if len(x_labels) < lg else None
+        y_labels.extend(empty_) if len(y_labels) < lg else None
+
+        which_one = "x" if len(x_labels) < lg else "y"
+        warn(f"The number of labels provided {which_one}_labels ({sm}) is less than the number of data series ({lg}). "
+             f"Using None as missing {which_one}_label for the remaining data series.")
 
     for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title):
         label = f"{x_labels[index]} vs {y_labels[index]}" if data_labels is None else data_labels[index]

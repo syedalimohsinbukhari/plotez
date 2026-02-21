@@ -20,6 +20,6 @@ fig, axs = n_plotter(
     auto_label=True
 )
 
-# plt.show()
-plt.savefig("./images/README_example3.png")
-plt.close()
+plt.show()
+# plt.savefig("./images/README_example3.png")
+# plt.close()

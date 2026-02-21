@@ -29,7 +29,7 @@ class TestErrorPlot:
 
     def test_errorplot_with_error_bar_params(self):
         """Test ErrorPlot with error bar specific parameters."""
-        ep = ErrorPlot(capsize=10, cap_thickness=1.5, error_line_width=2, error_color='blue')
+        ep = ErrorPlot(error_color='blue', error_line_width=2, capsize=10, cap_thickness=1.5)
         assert ep.capsize == 10
         assert ep.elinewidth == 2
         assert ep.ecolor == 'blue'
@@ -37,7 +37,7 @@ class TestErrorPlot:
 
     def test_errorplot_get_dict(self):
         """Test ErrorPlot get_dict method."""
-        ep = ErrorPlot(capsize=5, error_line_width=2, line_style='--')
+        ep = ErrorPlot(error_line_width=2, capsize=5, line_style='--')
         d = ep.get_dict()
         assert 'ls' in d
         assert 'capsize' in d
@@ -123,7 +123,7 @@ class TestErrorPlot:
 
     def test_errorplot_to_dict(self):
         """Test ErrorPlot to_dict method."""
-        ep = ErrorPlot(capsize=5, error_line_width=2, line_style='--')
+        ep = ErrorPlot(error_line_width=2, capsize=5, line_style='--')
         d = ep.to_dict()
 
         # to_dict includes None values
@@ -136,7 +136,7 @@ class TestErrorPlot:
 
     def test_errorplot_all_parameters(self):
         """Test _all_parameters method includes parent and child params."""
-        ep = ErrorPlot(capsize=5, cap_thickness=1.5, error_line_width=2, error_color='red', line_style='-')
+        ep = ErrorPlot(error_color='red', error_line_width=2, capsize=5, cap_thickness=1.5, line_style='-')
 
         params = ep._all_parameters()
         # Should include all LinePlot params plus error bar params
