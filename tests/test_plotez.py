@@ -5,9 +5,9 @@ import numpy as np
 import pytest
 from matplotlib.axes import Axes
 
-from ..plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
-from ..plotez.backend.error_handling import OrientationError
-from ..plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
+from plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
+from plotez.backend.error_handling import OrientationError
+from plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
 
 
 class TestPlotTwoColumnFile:
@@ -146,14 +146,6 @@ class TestPlotXYY:
             use_twin_x=True
         )
         assert isinstance(result, tuple)
-
-    def test_plot_xyy_dual_x(self, sample_x_data, sample_y_data, sample_y2_data):
-        """Test dual x-axis plotting (use_twin_x=False)."""
-        # For dual x-axis, we need x2_data instead of y2_data
-        # plot_xyy expects (x, y1, y2) but for dual x-axis we need different handling
-        # This is actually a limitation - plot_xyy is designed for dual y-axis
-        # For now, skip this test as plot_xyy doesn't support dual x naturally
-        pytest.skip("plot_xyy is designed for dual y-axis, use plot_with_dual_axes for dual x-axis")
 
 
 class TestPlotWithDualAxes:

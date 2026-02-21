@@ -18,10 +18,12 @@ with minimal boilerplate code.
 ## Features
 
 - **Simple API**: Create complex plots with just a few lines of code
+- **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
 - **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
+- **Inheritance-Based Design**: ErrorPlot inherits from LinePlot for consistent styling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 - **Well Tested**: Comprehensive test suite with 85%+ coverage
 
@@ -133,8 +135,38 @@ line_params = LinePlot(
 
 plot_xy(x, y, plot_dictionary=line_params)
 ```
-
 ![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
+
+### Error Bar Plots
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+from plotez import plot_errorbars
+from plotez.backend.utilities import ErrorPlot
+
+# Generate sample data with errors
+x = np.linspace(0, 10, 20)
+x_err = 0.4
+y = np.sin(x)
+y_err = 0.1 * np.random.rand(len(y))
+
+# Enhanced error bar styling
+ep = ErrorPlot(
+    line_style=':',
+    line_width=2,
+    color='darkblue',
+    marker='d',
+    marker_size=6,
+    capsize=8,
+    elinewidth=2,  # Error bar line width
+    ecolor='red',  # Error bar color (different from line!)
+    capthick=2  # Error bar cap thickness
+)
+plot_errorbars(x, y, x_err=x_err, y_err=y_err, plot_dictionary=ep)
+```
+![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example5.png)
 
 ## Development
 

@@ -224,6 +224,100 @@ PlotEZ can directly plot two-column CSV files:
        plot_title='Data from CSV'
    )
 
+Error Bar Plots
+---------------
+
+PlotEZ provides comprehensive error bar plotting capabilities through the ``ErrorPlot`` class
+and the ``plot_errorbars`` function.
+
+Basic Error Bars
+~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import numpy as np
+   from plotez import plot_errorbars
+   from plotez.backend.utilities import ErrorPlot
+
+   # Generate sample data with errors
+   x = np.linspace(0, 10, 20)
+   y = np.sin(x)
+   x_err = 0.1 * np.random.rand(len(x))
+   y_err = 0.1 * np.random.rand(len(y))
+
+   # Simple error bar plot
+   plot_errorbars(x, y, x_err, y_err)
+
+   # With custom styling
+   ep = ErrorPlot(line_style='--', capsize=5, color='blue')
+   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+
+Enhanced Error Bar Styling
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ErrorPlot inherits from LinePlot, providing access to all line styling options
+plus specialized error bar parameters:
+
+.. code-block:: python
+
+   # Full customization with enhanced error bar styling
+   ep = ErrorPlot(
+       # Line styling (inherited from LinePlot)
+       line_style='-',
+       line_width=2,
+       color='darkblue',
+       marker='o',
+       marker_size=6,
+       alpha=0.7,
+
+       # Error bar specific styling
+       capsize=8,           # Length of error bar caps
+       elinewidth=2,        # Width of error bar lines
+       ecolor='red',        # Color of error bars (can differ from line color)
+       capthick=2           # Thickness of error bar caps
+   )
+
+   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+
+Creating ErrorPlot from Dictionary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the ``populate()`` class method to create ErrorPlot instances from parameter dictionaries:
+
+.. code-block:: python
+
+   # Using parameter aliases
+   params = {
+       'ls': '--',          # line_style
+       'lw': 2,             # line_width
+       'color': 'purple',
+       'marker': 's',
+       'ms': 6,             # marker_size
+       'capsize': 7,
+       'elinewidth': 2,
+       'ecolor': 'crimson'
+   }
+
+   ep = ErrorPlot.populate(params)
+   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+
+Inheritance Benefits
+~~~~~~~~~~~~~~~~~~~
+
+Since ErrorPlot inherits from LinePlot, you can use it anywhere a LinePlot is expected,
+and it automatically includes all line plot functionality:
+
+.. code-block:: python
+
+   from plotez.backend.utilities import LinePlot
+
+   # ErrorPlot is a specialized LinePlot
+   ep = ErrorPlot(capsize=5)
+   print(isinstance(ep, LinePlot))  # True
+
+   # Has all LinePlot features plus error bar features
+   print(len(ep._all_parameters()))  # All parameters combined
+
 Next Steps
 ----------
 

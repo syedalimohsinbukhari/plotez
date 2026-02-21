@@ -19,20 +19,6 @@ class PlotError(Exception):
     pass
 
 
-class NoXYLabels(PlotError):
-    """
-    Raised when x or y labels are missing in a plot.
-
-    Notes
-    -----
-    This error occurs when a plot is expected to have labels for both
-    the x-axis and y-axis, but one or both are missing. Proper labeling
-    is often required for clarity in visualizations.
-    """
-
-    pass
-
-
 class OrientationError(PlotError):
     """
     Raised when an invalid or unexpected orientation is used in a plot.
