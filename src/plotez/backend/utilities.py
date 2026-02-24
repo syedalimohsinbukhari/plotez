@@ -15,39 +15,32 @@ __all__ = [
     "dual_axes_label_management",
 ]
 
-from typing import Any, Dict, List, Tuple
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Any, Dict, List, Literal, Tuple
 
-from matplotlib import rcParams
+from matplotlib.colors import Colormap, Normalize
+from matplotlib.figure import Figure, SubFigure
+from matplotlib.patheffects import AbstractPathEffect
+from matplotlib.transforms import Affine2D, BboxBase
 from numpy.typing import ArrayLike
 
-from plotez.backend import ERROR_ATTRS, LINE_ATTRS, SCATTER_ATTRS
+from plotez.backend import ERROR_ATTRS, SCATTER_ATTRS
+from plotez.backend.CONSTANTS import PLOT_ATTRS
 
+# Type aliases for matplotlib types (compatible with older versions)
+ColorType = Any  # str, tuple, etc.
+MarkerType = Any  # str, int, etc.
 label_management = Tuple[str, str, str, str, List[str]]
 
 
-def get_color():
-    """
-    Generate a list of colors from Matplotlib's default color cycle.
-
-    This function retrieves colors from Matplotlib's default color cycle and repeats if more colors are needed.
-    The user can specify the number of colors required.
-
-    Returns
-    -------
-    list of str
-        A list of color hex codes.
-        The length of the list is equal to `n_colors` if specified, otherwise the extended color list is returned.
-
-    Notes
-    -----
-    - The function extends the default color cycle by repeating it 10 times to accommodate
-      requests for more colors than the original cycle provides.
-    - If `n_colors` is greater than the original cycle length, repeated colors will appear.
-    """
-    color = rcParams["axes.prop_cycle"].by_key()["color"] * 10
-    return color[:]
+def _shortcuts(short_form, long_form):
+    if short_form is None and long_form is None:
+        return None
+    return short_form if short_form else long_form
 
 
+@dataclass
 class _PlotParams:
     """
     Base class for handling common plot parameters.
@@ -74,59 +67,57 @@ class _PlotParams:
         Width of the marker edges. Default is None.
     """
 
-    def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-    ):
+    agg_filter = None
+    alpha: float | None = None
+    animated: bool | None = None
+    antialiased: bool | None = None
+    clip_box: BboxBase | None = None
+    clip_on: bool | Sequence[bool] | None = None
+    clip_path = None
+    color: ArrayLike | Sequence[ColorType] | ColorType | None = None
+    dash_cap_style: str | None = None
+    dash_join_style: str | None = None
+    dashes: Sequence[float] | None = None
+    data: ArrayLike | None = None
+    draw_style: str | None = None
+    figure: Figure | SubFigure | None = None
+    fill_style: str | None = None
+    gap_color: str | None = None
+    gid: str | None = None
+    in_layout: bool | None = None
+    line_style: str | Sequence[str] | None = None
+    line_width: float | Sequence[float] | None = None
+    marker: str | MarkerType | None = None
+    marker_color: str | None = None
+    marker_edge_color: str | Sequence[str] | None = None
+    marker_edge_width: float | Sequence[float] | None = None
+    marker_face_color: str | Sequence[str] | None = None
+    marker_face_color_alt: str | None = None
+    marker_size: float | Sequence[float] | None = None
+    mark_every: int | Sequence[int] | None = None
+    mouse_over: bool | None = None
+    path_effects: AbstractPathEffect | Sequence[AbstractPathEffect] | None = None
+    picker: float | int | None = None
+    pick_radius: float | None = None
+    rasterized: bool | None = None
+    sketch_parameters: dict[str, float] | None = None
+    snap: bool | None = None
+    solid_cap_style: str | None = None
+    solid_join_style: str | None = None
+    transform: Affine2D | None = None
+    url: str | None = None
+    visible: bool | None = None
+    z_order: float | None = None
 
-        self.line_style = line_style
-        self.line_width = line_width
-        self.color = color
-        self.alpha = alpha
-        self.marker = marker
-        self.marker_size = marker_size
-        self.marker_edge_color = marker_edge_color
-        self.marker_face_color = marker_face_color
-        self.marker_edge_width = marker_edge_width
+    def __post_init__(self):
+        if self.marker_color:
+            self.marker_face_color = self.marker_face_color if self.marker_face_color else self.marker_color
+            self.marker_edge_color = self.marker_edge_color if self.marker_edge_color else self.marker_color
 
     def __repr__(self):
-        param_str = ", ".join(f"{key}={value!r}" for key, value in self.to_dict().items())
+        temp_ = {label: param for label, param in zip(self._all_labels(), self._all_parameters())}
+        param_str = ", ".join(f"{key}={value!r}" for key, value in temp_.items())
         return f"{self.__class__.__name__}({param_str})"
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self.to_dict() == other.to_dict()
-
-    def __hash__(self):
-        # Hash based on the tuple of sorted key-value pairs in the dictionary
-        # Convert lists to tuples for hashing
-        items = []
-        for key, value in sorted(self.to_dict().items()):
-            if isinstance(value, list):
-                value = tuple(value)
-            items.append((key, value))
-        return hash(tuple(items))
-
-    def to_dict(self) -> dict:
-        """
-        Convert the plot parameters to a dictionary.
-
-        Returns
-        -------
-        dict
-            A dictionary where keys are parameter labels and values are the corresponding
-            plot parameters. Parameters that are `None` are also included in the dictionary.
-        """
-        return {label: param for label, param in zip(self._all_labels(), self._all_parameters())}
 
     def get_dict(self):
         """
@@ -152,49 +143,56 @@ class _PlotParams:
         raise NotImplementedError("This method should be implemented by subclasses.")
 
 
+@dataclass
 class LinePlot(_PlotParams):
     """Class for double-line plot parameters."""
 
-    def __init__(
-        self,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-    ):
-        super().__init__(
-            line_style=line_style,
-            line_width=line_width,
-            color=color,
-            alpha=alpha,
-            marker=marker,
-            marker_size=marker_size,
-            marker_edge_color=marker_edge_color,
-            marker_face_color=marker_face_color,
-            marker_edge_width=marker_edge_width,
-        )
-        self.color = color or get_color()
-
     def _all_parameters(self):
         return [
+            self.agg_filter,
+            self.alpha,
+            self.animated,
+            self.antialiased,
+            self.clip_box,
+            self.clip_on,
+            self.clip_path,
+            self.color,
+            self.dash_cap_style,
+            self.dash_join_style,
+            self.dashes,
+            self.data,
+            self.draw_style,
+            self.figure,
+            self.fill_style,
+            self.gap_color,
+            self.gid,
+            self.in_layout,
             self.line_style,
             self.line_width,
-            self.color,
-            self.alpha,
             self.marker,
-            self.marker_size,
             self.marker_edge_color,
-            self.marker_face_color,
             self.marker_edge_width,
+            self.marker_face_color,
+            self.marker_face_color_alt,
+            self.marker_size,
+            self.mark_every,
+            self.mouse_over,
+            self.path_effects,
+            self.picker,
+            self.pick_radius,
+            self.rasterized,
+            self.sketch_parameters,
+            self.snap,
+            self.solid_cap_style,
+            self.solid_join_style,
+            self.transform,
+            self.url,
+            self.visible,
+            self.z_order,
         ]
 
     def _all_labels(self):
-        return ["ls", "lw", "color", "alpha", "marker", "ms", "mec", "mfc", "mew"]
+        return list(PLOT_ATTRS.keys())
 
     @classmethod
     def populate(cls, dictionary: Dict[str, Any]) -> "LinePlot":
@@ -214,41 +212,38 @@ class LinePlot(_PlotParams):
         """
         instance = cls()
         for key, value in dictionary.items():
-            attr_name = LINE_ATTRS.get(key, key)
+            attr_name = PLOT_ATTRS.get(key, key)
             setattr(instance, attr_name, value)
 
         return instance
 
 
+@dataclass
 class ScatterPlot(_PlotParams):
     """Class for double-scatter plot parameters."""
 
-    def __init__(
-        self,
-        size=None,
-        color=None,
-        marker=None,
-        cmap=None,
-        normalize=None,
-        v_min=None,
-        v_max=None,
-        linewidths=None,
-        face_color=None,
-        alpha=None,
-    ):
-        super().__init__(color=color, marker=marker, alpha=alpha, line_width=linewidths)
-        self.size = size
-        self.cmap = cmap
-        self.normalize = normalize
-        self.v_min = v_min
-        self.v_max = v_max
-        self.face_color = face_color
-
-        if self.color is None:
-            self.color = color or get_color()
+    size: float | None = None
+    cmap: str | Colormap | None = None
+    normalize: str | Normalize | None = None
+    v_min: float | None = None
+    v_max: float | None = None
+    line_widths: float | Sequence[float] | None = None
+    edge_colors: Literal["face", "none"] | ColorType | Sequence[ColorType] | None = None
+    colorizer: Any | None = None
+    plot_non_finite: bool | None = None
 
     def _all_parameters(self):
-        return [self.color, self.alpha, self.marker, self.size, self.cmap, self.face_color]
+        return [
+            self.size,
+            self.cmap,
+            self.normalize,
+            self.v_min,
+            self.v_max,
+            self.line_widths,
+            self.edge_colors,
+            self.colorizer,
+            self.plot_non_finite,
+        ] + LinePlot()._all_parameters()
 
     def _all_labels(self):
         return list(SCATTER_ATTRS.keys())
@@ -278,8 +273,7 @@ class ScatterPlot(_PlotParams):
         return instance
 
 
-# TODO:
-# fix the missing errorplot attributes
+@dataclass
 class ErrorPlot(LinePlot):
     """
     Class for error bar plot parameters.
@@ -314,53 +308,31 @@ class ErrorPlot(LinePlot):
         Width of the marker edges. Default is None.
     """
 
-    def __init__(
-        self,
-        error_color=None,
-        error_line_width=None,
-        capsize=None,
-        cap_thickness=None,
-        bars_above=None,
-        low_lims=False,
-        up_lims=False,
-        x_low_lims=False,
-        x_up_lims=False,
-        error_every_y=1,
-        line_style=None,
-        line_width=None,
-        color=None,
-        alpha=None,
-        marker=None,
-        marker_size=None,
-        marker_edge_color=None,
-        marker_face_color=None,
-        marker_edge_width=None,
-    ):
-        super().__init__(
-            line_style=line_style,
-            line_width=line_width,
-            color=color,
-            alpha=alpha,
-            marker=marker,
-            marker_size=marker_size,
-            marker_edge_color=marker_edge_color,
-            marker_face_color=marker_face_color,
-            marker_edge_width=marker_edge_width,
-        )
-        self.ecolor = error_color
-        self.elinewidth = error_line_width
-        self.capsize = capsize
-        self.capthick = cap_thickness
-        self.bars_above = bars_above
-        self.lolims = low_lims
-        self.uplims = up_lims
-        self.x_lolims = x_low_lims
-        self.x_uplims = x_up_lims
-        self.error_every_y = error_every_y
+    error_color: str | None = None
+    error_line_width: float | None = None
+    capsize: float | None = None
+    cap_thickness: float | None = None
+    bars_above: bool | None = None
+    low_lims: bool | None = None
+    up_lims: bool | None = None
+    x_low_lims: bool | None = None
+    x_up_lims: bool | None = None
+    error_every_y: int | None = None
 
     def _all_parameters(self):
         # Extend parent parameters with error bar specific parameters
-        return [self.elinewidth, self.ecolor, self.capsize, self.capthick] + super()._all_parameters()
+        return [
+            self.error_color,
+            self.error_line_width,
+            self.capsize,
+            self.cap_thickness,
+            self.bars_above,
+            self.low_lims,
+            self.up_lims,
+            self.x_low_lims,
+            self.x_up_lims,
+            self.error_every_y,
+        ] + super()._all_parameters()
 
     def _all_labels(self):
         return list(ERROR_ATTRS.keys())
@@ -479,7 +451,7 @@ def dual_axes_data_validation(
     y1_data: ArrayLike,
     y2_data: ArrayLike,
     use_twin_x: bool,
-    axis_labels: list[str] | str,
+    axis_labels: str | list[str],
 ) -> None:
     """
     Validate the data and parameters for dual-axes plotting.
@@ -526,7 +498,7 @@ def dual_axes_label_management(
     x1y2_label: str,
     x2y1_label: str,
     auto_label: bool,
-    axis_labels: list[str] | str,
+    axis_labels: str | Sequence[str],
     plot_title: str,
     use_twin_x: bool,
 ) -> label_management:

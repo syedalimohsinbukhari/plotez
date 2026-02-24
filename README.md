@@ -52,6 +52,8 @@ pip install -e ".[dev]"
 ## Quick Start
 
 ```python
+"""Basic plotting example."""
+
 import numpy as np
 from plotez import plot_xy
 
@@ -70,72 +72,74 @@ plot_xy(x, y, auto_label=True)
 ### Dual Y-Axis Plot
 
 ```python
+"""Demonstration of dual-y axis capability."""
+
 import numpy as np
 from plotez import plot_xyy
 
 x = np.linspace(0, 10, 100)
 y1 = np.sin(x)
-y2 = np.exp(x / 10)
+y2 = np.exp(-x / 10)
 
-plot_xyy(
-    x, y1, y2,
-    x_label='Time',
-    y1_label='Sine',
-    y2_label='Exponential',
-    data_labels=['sin(x)', 'exp(x/10)'],
-    plot_title='Dual Y-Axis Example',
-    use_twin_x=True
-)
+plot_xyy(x, y1, y2,
+         x_label="Time", y1_label="Sine", y2_label="Exponential",
+         data_labels=["sin(x)", "exp(-x/10)"], plot_title="Dual Y-Axis Example")
 ```
 
 ![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2.png)
 
+
+```python
+"""Demonstration of dual-y axis capability with custom plot configuration."""
+
+import numpy as np
+from plotez import plot_xyy
+from plotez.backend import LinePlot
+
+x = np.linspace(0, 10, 50)
+y1 = np.sin(x)
+y2 = np.exp(-x / 10)
+
+plot_config = LinePlot(line_style=["--", "-."], color=["red", "cyan"], marker=["o", "s"],
+                       marker_size=[10, 10], mark_every=[3, 5], marker_edge_color=["k", "k"])
+
+plot_xyy(x, y1, y2,
+         x_label="Time", y1_label="Sine", y2_label="Exponential",
+         data_labels=["sin(x)", "exp(-x/10)"], plot_title="Dual Y-Axis Example",
+         plot_config=plot_config)
+```
+
+![Example2A Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2A.png)
+
 ### Multi-Panel Plots
 
 ```python
+"""Demonstration of multi-panel layout capability with customizations."""
+
 import numpy as np
 from plotez import n_plotter
+from plotez.backend import LinePlot, SubPlots
 
 # Create 2×2 grid
-x_data = [np.linspace(0, 10, 100) for _ in range(4)]
+x_data = [np.linspace(0, 10, 100) for _ in range(6)]
 y_data = [
     np.sin(x_data[0]),
     np.cos(x_data[1]),
     np.tan(x_data[2] / 5),
-    x_data[3]**2 / 100
+    x_data[3] ** 2 / 100,
+    1 / np.cos(x_data[4]),
+    x_data[5]
 ]
 
-fig, axs = n_plotter(
-    x_data, y_data,
-    n_rows=2, n_cols=2,
-    auto_label=True
-)
+line_config = LinePlot(color=["red", "blue", "green", "black", "orange", "magenta"])
+subplot_config = SubPlots(fig_size=(10, 6))
+
+fig, axs = n_plotter(x_data, y_data,
+                     n_rows=2, n_cols=3, auto_label=True,
+                     plot_config=line_config, subplot_config=subplot_config)
 ```
 
 ![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example3.png)
-
-### Custom Styling
-
-```python
-import numpy as np
-from plotez import plot_xy
-from plotez.backend.utilities import LinePlot
-
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-
-# Create custom line plot parameters
-line_params = LinePlot(
-    line_style=['-'],
-    line_width=[2],
-    color=['#FF5733'],
-    marker=['o'],
-    marker_size=[4]
-)
-
-plot_xy(x, y, plot_dictionary=line_params)
-```
-![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
 ### Error Bar Plots
 
@@ -143,7 +147,7 @@ plot_xy(x, y, plot_dictionary=line_params)
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_errorbars
+from plotez import plot_errorbar
 from plotez.backend.utilities import ErrorPlot
 
 # Generate sample data with errors
@@ -160,13 +164,13 @@ ep = ErrorPlot(
     marker='d',
     marker_size=6,
     capsize=8,
-    elinewidth=2,  # Error bar line width
-    ecolor='red',  # Error bar color (different from line!)
-    capthick=2  # Error bar cap thickness
+    error_line_width=2,  # Error bar line width
+    error_color='red',  # Error bar color (different from line!)
+    cap_thickness=2  # Error bar cap thickness
 )
-plot_errorbars(x, y, x_err=x_err, y_err=y_err, plot_dictionary=ep)
+plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 ```
-![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example5.png)
+![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
 ## Development
 

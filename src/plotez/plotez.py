@@ -5,17 +5,16 @@ This module provides simplified plotting functions for common visualization task
 """
 
 __all__ = [
+    "plot_errorbar",
     "plot_two_column_file",
+    "plot_with_dual_axes",
     "plot_xy",
     "plot_xyy",
-    "plot_with_dual_axes",
-    "two_subplots",
     "n_plotter",
-    "plot_errorbar",
+    "two_subplots",
 ]
 
 from collections.abc import Sequence
-from typing import Optional, Tuple, Union
 from warnings import warn
 
 import matplotlib.pyplot as plt
@@ -36,24 +35,23 @@ from .backend import (
 from .backend.utilities import _PlotParams
 
 # safeguard
-lPsP = Union[LinePlot, ScatterPlot]
-pClass_type = _PlotParams
-axis_return = Union[Tuple[Axes, Axes], Axes]
+lPsP = LinePlot | ScatterPlot
+axis_return = tuple[Axes, Axes] | Axes
 
 
 def plot_errorbar(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    x_err: ArrayLike | float = None,
-    y_err: ArrayLike | float = None,
+    x_err: float | ArrayLike | None = None,
+    y_err: float | ArrayLike | None = None,
     x_label: str | None = None,
     y_label: str | None = None,
     plot_title: str | None = None,
     data_label: str | None = None,
     auto_label: bool = False,
-    errorbar_config: ErrorPlot | None = None,
+    errorbar_config: LinePlot | ErrorPlot | None = None,
     subplot_config: SubPlots | None = None,
-    axis: Optional[Axes] = None,
+    axis: Axes | None = None,
 ) -> Axes:
     """
     Create an error bar plot with customizable styling.
@@ -98,22 +96,25 @@ def plot_errorbar(
     if y_err is not None:
         y_err = np.asarray(y_err)
 
-    error_dict_items = errorbar_config.get_dict() if errorbar_config else ErrorPlot().get_dict()
+    e_config = errorbar_config.get_dict() if errorbar_config else ErrorPlot().get_dict()
 
-    print(error_dict_items)
+    if subplot_config and axis:
+        warn("Only one of subplot_config and axis can be passed. Using provided axis.")
 
-    if not axis:
-        sp_dict = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
-        fig, axis = plt.subplots(**sp_dict, squeeze=False)
+    if axis is None:
+        sp_config = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
+        fig, axis = plt.subplots(**sp_config, squeeze=False)
         axis = axis.flatten()
         if isinstance(axis, np.ndarray):
             axis = axis[0]
 
-    axis.errorbar(x, y, xerr=x_err, yerr=y_err, **error_dict_items)
+    axis.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **e_config)
 
-    x_label, y_label = x_label if x_label else "X", y_label if y_label else "Y"
     axis.set_xlabel("X" if auto_label else x_label)
     axis.set_ylabel("Y" if auto_label else y_label)
+    axis.set_title("Error Bar Plot" if auto_label else plot_title)
+    if data_label:
+        axis.legend()
 
     plt.tight_layout()
 
@@ -130,9 +131,9 @@ def plot_two_column_file(
     plot_title: str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: pClass_type = None,
-    subplot_config: SubPlots = None,
-    axis: Optional[Axes] = None,
+    plot_config: _PlotParams | None = None,
+    subplot_config: SubPlots | None = None,
+    axis: Axes | None = None,
 ) -> axis_return:
     """Read a two-column file (x, y) and plot the data.
 
@@ -194,9 +195,9 @@ def plot_xy(
     data_label: str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_dictionary: pClass_type = None,
-    subplot_dictionary: SubPlots | None = None,
-    axis: Optional[Axes] = None,
+    plot_config: _PlotParams | None = None,
+    subplot_config: SubPlots | None = None,
+    axis: Axes | None = None,
 ) -> axis_return:
     """Plot the x_data against y_data with customizable options.
 
@@ -218,10 +219,10 @@ def plot_xy(
         If True, automatically sets x and y-axis labels and the plot title. Default is False.
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
-    plot_dictionary :
+    plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
         the matplotlib plotting library. If None, a default plot type will be used.
-    subplot_dictionary :
+    subplot_config :
         Dictionary of parameters for subplot configuration.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
@@ -241,8 +242,8 @@ def plot_xy(
         axis_labels=axis_labels,
         plot_title=plot_title,
         is_scatter=is_scatter,
-        plot_config=plot_dictionary,
-        subplot_config=subplot_dictionary,
+        plot_config=plot_config,
+        subplot_config=subplot_config,
         axis=axis,
     )
 
@@ -256,11 +257,10 @@ def plot_xyy(
     y2_label: str | None = None,
     plot_title: str | None = None,
     data_labels: Sequence[str | None] = (None, None),
-    use_twin_x: bool = True,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_dictionary: pClass_type = None,
-    subplot_dictionary: Optional[SubPlots] = None,
+    plot_config: _PlotParams | None = None,
+    subplot_config: SubPlots | None = None,
     axis=None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -283,16 +283,14 @@ def plot_xyy(
         The title for the plot.
     data_labels :
         The labels for the two datasets. Default is `['X vs. Y1', 'X vs Y2']`.
-    use_twin_x :
-        If True, creates a dual y-axis plot. If False, creates a duala1` x-axis plot. Default is True.
     auto_label :
         Whether to automatically label the plot. Default is `False`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
-    plot_dictionary :
+    plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
         the matplotlib plotting library.
-    subplot_dictionary :
+    subplot_config :
         Dictionary of parameters for subplot configuration.
     axis :
         A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
@@ -310,13 +308,13 @@ def plot_xyy(
         y2_data=y2_data,
         x1y1_label=data_labels[0],
         x1y2_label=data_labels[1],
-        use_twin_x=use_twin_x,
+        use_twin_x=True,
         auto_label=auto_label,
         axis_labels=[x_label, y1_label, y2_label],
         plot_title=plot_title,
         is_scatter=is_scatter,
-        plot_config=plot_dictionary,
-        subplot_config=subplot_dictionary,
+        plot_config=plot_config,
+        subplot_config=subplot_config,
         axis=axis,
     )
 
@@ -334,7 +332,7 @@ def plot_with_dual_axes(
     axis_labels: list[str] | str | None = None,
     plot_title: str | None = None,
     is_scatter: bool = False,
-    plot_config: pClass_type = None,
+    plot_config: _PlotParams | None = None,
     subplot_config: SubPlots | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
@@ -404,7 +402,13 @@ def plot_with_dual_axes(
         sp_dict = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
         _, ax1 = plt.subplots(1, 1, **sp_dict)
 
-    plot_items = plot_config.get_dict() if plot_config else LinePlot().get_dict()
+    if plot_config is not None:
+        plot_items = plot_config.get_dict()
+    elif is_scatter:
+        plot_items = ScatterPlot().get_dict()
+    else:
+        plot_items = LinePlot().get_dict()
+
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_items.items()}
     plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
 
@@ -446,14 +450,14 @@ def two_subplots(
     x_labels: list[str] | str | None = None,
     y_labels: list[str] | str | None = None,
     data_labels: list[str] | str | None = None,
-    plot_title: Optional[str] = None,
+    plot_title: str | None = None,
     subplot_title: list[str] | str | None = None,
     orientation: str = "h",
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_dictionary: pClass_type = None,
-    subplot_dictionary: SubPlots | None = None,
-) -> Tuple[plt.Figure, np.ndarray]:
+    plot_config: _PlotParams | None = None,
+    subplot_config: SubPlots | None = None,
+) -> tuple[plt.Figure, Axes]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
     Parameters
@@ -478,9 +482,9 @@ def two_subplots(
         Automatically assigns labels to subplots if `True`.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    plot_dictionary :
+    plot_config :
         Object containing plot styling parameters. Defaults to `LinePlot`.
-    subplot_dictionary :
+    subplot_config :
         Dictionary of parameters for subplot configuration.
     """
     if orientation == "h":
@@ -502,8 +506,8 @@ def two_subplots(
         subplot_title=subplot_title,
         auto_label=auto_label,
         is_scatter=is_scatter,
-        subplot_dictionary=subplot_dictionary,
-        plot_dictionary=plot_dictionary,
+        plot_config=plot_config,
+        subplot_config=subplot_config,
     )
 
 
@@ -519,9 +523,9 @@ def n_plotter(
     subplot_title: Sequence[str] | str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    subplot_dictionary: SubPlots | None = None,
-    plot_dictionary: pClass_type | None = None,
-) -> Tuple[plt.Figure, np.ndarray]:
+    plot_config: _PlotParams | None = None,
+    subplot_config: SubPlots | None = None,
+) -> tuple[plt.Figure, Axes]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
 
@@ -550,13 +554,13 @@ def n_plotter(
         If `True`, it overwrites user-provided labels. Defaults to False.
     is_scatter : bool
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    subplot_dictionary : SubPlots | None
+    subplot_config : SubPlots | None
         Dictionary of parameters for subplot configuration.
-    plot_dictionary : pClass_type | None
+    plot_config : pClass_type | None
         Object containing plot styling parameters. Defaults to `LinePlot`.
     """
-    sp_dict = subplot_dictionary.get_dict() if subplot_dictionary else SubPlots().get_dict()
-    plot_items = plot_dictionary.get_dict() if plot_dictionary else LinePlot().get_dict()  # type: ignore
+    sp_dict = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
+    plot_items = plot_config.get_dict() if plot_config else LinePlot().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
     axs = axs.flatten()
@@ -564,6 +568,8 @@ def n_plotter(
     main_dict = [{key: value[c % len(value)] for key, value in plot_items.items()} for c in range(n_cols * n_rows)]
 
     if auto_label:
+        if any([i for i in [x_labels, y_labels, plot_title, subplot_title, data_labels]]):
+            warn("auto_label selected, it takes preference over user-provided labels.")
         x_labels = [rf"X$_{i + 1}$" for i in range(n_cols * n_rows)]
         y_labels = [rf"Y$_{i + 1}$" for i in range(n_cols * n_rows)]
 
@@ -575,9 +581,10 @@ def n_plotter(
         empty_ = [None for _ in range(n_cols * n_rows)]
         x_labels = x_labels if x_labels else empty_
         y_labels = y_labels if y_labels else empty_
-        plot_title = plot_title if plot_title else None
+
         data_labels = data_labels if data_labels else empty_
         subplot_title = subplot_title if subplot_title else empty_
+        plot_title = plot_title if plot_title else None
 
     shared_y = sp_dict.get("sharey")
     shared_x1 = sp_dict.get("sharex")

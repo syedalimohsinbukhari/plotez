@@ -76,19 +76,19 @@ class TestPlotXY:
     def test_plot_xy_with_lineplot_dict(self, sample_x_data, sample_y_data):
         """Test plotting with LinePlot dictionary."""
         lp = LinePlot(line_style=["-"], color=["red"], line_width=[2])
-        result = plot_xy(sample_x_data, sample_y_data, plot_dictionary=lp)
+        result = plot_xy(sample_x_data, sample_y_data, plot_config=lp)
         assert isinstance(result, Axes)
 
     def test_plot_xy_with_scatterplot_dict(self, sample_x_data, sample_y_data):
         """Test scatter plotting with ScatterPlot dictionary."""
         sp = ScatterPlot(size=[50], color=["blue"], marker=["o"])
-        result = plot_xy(sample_x_data, sample_y_data, is_scatter=True, plot_dictionary=sp)
+        result = plot_xy(sample_x_data, sample_y_data, is_scatter=True, plot_config=sp)
         assert isinstance(result, Axes)
 
     def test_plot_xy_with_subplot_dict(self, sample_x_data, sample_y_data):
         """Test plotting with subplot configuration."""
         sp = SubPlots(fig_size=(10, 6))
-        result = plot_xy(sample_x_data, sample_y_data, subplot_dictionary=sp)
+        result = plot_xy(sample_x_data, sample_y_data, subplot_config=sp)
         assert isinstance(result, Axes)
 
     def test_plot_xy_on_existing_axis(self, sample_x_data, sample_y_data):
@@ -103,7 +103,7 @@ class TestPlotXYY:
 
     def test_plot_xyy_dual_y_basic(self, sample_x_data, sample_y_data, sample_y2_data):
         """Test basic dual y-axis plotting."""
-        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, use_twin_x=True)
+        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data)
         assert isinstance(result, tuple)
         assert len(result) == 2
 
@@ -118,18 +118,17 @@ class TestPlotXYY:
             y2_label="Y2",
             plot_title="Dual Y Plot",
             data_labels=["Series 1", "Series 2"],
-            use_twin_x=True,
         )
         assert isinstance(result, tuple)
 
     def test_plot_xyy_auto_label(self, sample_x_data, sample_y_data, sample_y2_data):
         """Test dual y-axis with auto labeling."""
-        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, auto_label=True, use_twin_x=True)
+        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, auto_label=True)
         assert isinstance(result, tuple)
 
     def test_plot_xyy_scatter(self, sample_x_data, sample_y_data, sample_y2_data):
         """Test dual y-axis scatter plot."""
-        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, is_scatter=True, use_twin_x=True)
+        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, is_scatter=True)
         assert isinstance(result, tuple)
 
 
@@ -286,8 +285,8 @@ class TestNPlotter:
             x_labels=x_labels,
             y_labels=y_labels,
             data_labels=data_labels,
-            subplot_title=subplot_titles,
             plot_title="N Plotter Test",
+            subplot_title=subplot_titles,
         )
         assert isinstance(fig, plt.Figure)
 
@@ -299,11 +298,11 @@ class TestNPlotter:
     def test_n_plotter_with_plot_dict(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with a plot dictionary."""
         lp = LinePlot(line_style=["-", "--", "-.", ":"], color=["red", "blue", "green", "orange"])
-        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, plot_dictionary=lp)
+        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, plot_config=lp)
         assert isinstance(fig, plt.Figure)
 
     def test_n_plotter_with_subplot_dict(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with subplot configuration."""
         sp = SubPlots(share_x=True, share_y=True, fig_size=(12, 8))
-        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, subplot_dictionary=sp)
+        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, subplot_config=sp)
         assert isinstance(fig, plt.Figure)

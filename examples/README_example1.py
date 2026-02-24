@@ -13,5 +13,5 @@ y = np.sin(x)
 plot_xy(x, y, auto_label=True)
 
 # plt.show()
-plt.savefig("./images/README_example1.png")
+plt.savefig("./images/README_example1.png", dpi=300)
 plt.close()
