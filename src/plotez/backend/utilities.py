@@ -23,14 +23,12 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.figure import Figure, SubFigure
 from matplotlib.patheffects import AbstractPathEffect
 from matplotlib.transforms import Affine2D, BboxBase
+from matplotlib.typing import ColorType, MarkerType
 from numpy.typing import ArrayLike
 
 from plotez.backend import ERROR_ATTRS, SCATTER_ATTRS
 from plotez.backend.CONSTANTS import PLOT_ATTRS
 
-# Type aliases for matplotlib types (compatible with older versions)
-ColorType = Any  # str, tuple, etc.
-MarkerType = Any  # str, int, etc.
 label_management = Tuple[str, str, str, str, List[str]]
 
 

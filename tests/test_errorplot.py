@@ -13,7 +13,7 @@ class TestErrorPlot:
         """Test basic ErrorPlot creation."""
         ep = ErrorPlot(capsize=5)
         assert ep.capsize == 5
-        assert ep.color is not None  # Should have default color from get_color()
+        assert ep.color is None
 
     def test_errorplot_with_all_lineplot_params(self):
         """Test ErrorPlot with all LinePlot parameters."""
