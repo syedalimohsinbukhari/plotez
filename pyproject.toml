@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering :: Visualization",
     "Intended Audience :: Science/Research",
@@ -29,7 +30,20 @@ version = { attr = "plotez.version.__version__" }
 emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black", "isort", "pydocstyle", "flake8"]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "mypy",
+    "sphinx",
+    "sphinx-rtd-theme",
+    "black",
+    "isort",
+    "pydocstyle",
+    "flake8",
+    "pre-commit",
+    "tomli",
+    "build"
+]
 
 [project.urls]
 Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
@@ -41,7 +55,7 @@ testpaths = ["tests"]
 [tool.black]
 line-length = 120
 color = true
-target-version = ["py310", "py311"]
+target-version = ["py310", "py311", "py312"]
 include = '\.pyi?$'
 extend-exclude = '''
 /(

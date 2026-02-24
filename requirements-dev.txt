@@ -10,3 +10,4 @@ pydocstyle
 flake8
 pre-commit
 tomli
+build
