@@ -22,12 +22,24 @@ jobs:
             -   name: Install dependencies
                 run: |
                     python -m pip install --upgrade pip
-                    pip install pylint black
+                    pip install pylint black isort pydocstyle flake8
                     pip install -r requirements.txt
 
-            -   name: Linting the code with Black
+            -   name: Check code formatting with Black
                 run: |
-                    black --check src/plotez/ -C -l 120
+                    black --check --color --line-length 120 src/plotez/ tests/
+
+            -   name: Check import sorting with isort
+                run: |
+                    isort --check-only --profile black --line-length 120 src/plotez/ tests/
+
+            -   name: Check docstring quality with pydocstyle
+                run: |
+                    pydocstyle --convention=numpy --add-ignore=D100,D104,D105,D107 src/plotez/
+
+            -   name: Lint with flake8
+                run: |
+                    flake8 --max-line-length=120 --extend-ignore=E203,W503 src/plotez/ tests/
 
             -   name: Analysing the code with Pylint
                 run: |

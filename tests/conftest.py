@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 # Use non-interactive backend for testing
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def sample_y_data_list() -> List[np.ndarray]:
 @pytest.fixture
 def temp_csv_file():
     """Create a temporary CSV file with two columns."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("1.0,2.0\n")
         f.write("2.0,4.0\n")
         f.write("3.0,6.0\n")
@@ -66,13 +66,14 @@ def temp_csv_file():
 
     # Cleanup
     import os
+
     os.unlink(temp_path)
 
 
 @pytest.fixture
 def temp_csv_file_with_header():
     """Create a temporary CSV file with header."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("x,y\n")
         f.write("1.0,2.0\n")
         f.write("2.0,4.0\n")
@@ -83,6 +84,7 @@ def temp_csv_file_with_header():
 
     # Cleanup
     import os
+
     os.unlink(temp_path)
 
 
@@ -90,5 +92,4 @@ def temp_csv_file_with_header():
 def cleanup_plots():
     """Automatically close all matplotlib figures after each test."""
     yield
-    plt.close('all')
-
+    plt.close("all")

@@ -5,3 +5,8 @@ mypy
 sphinx
 sphinx-rtd-theme
 black
+isort
+pydocstyle
+flake8
+pre-commit
+tomli

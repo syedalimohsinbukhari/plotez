@@ -1,4 +1,4 @@
-"""Created on Feb 14 21:24:07 2026"""
+"""Created on Feb 14 21:24:07 2026."""
 
 __version__ = "0.2.0"
 __author__ = "Syed Ali Mohsin Bukhari"

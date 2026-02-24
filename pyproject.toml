@@ -29,7 +29,7 @@ version = { attr = "plotez.version.__version__" }
 emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black"]
+dev = ["pytest", "pytest-cov", "mypy", "sphinx", "sphinx-rtd-theme", "black", "isort", "pydocstyle", "flake8"]
 
 [project.urls]
 Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
@@ -37,6 +37,42 @@ Repository = "https://github.com/syedalimohsinbukhari/plotez/"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.black]
+line-length = 120
+color = true
+target-version = ["py310", "py311"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+src_paths = ["src", "tests"]
+
+[tool.pydocstyle]
+convention = "numpy"
+add-ignore = ["D100", "D104", "D105", "D107"]
+match = "(?!test_).*.py"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

@@ -10,48 +10,33 @@ __all__ = [
     "ErrorPlot",
     "SubPlots",
     "plot_or_scatter",
-    "plot_dictionary_handler",
     "split_dictionary",
     "dual_axes_data_validation",
     "dual_axes_label_management",
 ]
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple
 
-import numpy as np
 from matplotlib import rcParams
+from numpy.typing import ArrayLike
 
-# SAFEGUARDS:
-LSE = Union["LinePlot", "ScatterPlot", "ErrorPlot"]
-_split = Tuple[LSE, LSE]
+from plotez.backend import ERROR_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 
 label_management = Tuple[str, str, str, str, List[str]]
-
-LINE_ATTRS = {
-    "ls": "line_style",
-    "lw": "line_width",
-    "color": "color",
-    "alpha": "alpha",
-    "marker": "marker",
-    "ms": "marker_size",
-    "mec": "marker_edge_color",
-    "mfc": "marker_face_color",
-    "mew": "marker_edge_width",
-}
 
 
 def get_color():
     """
-    Generates a list of colors from Matplotlib's default color cycle.
+    Generate a list of colors from Matplotlib's default color cycle.
 
-    This function retrieves colors from Matplotlib's default color cycle and repeats
-    the cycle if more colors are needed. The user can specify the number of colors required.
+    This function retrieves colors from Matplotlib's default color cycle and repeats if more colors are needed.
+    The user can specify the number of colors required.
 
     Returns
     -------
     list of str
-        A list of color hex codes. The length of the list is equal to `n_colors` if specified,
-        otherwise the entire extended color list is returned.
+        A list of color hex codes.
+        The length of the list is equal to `n_colors` if specified, otherwise the extended color list is returned.
 
     Notes
     -----
@@ -69,30 +54,24 @@ class _PlotParams:
 
     Parameters
     ----------
-    line_style : list(str), optional
+    line_style :
         Line style for the plot. Default is None.
-    line_width : list(float), optional
+    line_width :
         Width of the lines. Default is None.
-    color : list(str), optional
+    color :
         List or tuple containing two colors. Defaults to the first two colors in the matplotlib color cycle.
-    alpha : list(float), optional
+    alpha :
         Opacity of the plot elements. Default is None.
-    marker : list(str), optional
+    marker :
         Marker style for the plot. Default is None.
-    marker_size : list(float), optional
+    marker_size :
         Size of the markers. Default is None.
-    marker_edge_color : list(str), optional
+    marker_edge_color :
         Color of the marker edges. Default is None.
-    marker_face_color : list(str), optional
+    marker_face_color :
         Color of the marker faces. Default is None.
-    marker_edge_width : list(float), optional
+    marker_edge_width :
         Width of the marker edges. Default is None.
-    size : list(float), optional
-        Size of the markers for scatter plots. Must be a list or tuple with exactly two elements. Default is None.
-    cmap : list(Colormap), optional
-        Colormap used for scatter plots. Default is None.
-    face_color : list(str), optional
-        Color of the marker faces in scatter plots. Default is None.
     """
 
     def __init__(
@@ -166,15 +145,6 @@ class _PlotParams:
 
         return param_dict
 
-    @classmethod
-    def populate(cls, dictionary: Dict[str, Any]) -> "_PlotParams":
-        """Create an instance of the `_PlotParams` class."""
-        instance = cls()
-        for key in dictionary.keys():
-            setattr(instance, key, key)
-
-        return instance
-
     def _all_parameters(self):
         raise NotImplementedError("This method should be implemented by subclasses.")
 
@@ -183,13 +153,7 @@ class _PlotParams:
 
 
 class LinePlot(_PlotParams):
-    """
-    Class for double-line plot parameters.
-
-    Parameters
-    ----------
-    All parameters are inherited from `_PlotParams`.
-    """
+    """Class for double-line plot parameters."""
 
     def __init__(
         self,
@@ -232,20 +196,52 @@ class LinePlot(_PlotParams):
     def _all_labels(self):
         return ["ls", "lw", "color", "alpha", "marker", "ms", "mec", "mfc", "mew"]
 
+    @classmethod
+    def populate(cls, dictionary: Dict[str, Any]) -> "LinePlot":
+        """
+        Create an instance of `LinePlot` from a dictionary of parameters.
+
+        Parameters
+        ----------
+        dictionary : dict
+            A dictionary where keys represent parameter labels (e.g., 'ls' for line style, 'lw' for line width),
+            and values represent the corresponding values for each parameter.
+
+        Returns
+        -------
+        LinePlot
+            An instance of `LinePlot` with attributes populated based on the provided dictionary.
+        """
+        instance = cls()
+        for key, value in dictionary.items():
+            attr_name = LINE_ATTRS.get(key, key)
+            setattr(instance, attr_name, value)
+
+        return instance
+
 
 class ScatterPlot(_PlotParams):
-    """
-    Class for double-scatter plot parameters.
+    """Class for double-scatter plot parameters."""
 
-    Parameters
-    ----------
-    All parameters are inherited from `_PlotParams`.
-    """
-
-    def __init__(self, size=None, cmap=None, face_color=None, color=None, alpha=None, marker=None):
-        super().__init__(color=color, alpha=alpha, marker=marker)
+    def __init__(
+        self,
+        size=None,
+        color=None,
+        marker=None,
+        cmap=None,
+        normalize=None,
+        v_min=None,
+        v_max=None,
+        linewidths=None,
+        face_color=None,
+        alpha=None,
+    ):
+        super().__init__(color=color, marker=marker, alpha=alpha, line_width=linewidths)
         self.size = size
         self.cmap = cmap
+        self.normalize = normalize
+        self.v_min = v_min
+        self.v_max = v_max
         self.face_color = face_color
 
         if self.color is None:
@@ -255,9 +251,35 @@ class ScatterPlot(_PlotParams):
         return [self.color, self.alpha, self.marker, self.size, self.cmap, self.face_color]
 
     def _all_labels(self):
-        return ["c", "alpha", "marker", "s", "cmap", "fc"]
+        return list(SCATTER_ATTRS.keys())
+
+    @classmethod
+    def populate(cls, dictionary: Dict[str, Any]) -> "ScatterPlot":
+        """
+        Create an instance of `ErrorPlot` from a dictionary of parameters.
+
+        Parameters
+        ----------
+        dictionary : dict
+            A dictionary where keys represent parameter labels (e.g., 'ls' for line style,
+            'capsize' for error bar cap size), and values represent the corresponding
+            values for each parameter.
+
+        Returns
+        -------
+        ErrorPlot
+            An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
+        """
+        instance = cls()
+        for key, value in dictionary.items():
+            attr_name = SCATTER_ATTRS.get(key, key)
+            setattr(instance, attr_name, value)
+
+        return instance
 
 
+# TODO:
+# fix the missing errorplot attributes
 class ErrorPlot(LinePlot):
     """
     Class for error bar plot parameters.
@@ -298,12 +320,12 @@ class ErrorPlot(LinePlot):
         error_line_width=None,
         capsize=None,
         cap_thickness=None,
-        bars_above: bool = None,
-        low_lims: bool = False,
-        up_lims: bool = False,
-        x_low_lims: bool = False,
-        x_up_lims: bool = False,
-        error_every_y: int = None,
+        bars_above=None,
+        low_lims=False,
+        up_lims=False,
+        x_low_lims=False,
+        x_up_lims=False,
+        error_every_y=1,
         line_style=None,
         line_width=None,
         color=None,
@@ -338,11 +360,34 @@ class ErrorPlot(LinePlot):
 
     def _all_parameters(self):
         # Extend parent parameters with error bar specific parameters
-        return [self.capsize, self.capthick, self.elinewidth, self.ecolor] + super()._all_parameters()
+        return [self.elinewidth, self.ecolor, self.capsize, self.capthick] + super()._all_parameters()
 
     def _all_labels(self):
-        # Extend parent labels with error bar specific labels
-        return ["capsize", "capthick", "elinewidth", "ecolor"] + super()._all_labels()
+        return list(ERROR_ATTRS.keys())
+
+    @classmethod
+    def populate(cls, dictionary: Dict[str, Any]) -> "ErrorPlot":
+        """
+        Create an instance of `ErrorPlot` from a dictionary of parameters.
+
+        Parameters
+        ----------
+        dictionary : dict
+            A dictionary where keys represent parameter labels (e.g., 'ls' for line style,
+            'capsize' for error bar cap size), and values represent the corresponding
+            values for each parameter.
+
+        Returns
+        -------
+        ErrorPlot
+            An instance of `ErrorPlot` with attributes populated based on the provided dictionary.
+        """
+        instance = cls()
+        for key, value in dictionary.items():
+            attr_name = ERROR_ATTRS.get(key, key)
+            setattr(instance, attr_name, value)
+
+        return instance
 
 
 class SubPlots(_PlotParams):
@@ -351,19 +396,19 @@ class SubPlots(_PlotParams):
 
     Parameters
     ----------
-    share_x : bool, optional
+    share_x :
         Whether to share the x-axis across subplots. Default is False.
-    share_y : bool, optional
+    share_y :
         Whether to share the y-axis across subplots. Default is False.
-    fig_size : tuple, optional
+    fig_size :
         The size of the figure, in inches. Default is (6.4, 4.8).
     """
 
-    def __init__(self, share_x=None, share_y=None, fig_size=None):
+    def __init__(self, share_x=False, share_y=False, fig_size=None):
         super().__init__()
         self.share_x = share_x
         self.share_y = share_y
-        self.fig_size = rcParams["figure.figsize"] if fig_size is None else fig_size
+        self.fig_size = fig_size if fig_size is not None else (6.4, 4.8)
 
     def _all_labels(self):
         return ["sharex", "sharey", "figsize"]
@@ -374,13 +419,13 @@ class SubPlots(_PlotParams):
 
 def plot_or_scatter(axes, scatter: bool):
     """
-    Returns the plot or scatter method based on the specified plot type.
+    Return the plot or scatter method based on the specified plot type.
 
     Parameters
     ----------
-    axes : plt.axis
+    axes :
         The matplotlib axis on which to apply the plot or scatter method.
-    scatter : bool
+    scatter :
         If True, returns the scatter method; otherwise, returns the plot method.
 
     Returns
@@ -391,45 +436,24 @@ def plot_or_scatter(axes, scatter: bool):
     return axes.scatter if scatter else axes.plot
 
 
-def plot_dictionary_handler(plot_dictionary: Union[LinePlot, ScatterPlot, ErrorPlot]):
+def split_dictionary(plot_instance):
     """
-    Handles plot dictionary configuration, retrieving items from the specified plot dictionary.
-
-    If no dictionary is provided, it returns an empty dictionary.
-
-    Parameters
-    ----------
-    plot_dictionary : Union[LinePlot, ScatterPlot, ErrorPlot], optional
-        The plot dictionary to retrieve items from. If None, returns an empty dictionary.
-
-    Returns
-    -------
-    dict
-        Dictionary containing plot parameters, or empty dict if plot_dictionary is None.
-    """
-    if plot_dictionary is None:
-        return {}
-    return plot_dictionary.get_dict()
-
-
-def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> _split:
-    """
-    Split a `LinePlot`, `ScatterPlot`, or `ErrorPlot` instance's parameters into two separate instances of the same type.
+    Split a `LinePlot`, `ScatterPlot`, or `ErrorPlot` instance's parameters into two separate instances.
 
     Parameters
     ----------
     plot_instance : Union[LinePlot, ScatterPlot, ErrorPlot]
-        An instance of `LinePlot`, `ScatterPlot`, or `ErrorPlot` with parameters stored as lists or tuples of two elements.
-        Each parameter should be a list or tuple containing exactly two values, corresponding to settings
-        for the two resulting instances.
+        An instance of `LinePlot`, `ScatterPlot`, or `ErrorPlot` with parameters stored as lists or tuples.
+        Each parameter should be a list or tuple containing exactly two values, corresponding to settings for the
+        two resulting instances.
 
     Returns
     -------
     Tuple[Union[LinePlot, ScatterPlot, ErrorPlot], Union[LinePlot, ScatterPlot, ErrorPlot]]
         Two instances of the same type as `plot_instance` (either `LinePlot`, `ScatterPlot`, or `ErrorPlot`),
-        with parameters split based on the values in `plot_instance`. The first instance (`instance1`)
-        and second instance (`instance2`) will have their attributes set according to the first and second
-        elements, respectively, from each list or tuple in `plot_instance`.
+        with parameters split based on the values in `plot_instance`.
+        The first instance (`instance1`) and second instance (`instance2`) will have their attributes set according
+        to the first and second elements, respectively, from each list or tuple in `plot_instance`.
 
     Raises
     ------
@@ -450,29 +474,29 @@ def split_dictionary(plot_instance: Union[LinePlot, ScatterPlot, ErrorPlot]) -> 
 
 
 def dual_axes_data_validation(
-    x1_data,
-    x2_data,
-    y1_data,
-    y2_data,
-    use_twin_x,
-    axis_labels,
+    x1_data: ArrayLike,
+    x2_data: ArrayLike,
+    y1_data: ArrayLike,
+    y2_data: ArrayLike,
+    use_twin_x: bool,
+    axis_labels: list[str] | str,
 ) -> None:
     """
-    Validates the data and parameters for dual-axes plotting.
+    Validate the data and parameters for dual-axes plotting.
 
     Parameters
     ----------
-    x1_data
+    x1_data :
         Data for the primary x-axis.
-    x2_data
+    x2_data :
         Data for the secondary x-axis (used in dual x-axis plots). Should be `None` if `use_twin_x` is True.
-    y1_data
+    y1_data :
         Data for the primary y-axis.
-    y2_data
+    y2_data :
         Data for the secondary y-axis (used in dual y-axis plots). Should be `None` if `use_twin_x` is False.
-    use_twin_x
+    use_twin_x :
         If True, a dual y-axis plot is expected; otherwise, a dual x-axis plot is expected.
-    axis_labels
+    axis_labels :
         List of axis labels. Must have exactly three elements:
         - Label for the x-axis of the primary plot.
         - Label for the y-axis of the primary plot.
@@ -498,34 +522,34 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-    x1y1_label,
-    x1y2_label,
-    x2y1_label,
-    auto_label,
-    axis_labels,
-    plot_title,
-    use_twin_x,
+    x1y1_label: str,
+    x1y2_label: str,
+    x2y1_label: str,
+    auto_label: bool,
+    axis_labels: list[str] | str,
+    plot_title: str,
+    use_twin_x: bool,
 ) -> label_management:
     """
-    Manages labels and titles for dual-axes plots, with options for automatic labeling.
+    Manage labels and titles for dual-axes plots, with options for automatic labeling.
 
     Parameters
     ----------
-    x1y1_label
+    x1y1_label :
         Label for the primary plot (X1 vs. Y1).
-    x1y2_label
+    x1y2_label :
         Label for the secondary Y-axis plot (X1 vs. Y2), used if `use_twin_x` is True.
-    x2y1_label
+    x2y1_label :
         Label for the secondary X-axis plot (X2 vs. Y1), used if `use_twin_x` is False.
-    auto_label
-        If True, automatically fills in missing labels and title with defaults.
-    axis_labels
+    auto_label :
+        If True, it automatically fills in missing labels and titles with defaults.
+    axis_labels :
         A list of axis labels. If provided, it must contain three strings.
         - For dual Y-axis: [primary x-axis label, primary y-axis label, secondary y-axis label].
         - For dual X-axis: [primary x-axis label, primary y-axis label, secondary x-axis label].
-    plot_title
-        Title of the plot. If None and `auto_label` is True, a default title will be used.
-    use_twin_x
+    plot_title :
+        Title of the plot. If None and `auto_label` are True, a default title will be used.
+    use_twin_x :
         If True, indicates a dual Y-axis plot (X1 vs. Y1 and X1 vs. Y2).
         If False, indicates a dual X-axis plot (X1 vs. Y1 and X2 vs. Y1).
 

@@ -302,7 +302,7 @@ Use the ``populate()`` class method to create ErrorPlot instances from parameter
    plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
 
 Inheritance Benefits
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 Since ErrorPlot inherits from LinePlot, you can use it anywhere a LinePlot is expected,
 and it automatically includes all line plot functionality:
@@ -324,4 +324,3 @@ Next Steps
 * Explore the :doc:`api` for complete function signatures
 * Check out the :doc:`CHANGELOG` for version history
 * Review the test suite for more usage examples
-
