@@ -556,7 +556,7 @@ def n_plotter(
         Object containing plot styling parameters. Defaults to `LinePlot`.
     """
     sp_dict = subplot_dictionary.get_dict() if subplot_dictionary else SubPlots().get_dict()
-    plot_items = pClass_type.get_dict() if plot_dictionary else LinePlot().get_dict()  # type: ignore
+    plot_items = plot_dictionary.get_dict() if plot_dictionary else LinePlot().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
     axs = axs.flatten()

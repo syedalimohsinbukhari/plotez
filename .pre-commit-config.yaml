@@ -20,7 +20,11 @@ repos:
         rev: 7.1.1
         hooks:
             -   id: flake8
-                args: [--max-line-length=120, --extend-ignore=E203,W503, src/plotez/ tests/]
+                args:
+                    - --max-line-length=120
+                    - --extend-ignore=E203,W503
+                    - src/plotez/
+                    - tests/
 
     # pydocstyle for docstring quality
     -   repo: https://github.com/PyCQA/pydocstyle
