@@ -1,4 +1,4 @@
-# Configuration file for the Sphinx documentation builder.
+"""Configuration file for the Sphinx documentation builder."""
 
 import os
 import sys
@@ -15,9 +15,11 @@ release = "0.1.0"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.extlinks",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
+    "sphinx_copybutton",
     "myst_parser",
 ]
 
@@ -25,7 +27,7 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 # -- Extension configuration -------------------------------------------------
@@ -59,12 +61,19 @@ autodoc_default_options = {
     "exclude-members": "__weakref__",
 }
 
-# # Intersphinx mapping
-# intersphinx_mapping = {
-#     "python": ("https://docs.python.org/3", None),
-#     "numpy": ("https://numpy.org/doc/stable/", None),
-#     "matplotlib": ("https://matplotlib.org/stable/", None),
-# }
+# Intersphinx mapping
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+}
 
 # Autosummary settings
 autosummary_generate = True
+autodoc_typehints = "signature"
+add_module_names = False
+html_show_sourcelink = False
+
+numpydoc_show_class_members = False
+numpydod_show_inherited_class_members = True
+numpydoc_class_members_toctree = False

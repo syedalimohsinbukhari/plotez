@@ -17,7 +17,7 @@ Utility Classes
 Parameter Classes
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: plotez.backend.utilities.LinePlot
+.. autoclass:: plotez.backend.utilities.LinePlotConfig
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,11 +28,11 @@ Parameter Classes
    :show-inheritance:
 
    .. note::
-      ErrorPlotConfig inherits from LinePlot, providing all line plot styling options
+      ErrorPlotConfig inherits from LinePlotConfig, providing all line plot styling options
       (line_style, line_width, color, alpha, marker properties) plus additional
       error bar styling parameters (capsize, elinewidth, ecolor, capthick).
 
-.. autoclass:: plotez.backend.utilities.ScatterPlot
+.. autoclass:: plotez.backend.utilities.ScatterPlotConfig
    :members:
    :undoc-members:
    :show-inheritance:
@@ -46,8 +46,6 @@ Utility Functions
 ~~~~~~~~~~~~~~~~~
 
 .. autofunction:: plotez.backend.utilities.plot_or_scatter
-
-.. autofunction:: plotez.backend.utilities.plot_dictionary_handler
 
 .. autofunction:: plotez.backend.utilities.split_dictionary
 
