@@ -1,56 +1,55 @@
-"""Test ErrorPlot functionality for the test suite."""
+"""Test ErrorPlotConfig functionality for the test suite."""
 
-from plotez.backend.utilities import ErrorPlot
+from plotez.backend.utilities import ErrorPlotConfig
 
 
 # TODO:
 # Fix has for dataclasses
 # Fix alias for plotting
 class TestErrorPlot:
-    """Test ErrorPlot class."""
+    """Test ErrorPlotConfig class."""
 
     def test_errorplot_basic_creation(self):
-        """Test basic ErrorPlot creation."""
-        ep = ErrorPlot(capsize=5)
+        """Test basic ErrorPlotConfig creation."""
+        ep = ErrorPlotConfig(capsize=5)
         assert ep.capsize == 5
         assert ep.color is None
 
     def test_errorplot_with_all_lineplot_params(self):
-        """Test ErrorPlot with all LinePlot parameters."""
-        ep = ErrorPlot(
+        """Test ErrorPlotConfig with all LinePlot parameters."""
+        ep = ErrorPlotConfig(
             capsize=5,
-            line_style="-",
-            line_width=2,
+            linestyle="-",
+            linewidth=2,
             color="red",
             alpha=0.5,
             marker="o",
-            marker_size=8,
-            marker_edge_color="black",
-            marker_face_color="white",
-            marker_edge_width=1.5,
+            markersize=8,
+            markeredgecolor="black",
+            markerfacecolor="white",
+            _extra={"mew": 1.5},
         )
-        assert ep.line_style == "-"
-        assert ep.line_width == 2
+        assert ep.linestyle == "-"
+        assert ep.linewidth == 2
         assert ep.color == "red"
         assert ep.alpha == 0.5
         assert ep.marker == "o"
-        assert ep.marker_size == 8
-        assert ep.marker_edge_color == "black"
-        assert ep.marker_face_color == "white"
-        assert ep.marker_edge_width == 1.5
+        assert ep.markersize == 8
+        assert ep.markeredgecolor == "black"
+        assert ep.markerfacecolor == "white"
         assert ep.capsize == 5
 
     def test_errorplot_with_error_bar_params(self):
-        """Test ErrorPlot with error bar specific parameters."""
-        ep = ErrorPlot(error_color="blue", error_line_width=2, capsize=10, cap_thickness=1.5)
+        """Test ErrorPlotConfig with error bar specific parameters."""
+        ep = ErrorPlotConfig(ecolor="blue", elinewidth=2, capsize=10, capthick=1.5)
         assert ep.capsize == 10
-        assert ep.error_line_width == 2
-        assert ep.error_color == "blue"
-        assert ep.cap_thickness == 1.5
+        assert ep.elinewidth == 2
+        assert ep.ecolor == "blue"
+        assert ep.capthick == 1.5
 
     def test_errorplot_get_dict(self):
-        """Test ErrorPlot get_dict method."""
-        ep = ErrorPlot(error_line_width=2, capsize=5, line_style="--")
+        """Test ErrorPlotConfig get_dict method."""
+        ep = ErrorPlotConfig(elinewidth=2, capsize=5, linestyle="--")
         d = ep.get_dict()
         assert "linestyle" in d
         assert "capsize" in d
@@ -61,77 +60,70 @@ class TestErrorPlot:
 
     def test_errorplot_get_dict_excludes_none(self):
         """Test that get_dict excludes None values."""
-        ep = ErrorPlot(capsize=5)
+        ep = ErrorPlotConfig(capsize=5)
         d = ep.get_dict()
         assert "capsize" in d
         # None values should be excluded
         assert all(v is not None for v in d.values())
 
     def test_errorplot_repr(self):
-        """Test ErrorPlot __repr__ method."""
-        ep = ErrorPlot(capsize=5, line_style="--")
+        """Test ErrorPlotConfig __repr__ method."""
+        ep = ErrorPlotConfig(capsize=5, linestyle="--")
         repr_str = repr(ep)
-        assert "ErrorPlot" in repr_str
+        assert "ErrorPlotConfig" in repr_str
         assert "capsize" in repr_str
 
     def test_errorplot_equality(self):
-        """Test ErrorPlot equality comparison."""
-        ep1 = ErrorPlot(capsize=5, line_style="--", color="red")
-        ep2 = ErrorPlot(capsize=5, line_style="--", color="red")
-        ep3 = ErrorPlot(capsize=10, line_style="--", color="red")
+        """Test ErrorPlotConfig equality comparison."""
+        ep1 = ErrorPlotConfig(capsize=5, linestyle="--", color="red")
+        ep2 = ErrorPlotConfig(capsize=5, linestyle="--", color="red")
+        ep3 = ErrorPlotConfig(capsize=10, linestyle="--", color="red")
 
         assert ep1 == ep2
         assert ep1 != ep3
         assert ep2 != ep3
 
     # def test_errorplot_hash(self):
-    #     """Test ErrorPlot hashing."""
-    #     ep1 = ErrorPlot(capsize=5, line_style="--")
-    #     ep2 = ErrorPlot(capsize=5, line_style="--")
-    #     ep3 = ErrorPlot(capsize=10, line_style="--")
+    #     """Test ErrorPlotConfig hashing."""
+    #     ep1 = ErrorPlotConfig(capsize=5, line_style="--")
+    #     ep2 = ErrorPlotConfig(capsize=5, line_style="--")
+    #     ep3 = ErrorPlotConfig(capsize=10, line_style="--")
     #
     #     assert hash(ep1) == hash(ep2)
     #     assert hash(ep1) != hash(ep3)
 
     def test_errorplot_populate(self):
-        """Test ErrorPlot.populate classmethod."""
+        """Test ErrorPlotConfig.populate classmethod."""
         params_dict = {
-            "line_style": "-",
-            "line_width": 2,
+            "linestyle": "-",
+            "linewidth": 2,
             "color": "blue",
             "capsize": 8,
             "elinewidth": 1.5,
             "marker": "o",
         }
 
-        ep = ErrorPlot.populate(params_dict)
-        assert ep.line_style == "-"
-        assert ep.line_width == 2
+        ep = ErrorPlotConfig.populate(params_dict)
+        print(ep.linestyle)
+        assert ep.linestyle == "-"
+        assert ep.linewidth == 2
         assert ep.color == "blue"
         assert ep.capsize == 8
-        assert ep.error_line_width == 1.5
+        assert ep.elinewidth == 1.5
         assert ep.marker == "o"
 
-    # def test_errorplot_populate_with_alias(self):
-    #     """Test ErrorPlot.populate with parameter aliases."""
-    #     params_dict = {"ms": 10, "markersize": 12, "mec": "black", "mfc": "white"}  # This should override ms
-    #
-    #     ep = ErrorPlot.populate(params_dict)
-    #     # The last one wins
-    #     assert ep.marker_size in [10, 12]
-    #     assert ep.marker_edge_color == "black"
-    #     assert ep.marker_face_color == "white"
+    def test_errorplot_populate_with_alias(self):
+        """Test ErrorPlotConfig.populate with parameter aliases."""
+        params_dict = {"ms": 10, "mec": "black", "mfc": "white"}  # This should override ms
 
-    def test_errorplot_inherits_from_lineplot(self):
-        """Test that ErrorPlot properly inherits from LinePlot."""
-        from plotez.backend.utilities import LinePlot
-
-        ep = ErrorPlot(capsize=5)
-        assert isinstance(ep, LinePlot)
+        ep = ErrorPlotConfig.populate(params_dict)
+        assert ep.markersize in [10, 12]
+        assert ep.markeredgecolor == "black"
+        assert ep.markerfacecolor == "white"
 
     def test_errorplot_to_dict(self):
-        """Test ErrorPlot to_dict method."""
-        ep = ErrorPlot(error_line_width=2, capsize=5, line_style="--")
+        """Test ErrorPlotConfig to_dict method."""
+        ep = ErrorPlotConfig(elinewidth=2, capsize=5, linestyle="--")
         d = ep.get_dict()
 
         # to_dict includes None values
@@ -141,23 +133,3 @@ class TestErrorPlot:
         assert d["capsize"] == 5
         assert d["elinewidth"] == 2
         assert d["linestyle"] == "--"
-
-    def test_errorplot_all_parameters(self):
-        """Test _all_parameters method includes parent and child params."""
-        ep = ErrorPlot(error_color="red", error_line_width=2, capsize=5, cap_thickness=1.5, line_style="-")
-
-        params = ep._all_parameters()
-        # Should include all LinePlot params plus error bar params
-        assert len(params) == 50  # 9 from LinePlot + 4 from ErrorPlot
-
-    def test_errorplot_all_labels(self):
-        """Test _all_labels method includes parent and child labels."""
-        ep = ErrorPlot()
-
-        labels = ep._all_labels()
-        # Should include all LinePlot labels plus error bar labels
-        assert len(labels) == 50  # 9 from LinePlot + 4 from ErrorPlot
-        assert "capsize" in labels
-        assert "elinewidth" in labels
-        assert "ecolor" in labels
-        assert "capthick" in labels

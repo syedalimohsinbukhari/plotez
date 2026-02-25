@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Error Bar Plotting**: Complete error bar plotting functionality with `plot_errorbars` function
-- **ErrorPlot Class**: New parameter class for error bar plot customization
+- **ErrorPlotConfig Class**: New parameter class for error bar plot customization
   - Inherits from `LinePlot` for consistent line styling
   - Additional error bar parameters: `capsize`, `elinewidth`, `ecolor`, `capthick`
   - `populate()` class method for creating instances from dictionaries
   - Full compatibility with all LinePlot styling options
 
 ### Enhanced
-- **ErrorPlot Inheritance**: ErrorPlot now properly inherits from LinePlot
+- **ErrorPlotConfig Inheritance**: ErrorPlotConfig now properly inherits from LinePlot
   - Eliminates code duplication between line plots and error bar plots
   - Automatic access to all line styling parameters (line_style, line_width, color, alpha, marker properties)
   - Enhanced error bar styling with independent control over error bar appearance
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Dictionary iteration issues in `plot_dictionary_handler()` function
-- Parameter consistency between LinePlot and ErrorPlot classes
+- Parameter consistency between LinePlot and ErrorPlotConfig classes
 
 ## [v0.1.1]
 ### Changed
@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameter classes for plot customization:
     - `LinePlot`: Line plot parameters (line style, width, color, markers, etc.)
     - `ScatterPlot`: Scatter plot parameters (colors, sizes, markers, etc.)
-    - `SubPlots`: Subplot configuration (figure size, axis sharing)
+    - `SubPlotConfig`: Subplot configuration (figure size, axis sharing)
 - Custom exceptions:
     - `PlotError`: Base exception for plotting errors
     - `OrientationError`: Exception for invalid subplot orientation

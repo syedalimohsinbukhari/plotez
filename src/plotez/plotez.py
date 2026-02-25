@@ -23,19 +23,18 @@ from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
 from .backend import (
-    ErrorPlot,
-    LinePlot,
+    ErrorPlotConfig,
+    LinePlotConfig,
     OrientationError,
-    ScatterPlot,
-    SubPlots,
+    ScatterPlotConfig,
+    SubPlotConfig,
     dual_axes_data_validation,
     dual_axes_label_management,
     plot_or_scatter,
 )
-from .backend.utilities import _PlotParams
 
 # safeguard
-lPsP = LinePlot | ScatterPlot
+lPsP = LinePlotConfig | ScatterPlotConfig
 axis_return = tuple[Axes, Axes] | Axes
 
 
@@ -49,8 +48,8 @@ def plot_errorbar(
     plot_title: str | None = None,
     data_label: str | None = None,
     auto_label: bool = False,
-    errorbar_config: LinePlot | ErrorPlot | None = None,
-    subplot_config: SubPlots | None = None,
+    errorbar_config: LinePlotConfig | ErrorPlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
     axis: Axes | None = None,
 ) -> Axes:
     """
@@ -96,13 +95,13 @@ def plot_errorbar(
     if y_err is not None:
         y_err = np.asarray(y_err)
 
-    e_config = errorbar_config.get_dict() if errorbar_config else ErrorPlot().get_dict()
+    e_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
 
     if subplot_config and axis:
         warn("Only one of subplot_config and axis can be passed. Using provided axis.")
 
     if axis is None:
-        sp_config = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
+        sp_config = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
         fig, axis = plt.subplots(**sp_config, squeeze=False)
         axis = axis.flatten()
         if isinstance(axis, np.ndarray):
@@ -131,8 +130,8 @@ def plot_two_column_file(
     plot_title: str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Read a two-column file (x, y) and plot the data.
@@ -195,8 +194,8 @@ def plot_xy(
     data_label: str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the x_data against y_data with customizable options.
@@ -259,8 +258,8 @@ def plot_xyy(
     data_labels: Sequence[str | None] = (None, None),
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
     axis=None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -332,8 +331,8 @@ def plot_with_dual_axes(
     axis_labels: list[str] | str | None = None,
     plot_title: str | None = None,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the data with options for dual axes (x or y) or single axis.
@@ -399,15 +398,13 @@ def plot_with_dual_axes(
     if axis:
         ax1 = axis
     else:
-        sp_dict = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
+        sp_dict = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
         _, ax1 = plt.subplots(1, 1, **sp_dict)
 
     if plot_config is not None:
         plot_items = plot_config.get_dict()
-    elif is_scatter:
-        plot_items = ScatterPlot().get_dict()
     else:
-        plot_items = LinePlot().get_dict()
+        plot_items = LinePlotConfig().get_dict()
 
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_items.items()}
     plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
@@ -455,8 +452,8 @@ def two_subplots(
     orientation: str = "h",
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
@@ -523,8 +520,8 @@ def n_plotter(
     subplot_title: Sequence[str] | str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: _PlotParams | None = None,
-    subplot_config: SubPlots | None = None,
+    plot_config: LinePlotConfig | None = None,
+    subplot_config: SubPlotConfig | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
@@ -554,13 +551,13 @@ def n_plotter(
         If `True`, it overwrites user-provided labels. Defaults to False.
     is_scatter : bool
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    subplot_config : SubPlots | None
+    subplot_config : SubPlotConfig | None
         Dictionary of parameters for subplot configuration.
     plot_config : pClass_type | None
         Object containing plot styling parameters. Defaults to `LinePlot`.
     """
-    sp_dict = subplot_config.get_dict() if subplot_config else SubPlots().get_dict()
-    plot_items = plot_config.get_dict() if plot_config else LinePlot().get_dict()  # type: ignore
+    sp_dict = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
+    plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
     axs = axs.flatten()

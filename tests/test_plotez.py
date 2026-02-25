@@ -7,7 +7,7 @@ from matplotlib.axes import Axes
 
 from plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
 from plotez.backend.error_handling import OrientationError
-from plotez.backend.utilities import LinePlot, ScatterPlot, SubPlots
+from plotez.backend.utilities import LinePlotConfig, ScatterPlotConfig, SubPlotConfig
 
 
 class TestPlotTwoColumnFile:
@@ -75,19 +75,19 @@ class TestPlotXY:
 
     def test_plot_xy_with_lineplot_dict(self, sample_x_data, sample_y_data):
         """Test plotting with LinePlot dictionary."""
-        lp = LinePlot(line_style=["-"], color=["red"], line_width=[2])
+        lp = LinePlotConfig(linestyle="-", color="red", linewidth=2)
         result = plot_xy(sample_x_data, sample_y_data, plot_config=lp)
         assert isinstance(result, Axes)
 
     def test_plot_xy_with_scatterplot_dict(self, sample_x_data, sample_y_data):
         """Test scatter plotting with ScatterPlot dictionary."""
-        sp = ScatterPlot(size=[50], color=["blue"], marker=["o"])
+        sp = ScatterPlotConfig(s=50, c="blue", marker="o")
         result = plot_xy(sample_x_data, sample_y_data, is_scatter=True, plot_config=sp)
         assert isinstance(result, Axes)
 
     def test_plot_xy_with_subplot_dict(self, sample_x_data, sample_y_data):
         """Test plotting with subplot configuration."""
-        sp = SubPlots(fig_size=(10, 6))
+        sp = SubPlotConfig(figsize=(10, 6))
         result = plot_xy(sample_x_data, sample_y_data, subplot_config=sp)
         assert isinstance(result, Axes)
 
@@ -182,7 +182,7 @@ class TestPlotWithDualAxes:
 
 
 class TestTwoSubplots:
-    """Test two_subplots function."""
+    """Test the two_subplots function."""
 
     def test_two_subplots_horizontal(self, sample_x_data, sample_y_data):
         """Test two horizontal subplots."""
@@ -297,12 +297,12 @@ class TestNPlotter:
 
     def test_n_plotter_with_plot_dict(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with a plot dictionary."""
-        lp = LinePlot(line_style=["-", "--", "-.", ":"], color=["red", "blue", "green", "orange"])
+        lp = LinePlotConfig(linestyle=["-", "--", "-.", ":"], color=["red", "blue", "green", "orange"])
         fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, plot_config=lp)
         assert isinstance(fig, plt.Figure)
 
     def test_n_plotter_with_subplot_dict(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with subplot configuration."""
-        sp = SubPlots(share_x=True, share_y=True, fig_size=(12, 8))
+        sp = SubPlotConfig(sharex=True, sharey=True, figsize=(12, 8))
         fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, subplot_config=sp)
         assert isinstance(fig, plt.Figure)

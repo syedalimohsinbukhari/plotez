@@ -4,19 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from plotez import plot_xyy
-from plotez.backend import LinePlot
+from plotez.backend import LinePlotConfig
 
 x = np.linspace(0, 10, 50)
 y1 = np.sin(x)
 y2 = np.exp(-x / 10)
 
-plot_config = LinePlot(
-    line_style=["--", "-."],
+plot_config = LinePlotConfig(
+    linestyle=["--", "-."],
     color=["red", "cyan"],
     marker=["o", "s"],
-    marker_size=[10, 10],
-    mark_every=[3, 5],
-    marker_edge_color=["k", "k"],
+    markersize=[10, 10],
+    markeredgecolor=["k", "k"],
+    _extra={"markevery": [3, 5]},
 )
 
 plot_xyy(

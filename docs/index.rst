@@ -25,7 +25,7 @@ Features
 * **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 * **File Integration**: Direct plotting from CSV files
 * **Extensive Customization**: Full control over plot appearance via parameter classes
-* **Inheritance-Based Design**: ErrorPlot inherits from LinePlot for consistent styling
+* **Inheritance-Based Design**: ErrorPlotConfig inherits from LinePlot for consistent styling
 * **Type Safety**: Complete type hints for better IDE support and type checking
 * **Well Tested**: Comprehensive test suite with 70%+ coverage
 
@@ -36,7 +36,7 @@ Quick Example
 
    import numpy as np
    from plotez import plot_xy, plot_errorbars
-   from plotez.backend.utilities import ErrorPlot
+   from plotez.backend.utilities import ErrorPlotConfig
 
    # Basic line plot
    x = np.linspace(0, 10, 100)
@@ -48,7 +48,7 @@ Quick Example
    y_sparse = np.sin(x_sparse)
    y_err = 0.1 * np.random.rand(len(y_sparse))
 
-   ep = ErrorPlot(
+   ep = ErrorPlotConfig(
        line_style='-',
        color='blue',
        marker='o',
@@ -63,4 +63,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

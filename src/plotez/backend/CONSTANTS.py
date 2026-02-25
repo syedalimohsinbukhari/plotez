@@ -1,71 +1,19 @@
 """Created on Feb 24 03:02:20 2026."""
 
-PLOT_ATTRS = {
-    "agg_filter": "agg_filter",
-    "alpha": "alpha",
-    "animated": "animated",
-    "antialiased": "antialiased",
-    "clip_box": "clip_box",
-    "clip_on": "clip_on",
-    "clip_path": "clip_path",
-    "color": "color",
-    "dash_capstyle": "dash_cap_style",
-    "dash_joinstyle": "dash_join_style",
-    "dashes": "dashes",
-    "data": "data",
-    "drawstyle": "draw_style",
-    "figure": "figure",
-    "fillstyle": "fill_style",
-    "gapcolor": "gap_color",
-    "gid": "gid",
-    "in_layout": "in_layout",
-    "linestyle": "line_style",
-    "linewidth": "line_width",
-    "marker": "marker",
-    "markeredgecolor": "marker_edge_color",
-    "markeredgewidth": "marker_edge_width",
-    "markerfacecolor": "marker_face_color",
-    "markerfacecoloralt": "marker_face_color_alt",
-    "markersize": "marker_size",
-    "markevery": "mark_every",
-    "mouseover": "mouse_over",
-    "path_effects": "path_effects",
-    "picker": "picker",
-    "pickradius": "pick_radius",
-    "rasterized": "rasterized",
-    "sketch_params": "sketch_parameters",
-    "snap": "snap",
-    "solid_capstyle": "solid_cap_style",
-    "solid_joinstyle": "solid_join_style",
-    "transform": "transform",
-    "url": "url",
-    "visible": "visible",
-    "zorder": "z_order",
+LINE_ATTRS = {
+    "ls": "linestyle",
+    "lw": "linewidth",
+    "c": "color",
+    "ms": "markersize",
+    "mec": "markeredgecolor",
+    "mfc": "markerfacecolor",
+    "mew": "markeredgewidth",
 }
-
-SCATTER_ATTRS = {
-    "s": "size",
-    "cmap": "cmap",
-    "norm": "normalize",
-    "vmin": "v_min",
-    "vmax": "v_max",
-    "linewidths": "line_widths",
-    "edgecolors": "edge_colors",
-    "colorizer": "colorizer",
-    "plotnonfinite": "plot_non_finite",
-} | PLOT_ATTRS
-
-SUBPLOT_ATTRS = {"sharex": "share_x", "sharey": "share_y", "figsize": "fig_size"}
-
-ERROR_ATTRS = {
-    "ecolor": "error_color",
-    "elinewidth": "error_line_width",
+ERROR_ATTRS = LINE_ATTRS | {
+    "ecolor": "ecolor",
+    "elinewidth": "elinewidth",
     "capsize": "capsize",
-    "capthick": "cap_thickness",
-    "barsabove": "bars_above",
-    "lolims": "low_lims",
-    "uplims": "up_lims",
-    "xlolims": "x_low_lims",
-    "xuplims": "x_up_lims",
-    "errorevery": "error_every_y",
-} | PLOT_ATTRS
+    "capthick": "capthick",
+}
+SCATTER_ATTRS = {"c": "color", "s": "size", "ec": "edgecolors", "fc": "facecolors"}
+SUBPLOT_ATTRS = {"sharex": "sharex", "sharey": "sharey", "figsize": "figsize"}

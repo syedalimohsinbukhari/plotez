@@ -23,7 +23,7 @@ with minimal boilerplate code.
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
-- **Inheritance-Based Design**: ErrorPlot inherits from LinePlot for consistent styling
+- **Inheritance-Based Design**: ErrorPlotConfig inherits from LinePlot for consistent styling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 - **Well Tested**: Comprehensive test suite with 85%+ coverage
 
@@ -118,7 +118,7 @@ plot_xyy(x, y1, y2,
 
 import numpy as np
 from plotez import n_plotter
-from plotez.backend import LinePlot, SubPlots
+from plotez.backend import LinePlot, SubPlotConfig
 
 # Create 2×2 grid
 x_data = [np.linspace(0, 10, 100) for _ in range(6)]
@@ -126,13 +126,13 @@ y_data = [
     np.sin(x_data[0]),
     np.cos(x_data[1]),
     np.tan(x_data[2] / 5),
-    x_data[3] ** 2 / 100,
+    x_data[3]**2 / 100,
     1 / np.cos(x_data[4]),
     x_data[5]
 ]
 
 line_config = LinePlot(color=["red", "blue", "green", "black", "orange", "magenta"])
-subplot_config = SubPlots(fig_size=(10, 6))
+subplot_config = SubPlotConfig(fig_size=(10, 6))
 
 fig, axs = n_plotter(x_data, y_data,
                      n_rows=2, n_cols=3, auto_label=True,
@@ -148,7 +148,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from plotez import plot_errorbar
-from plotez.backend.utilities import ErrorPlot
+from plotez.backend.utilities import ErrorPlotConfig
 
 # Generate sample data with errors
 x = np.linspace(0, 10, 20)
@@ -157,7 +157,7 @@ y = np.sin(x)
 y_err = 0.1 * np.random.rand(len(y))
 
 # Enhanced error bar styling
-ep = ErrorPlot(
+ep = ErrorPlotConfig(
     line_style=':',
     line_width=2,
     color='darkblue',

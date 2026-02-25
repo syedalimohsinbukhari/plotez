@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from plotez import plot_errorbar
-from plotez.backend import ErrorPlot
+from plotez.backend import ErrorPlotConfig
 
 rng = np.random.default_rng(123)
 
@@ -14,14 +14,8 @@ y = np.sin(x)
 y_err = abs(rng.normal(0, 0.25, (2, y.size)))  # Random errors for y
 
 # Enhanced error bar styling
-ep = ErrorPlot(
-    error_color="red",
-    capsize=8,
-    color="darkblue",
-    marker_face_color="cyan",
-    marker_edge_color="k",
-    marker="o",
-    line_width=2,
+ep = ErrorPlotConfig(
+    ecolor="red", capsize=8, color="darkblue", markerfacecolor="cyan", markeredgecolor="k", marker="o", linewidth=2
 )
 plot_errorbar(x, y, x_err=x_err, y_err=y_err, auto_label=True, errorbar_config=ep, data_label=r"$\sin(x)$")
 
