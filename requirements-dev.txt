@@ -1,7 +1,27 @@
+# CORE
+numpy
 matplotlib
+
+# FORMATTING & LINTING
+black
+flake8
+isort
+mypy
+pydocstyle
+
+# COVERAGE & TEST
 pytest
 pytest-cov
-mypy
+
+# PRE-COMMIT
+pre-commit
+
+# BUILD TOOLS
+build
+tomli
+
+# DOCS
+myst-parser
+pydata-sphinx-theme
 sphinx
-sphinx-rtd-theme
-black
+sphinx-copybutton

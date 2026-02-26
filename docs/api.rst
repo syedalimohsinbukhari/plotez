@@ -17,17 +17,27 @@ Utility Classes
 Parameter Classes
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: plotez.backend.utilities.LinePlot
+.. autoclass:: plotez.backend.utilities.LinePlotConfig
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: plotez.backend.utilities.ScatterPlot
+.. autoclass:: plotez.backend.utilities.ErrorPlotConfig
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: plotez.backend.utilities.SubPlots
+.. autoclass:: plotez.backend.utilities.ErrorBandConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: plotez.backend.utilities.ScatterPlotConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: plotez.backend.utilities.FigureConfig
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,11 +45,7 @@ Parameter Classes
 Utility Functions
 ~~~~~~~~~~~~~~~~~
 
-.. autofunction:: plotez.backend.utilities.get_color
-
 .. autofunction:: plotez.backend.utilities.plot_or_scatter
-
-.. autofunction:: plotez.backend.utilities.plot_dictionary_handler
 
 .. autofunction:: plotez.backend.utilities.split_dictionary
 
@@ -54,4 +60,3 @@ Error Handling
    :members:
    :undoc-members:
    :show-inheritance:
-
