@@ -7,25 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Error Bar Plotting**: Complete error bar plotting functionality with `plot_errorbars` function
-- **ErrorPlotConfig Class**: New parameter class for error bar plot customization
-  - Inherits from `LinePlot` for consistent line styling
-  - Additional error bar parameters: `capsize`, `elinewidth`, `ecolor`, `capthick`
-  - `populate()` class method for creating instances from dictionaries
-  - Full compatibility with all LinePlot styling options
+## [v0.2.0] - 2026-02-26
 
-### Enhanced
-- **ErrorPlotConfig Inheritance**: ErrorPlotConfig now properly inherits from LinePlot
-  - Eliminates code duplication between line plots and error bar plots
-  - Automatic access to all line styling parameters (line_style, line_width, color, alpha, marker properties)
-  - Enhanced error bar styling with independent control over error bar appearance
-- **Documentation**: Updated API documentation and quickstart guide with comprehensive error bar examples
-- **Code Quality**: Improved maintainability through inheritance-based design
+### Added
+- **Error Bar Plotting**: `plot_errorbar` function for error bar plots with full customization
+- **Error Band Plotting**: `plot_errorband` function for shaded error band visualization
+- **ErrorPlotConfig**: Dataclass for error bar plot styling (color, capsize, ecolor, elinewidth, capthick, etc.)
+- **ErrorBandConfig**: Dataclass for error band styling (color, alpha, hatch, edgecolor, interpolate, etc.)
+- Comprehensive test suites for `plot_errorbar` and `plot_errorband`
+- `plot_errorband` and all config classes exported from `plotez` top-level package
+- `CHANGELOG.md` symlink at repository root for GitHub visibility
+
+### Changed
+- **Renamed parameter classes** (breaking):
+  - `LinePlot` → `LinePlotConfig`
+  - `ScatterPlot` → `ScatterPlotConfig`
+  - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`, `share_x`, `share_y`)
+- **Renamed function keyword arguments** (breaking):
+  - `plot_dictionary` → `plot_config`
+  - `subplot_dictionary` / `subplot_config` → `figure_config`
+- All parameter classes converted to `dataclasses` with `_extra` dict for arbitrary kwargs
+- `populate()` class methods on all config classes for alias-based dictionary creation
+- Replaced `typing.Tuple` / `typing.List` with built-in `tuple` / `list` generics (Python ≥ 3.10)
+- Added type annotation `Axes | None` to `plot_xyy`'s `axis` parameter
+- Added `Returns` sections to all public function docstrings
+- Added `Attributes` sections to all config dataclass docstrings
+- Updated `quickstart.rst`, `api.rst`, and `README.md` to reflect current API
+- Excluded `md_SUMMARIES/` from package builds
 
 ### Fixed
-- Dictionary iteration issues in `plot_dictionary_handler()` function
-- Parameter consistency between LinePlot and ErrorPlotConfig classes
+- Tests using non-existent `subplot_config` kwarg (→ `figure_config`)
+- `quickstart.rst` referencing old `LinePlot`, `ScatterPlot`, `plot_errorbars`, `plot_dictionary`, `subplot_dictionary`
+- `README.md` referencing old `LinePlot`, `line_style`, `marker_size`, `mark_every`
+- `api.rst` stale note about ErrorPlotConfig inheriting from LinePlotConfig
 
 ## [v0.1.1]
 ### Changed

@@ -19,17 +19,17 @@ with minimal boilerplate code.
 
 - **Simple API**: Create complex plots with just a few lines of code
 - **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
+- **Error Band Plotting**: Shaded error band support via `plot_errorband` and `ErrorBandConfig`
 - **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
-- **Inheritance-Based Design**: ErrorPlotConfig inherits from LinePlot for consistent styling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 - **Well Tested**: Comprehensive test suite with 85%+ coverage
 
 ## Installation
 
-### From PyPI (once published)
+### From PyPI
 
 ```bash
 pip install plotez
@@ -145,11 +145,10 @@ fig, axs = n_plotter(x_data, y_data,
 ### Error Bar Plots
 
 ```python
-import matplotlib.pyplot as plt
 import numpy as np
 
 from plotez import plot_errorbar
-from plotez.backend.utilities import ErrorPlotConfig
+from plotez.backend import ErrorPlotConfig
 
 # Generate sample data with errors
 x = np.linspace(0, 10, 20)
@@ -173,13 +172,14 @@ plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 ```
 ![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
+### Error Band Plots
+
 ```python
 """Demonstration of error band plotting with custom configurations."""
-import matplotlib.pyplot as plt
 import numpy as np
 
+from plotez import plot_errorband
 from plotez.backend import ErrorBandConfig, LinePlotConfig
-from plotez.plotez import plot_errorband
 
 rng = np.random.default_rng(1234)
 

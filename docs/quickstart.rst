@@ -58,17 +58,25 @@ Plot two datasets with different y-scales:
        y1_label='Sine',
        y2_label='Exponential',
        data_labels=['sin(x)', 'exp(x/10)'],
-       plot_title='Dual Y-Axis Example',
-       use_twin_x=True
+       plot_title='Dual Y-Axis Example'
    )
 
 Dual X-Axis
 ~~~~~~~~~~~
 
+Use ``plot_with_dual_axes`` directly for dual x-axis plots:
+
 .. code-block:: python
 
-   plot_xyy(
-       x, y1, y2,
+   from plotez import plot_with_dual_axes
+
+   x1 = np.linspace(0, 10, 100)
+   x2 = np.linspace(0, 20, 100)
+   y = np.sin(x1)
+
+   plot_with_dual_axes(
+       x1, y,
+       x2_data=x2,
        use_twin_x=False,
        auto_label=True
    )
@@ -151,37 +159,37 @@ Line Plots
 .. code-block:: python
 
    from plotez import plot_xy
-   from plotez.backend.utilities import LinePlot
+   from plotez.backend.utilities import LinePlotConfig
 
    x = np.linspace(0, 10, 100)
    y = np.sin(x)
 
    # Create custom line plot parameters
-   line_params = LinePlot(
-       line_style=['-'],
-       line_width=[2],
-       color=['#FF5733'],
-       marker=['o'],
-       marker_size=[4]
+   line_params = LinePlotConfig(
+       linestyle='-',
+       linewidth=2,
+       color='#FF5733',
+       marker='o',
+       markersize=4
    )
 
-   plot_xy(x, y, plot_dictionary=line_params)
+   plot_xy(x, y, plot_config=line_params)
 
 Scatter Plots
 ~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from plotez.backend.utilities import ScatterPlot
+   from plotez.backend.utilities import ScatterPlotConfig
 
-   scatter_params = ScatterPlot(
-       color=['blue'],
-       size=[50],
-       marker=['s'],
-       alpha=[0.6]
+   scatter_params = ScatterPlotConfig(
+       c='blue',
+       s=50,
+       marker='s',
+       alpha=0.6
    )
 
-   plot_xy(x, y, is_scatter=True, plot_dictionary=scatter_params)
+   plot_xy(x, y, is_scatter=True, plot_config=scatter_params)
 
 Subplot Configuration
 ~~~~~~~~~~~~~~~~~~~~~
@@ -191,15 +199,15 @@ Subplot Configuration
    from plotez.backend.utilities import FigureConfig
 
    subplot_params = FigureConfig(
-       share_x=True,
-       share_y=True,
-       fig_size=(12, 8)
+       sharex=True,
+       sharey=True,
+       figsize=(12, 8)
    )
 
    fig, axs = two_subplots(
        [x, x], [y, y*2],
        orientation='h',
-       subplot_dictionary=subplot_params
+       figure_config=subplot_params
    )
 
 Plotting from Files
@@ -228,7 +236,7 @@ Error Bar Plots
 ---------------
 
 PlotEZ provides comprehensive error bar plotting capabilities through the ``ErrorPlotConfig`` class
-and the ``plot_errorbars`` function.
+and the ``plot_errorbar`` function.
 
 Basic Error Bars
 ~~~~~~~~~~~~~~~~
@@ -236,7 +244,7 @@ Basic Error Bars
 .. code-block:: python
 
    import numpy as np
-   from plotez import plot_errorbars
+   from plotez import plot_errorbar
    from plotez.backend.utilities import ErrorPlotConfig
 
    # Generate sample data with errors
@@ -246,28 +254,28 @@ Basic Error Bars
    y_err = 0.1 * np.random.rand(len(y))
 
    # Simple error bar plot
-   plot_errorbars(x, y, x_err, y_err)
+   plot_errorbar(x, y, x_err=x_err, y_err=y_err)
 
    # With custom styling
-   ep = ErrorPlotConfig(line_style='--', capsize=5, color='blue')
-   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+   ep = ErrorPlotConfig(linestyle='--', capsize=5, color='blue')
+   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 
 Enhanced Error Bar Styling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ErrorPlotConfig inherits from LinePlot, providing access to all line styling options
+ErrorPlotConfig provides access to all line styling options
 plus specialized error bar parameters:
 
 .. code-block:: python
 
    # Full customization with enhanced error bar styling
    ep = ErrorPlotConfig(
-       # Line styling (inherited from LinePlot)
-       line_style='-',
-       line_width=2,
+       # Line styling
+       linestyle='-',
+       linewidth=2,
        color='darkblue',
        marker='o',
-       marker_size=6,
+       markersize=6,
        alpha=0.7,
 
        # Error bar specific styling
@@ -277,10 +285,10 @@ plus specialized error bar parameters:
        capthick=2           # Thickness of error bar caps
    )
 
-   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 
 Creating ErrorPlotConfig from Dictionary
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the ``populate()`` class method to create ErrorPlotConfig instances from parameter dictionaries:
 
@@ -288,35 +296,44 @@ Use the ``populate()`` class method to create ErrorPlotConfig instances from par
 
    # Using parameter aliases
    params = {
-       'ls': '--',          # line_style
-       'lw': 2,             # line_width
+       'ls': '--',          # linestyle
+       'lw': 2,             # linewidth
        'color': 'purple',
        'marker': 's',
-       'ms': 6,             # marker_size
+       'ms': 6,             # markersize
        'capsize': 7,
        'elinewidth': 2,
        'ecolor': 'crimson'
    }
 
    ep = ErrorPlotConfig.populate(params)
-   plot_errorbars(x, y, x_err, y_err, plot_dictionary=ep)
+   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 
-Inheritance Benefits
-~~~~~~~~~~~~~~~~~~~~
+Error Band Plots
+----------------
 
-Since ErrorPlotConfig inherits from LinePlot, you can use it anywhere a LinePlot is expected,
-and it automatically includes all line plot functionality:
+PlotEZ also supports shaded error band plots through the ``ErrorBandConfig`` class
+and the ``plot_errorband`` function.
 
 .. code-block:: python
 
-   from plotez.backend.utilities import LinePlot
+   import numpy as np
+   from plotez import plot_errorband
+   from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
 
-   # ErrorPlotConfig is a specialized LinePlot
-   ep = ErrorPlotConfig(capsize=5)
-   print(isinstance(ep, LinePlot))  # True
+   x = np.linspace(0, 10, 50)
+   y = np.sin(x)
+   y_low = y - 0.2
+   y_upp = y + 0.2
 
-   # Has all LinePlot features plus error bar features
-   print(len(ep._all_parameters()))  # All parameters combined
+   band_config = ErrorBandConfig(color='cyan', edgecolor='k', linestyle='--', hatch='\\')
+   line_config = LinePlotConfig(color='gold', linestyle='--', linewidth=2,
+                                marker='o', markersize=5, markeredgecolor='k')
+
+   ax = plot_errorband(x, y, y_low, y_upp,
+                       data_label=r'$\sin(x)$',
+                       band_config=band_config,
+                       line_config=line_config)
 
 Next Steps
 ----------

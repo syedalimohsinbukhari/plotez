@@ -93,4 +93,4 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["examples", "*tests*"]
+exclude = ["examples", "*tests*", "md_SUMMARIES*"]

@@ -251,12 +251,21 @@ def plot_two_column_file(
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
-        An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
-        the matplotlib plotting library. If None, a default plot type will be used.
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config :
-        Dictionary of parameters for subplot configuration.
+        Configuration object for subplot/figure settings.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+
+    Returns
+    -------
+    tuple[Axes, Axes] or Axes
+        A tuple of ``(primary_axis, secondary_axis)`` if a dual-axis plot is created, otherwise a single ``Axes``.
+
+    Raises
+    ------
+    ValueError
+        If the file does not contain exactly two columns.
     """
     data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)
 
@@ -313,12 +322,16 @@ def plot_xy(
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
-        An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
-        the matplotlib plotting library. If None, a default plot type will be used.
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config :
-        Dictionary of parameters for subplot configuration.
+        Configuration object for subplot/figure settings.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+
+    Returns
+    -------
+    tuple[Axes, Axes] or Axes
+        A tuple of ``(primary_axis, secondary_axis)`` if a dual-axis plot is created, otherwise a single ``Axes``.
     """
     if auto_label:
         x_label = "X"
@@ -354,7 +367,7 @@ def plot_xyy(
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_config: FigureConfig | None = None,
-    axis=None,
+    axis: Axes | None = None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
 
@@ -375,18 +388,22 @@ def plot_xyy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is `['X vs. Y1', 'X vs Y2']`.
+        The labels for the two datasets. Default is ``(None, None)``.
     auto_label :
         Whether to automatically label the plot. Default is `False`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
-        An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
-        the matplotlib plotting library.
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config :
-        Dictionary of parameters for subplot configuration.
+        Configuration object for subplot/figure settings.
     axis :
         A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
+
+    Returns
+    -------
+    tuple[Axes, Axes] or Axes
+        A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot, or a single ``Axes``.
     """
     if auto_label:
         x_label = "X"
@@ -442,31 +459,36 @@ def plot_with_dual_axes(
     y2_data :
         Data for the secondary y-axis (used for dual y-axis plots).
     x1y1_label :
-        Label for the plot of X1 vs. Y1. If None and `auto_label` are True, defaults to 'X1 vs Y1'.
+        Label for the plot of X1 vs. Y1. If None and `auto_label` is True, defaults to 'X1 vs Y1'.
     x1y2_label :
-        Label for the plot of X1 vs. Y2 (when using dual Y-axes). If None and `auto_label` are True,
+        Label for the plot of X1 vs. Y2 (when using dual Y-axes). If None and `auto_label` is True,
         defaults to 'X1 vs Y2'.
     x2y1_label :
         Label for the plot of X2 vs. Y1 (when using dual X-axes).
-        If None and `auto_label` are True, defaults to 'X2 vs Y1'.
+        If None and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x :
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot. Default is False.
     auto_label :
         If True, automatically assigns labels if none are provided. Default is False.
     axis_labels :
         List of axis labels in the form [x_label, y_label1, y_label2].
-        If None and `auto_label` are True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
+        If None and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
     plot_title :
-        Title of the plot. If None and `auto_label` are True, defaults to 'Plot'.
-        If None and `auto_label` are False, no title is added.
+        Title of the plot. If None and `auto_label` is True, defaults to 'Plot'.
+        If None and `auto_label` is False, no title is added.
     is_scatter :
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
-        An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to the matplotlib.
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config :
-        Dictionary of parameters for subplot configuration.
+        Configuration object for subplot/figure settings.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+
+    Returns
+    -------
+    tuple[Axes, Axes] or Axes
+        A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
     """
     labels = dual_axes_label_management(
         x1y1_label=x1y1_label,
@@ -493,7 +515,7 @@ def plot_with_dual_axes(
         ax1 = axis
     else:
         fig_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
-        _, ax1 = plt.subplots(1, 1, **fig_dict)
+        _, ax1 = plt.subplots(**fig_dict)
 
     if plot_config is not None:
         plot_dict = plot_config.get_dict()
@@ -568,15 +590,25 @@ def two_subplots(
     subplot_title :
         Titles for the subplots, if required.
     orientation :
-        Orientation of the subplots, either 'h' for horizontal or 'v' for vertical.
+        Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
     auto_label :
         Automatically assigns labels to subplots if `True`.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
-        Object containing plot styling parameters. Defaults to `LinePlot`.
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config :
-        Dictionary of parameters for subplot configuration.
+        Configuration object for subplot/figure settings.
+
+    Returns
+    -------
+    tuple[Figure, Axes]
+        A tuple of ``(figure, axes_array)`` containing the matplotlib Figure and flattened array of Axes.
+
+    Raises
+    ------
+    OrientationError
+        If ``orientation`` is not ``'h'`` or ``'v'``.
     """
     if orientation == "h":
         n_rows, n_cols = 1, 2
@@ -645,12 +677,19 @@ def n_plotter(
         If `True`, it overwrites user-provided labels. Defaults to False.
     is_scatter : bool
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
+    plot_config : LinePlotConfig | ScatterPlotConfig | None
+        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
     figure_config : FigureConfig | None
-        Dictionary of parameters for subplot configuration.
-    plot_config : pClass_type | None
-        Object containing plot styling parameters. Defaults to `LinePlot`.
+        Configuration object for subplot/figure settings.
+
+    Returns
+    -------
+    tuple[Figure, Axes]
+        A tuple of ``(figure, axes_array)`` containing the matplotlib Figure and flattened array of Axes.
     """
     sp_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
+    sp_dict.pop("nrows", None)
+    sp_dict.pop("ncols", None)
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
