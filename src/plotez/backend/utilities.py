@@ -8,7 +8,8 @@ __all__ = [
     "LinePlotConfig",
     "ScatterPlotConfig",
     "ErrorPlotConfig",
-    "SubPlotConfig",
+    "FigureConfig",
+    "ErrorBandConfig",
     "plot_or_scatter",
     "split_dictionary",
     "dual_axes_data_validation",
@@ -17,12 +18,12 @@ __all__ = [
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, List, Tuple
+from typing import Any, List, Literal, Tuple
 
 from matplotlib.typing import ColorType
 from numpy.typing import ArrayLike
 
-from plotez.backend import ERROR_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
+from plotez.backend import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
 
 label_management = Tuple[str, str, str, str, List[str]]
 
@@ -42,15 +43,14 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
 class LinePlotConfig:
     """Configuration class for line plots."""
 
-    # Most common parameters with type hints
-    linestyle: str | Sequence[str] | None = None
-    linewidth: float | Sequence[float] | None = None
     color: str | ColorType | Sequence[ColorType] | None = None
+    linewidth: float | Sequence[float] | None = None
+    linestyle: str | Sequence[str] | None = None
     alpha: float | Sequence[float] | None = None
     marker: str | Sequence[str] | None = None
     markersize: float | Sequence[float] | None = None
-    markeredgecolor: str | Sequence[str] | None = None
     markerfacecolor: str | Sequence[str] | None = None
+    markeredgecolor: str | Sequence[str] | None = None
     markeredgewidth: float | Sequence[float] | None = None
 
     # For extra params - pass as dict to this field directly
@@ -59,7 +59,7 @@ class LinePlotConfig:
     @classmethod
     def populate(cls, dictionary: dict[str, Any]) -> "LinePlotConfig":
         """Create a LinePlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(cls, dictionary, LINE_ATTRS)
+        return _populate(_class=cls, dictionary=dictionary, mapping=LINE_ATTRS)
 
     def get_dict(self) -> dict[str, Any]:
         """Get all parameters as dict for matplotlib."""
@@ -75,22 +75,59 @@ class LinePlotConfig:
 
 
 @dataclass
+class ErrorBandConfig:
+    """Configuration class for error bands."""
+
+    color: str | None = None
+    alpha: float = 0.25
+    linewidth: float | None = None
+    edgecolor: str | ColorType | None = None
+    linestyle: str | None = None
+    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
+    interpolate: bool = False
+    step: str | Literal["pre", "post", "mid"] | None = None
+
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    @classmethod
+    def populate(cls, dictionary: dict[str, Any]) -> "ErrorBandConfig":
+        """Create an ErrorBandConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=ERROR_BAND_ATTRS)
+
+    def get_dict(self) -> dict[str, Any]:
+        """Get all parameters as dict for matplotlib."""
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
+        result.update(self._extra)
+        return result
+
+    def __repr__(self):
+        """Return a string representation of the ErrorBandConfig instance."""
+        all_params = self.get_dict()
+        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
+        return f"{self.__class__.__name__}({param_str})"
+
+
+@dataclass
 class ErrorPlotConfig:
     """Configuration class for error plots."""
 
-    # LinePlotConfig shared parameters
-    linestyle: str | None = None
-    linewidth: float | None = None
+    # Core signal identity
     color: str | None = None
+    linewidth: float | None = None
+    linestyle: str | None = None
     alpha: float | None = None
-    marker: str | None = None
-    markersize: float | None = None
-    markeredgecolor: str | None = None
-    markerfacecolor: str | None = None
 
-    # ErrorPlotConfig specific parameters
+    # Error structure (second layer of perception)
     ecolor: str | None = None
     elinewidth: float | None = None
+
+    # Markers (data discreteness)
+    marker: str | None = None
+    markersize: float | None = None
+    markerfacecolor: str | None = None
+    markeredgecolor: str | None = None
+
+    # Visual refinement
     capsize: float | None = None
     capthick: float | None = None
 
@@ -100,7 +137,7 @@ class ErrorPlotConfig:
     @classmethod
     def populate(cls, dictionary: dict[str, Any]) -> "ErrorPlotConfig":
         """Create an ErrorPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(cls, dictionary, ERROR_ATTRS)
+        return _populate(_class=cls, dictionary=dictionary, mapping=ERROR_ATTRS)
 
     def get_dict(self) -> dict[str, Any]:
         """Get all parameters as dict for matplotlib."""
@@ -119,13 +156,13 @@ class ErrorPlotConfig:
 class ScatterPlotConfig:
     """Configuration class for scatter plots."""
 
-    s: float | None = None  # 's' in matplotlib
     c: str | None = None
-    edgecolors: str | None = None  # 'ec' in matplotlib
-    facecolors: str | None = None  # 'fc' in matplotlib
+    s: float | None = None
     alpha: float | None = None
     marker: str | None = None
     cmap: str | None = None
+    edgecolors: str | None = None
+    facecolors: str | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -133,7 +170,7 @@ class ScatterPlotConfig:
     @classmethod
     def populate(cls, dictionary: dict[str, Any]) -> "ScatterPlotConfig":
         """Create a ScatterPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(cls, dictionary, SCATTER_ATTRS)
+        return _populate(_class=cls, dictionary=dictionary, mapping=SCATTER_ATTRS)
 
     def get_dict(self) -> dict[str, Any]:
         """Get all parameters as dict for matplotlib."""
@@ -149,20 +186,27 @@ class ScatterPlotConfig:
 
 
 @dataclass
-class SubPlotConfig:
+class FigureConfig:
     """Configuration class for subplots."""
+
+    nrows: int = 1
+    ncols: int = 1
+    figsize: tuple[float, float] = (6.4, 4.8)
 
     sharex: bool = False
     sharey: bool = False
-    figsize: tuple[float, float] = (6.4, 4.8)
+
+    constrained_layout: bool = False
+    wspace: float | None = None
+    hspace: float | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
 
     @classmethod
-    def populate(cls, dictionary: dict[str, Any]) -> "SubPlotConfig":
-        """Create a SubPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(cls, dictionary, SUBPLOT_ATTRS)
+    def populate(cls, dictionary: dict[str, Any]) -> "FigureConfig":
+        """Create a FigureConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=SUBPLOT_ATTRS)
 
     def get_dict(self) -> dict[str, Any]:
         """Get all parameters as dict for matplotlib."""

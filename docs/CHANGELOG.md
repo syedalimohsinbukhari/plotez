@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameter classes for plot customization:
     - `LinePlot`: Line plot parameters (line style, width, color, markers, etc.)
     - `ScatterPlot`: Scatter plot parameters (colors, sizes, markers, etc.)
-    - `SubPlotConfig`: Subplot configuration (figure size, axis sharing)
+    - `FigureConfig`: Subplot configuration (figure size, axis sharing)
 - Custom exceptions:
     - `PlotError`: Base exception for plotting errors
     - `OrientationError`: Exception for invalid subplot orientation

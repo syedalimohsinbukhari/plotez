@@ -7,7 +7,7 @@ from matplotlib.axes import Axes
 
 from plotez import n_plotter, plot_two_column_file, plot_with_dual_axes, plot_xy, plot_xyy, two_subplots
 from plotez.backend.error_handling import OrientationError
-from plotez.backend.utilities import LinePlotConfig, ScatterPlotConfig, SubPlotConfig
+from plotez.backend.utilities import FigureConfig, LinePlotConfig, ScatterPlotConfig
 
 
 class TestPlotTwoColumnFile:
@@ -87,7 +87,7 @@ class TestPlotXY:
 
     def test_plot_xy_with_subplot_dict(self, sample_x_data, sample_y_data):
         """Test plotting with subplot configuration."""
-        sp = SubPlotConfig(figsize=(10, 6))
+        sp = FigureConfig(figsize=(10, 6))
         result = plot_xy(sample_x_data, sample_y_data, subplot_config=sp)
         assert isinstance(result, Axes)
 
@@ -303,6 +303,6 @@ class TestNPlotter:
 
     def test_n_plotter_with_subplot_dict(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with subplot configuration."""
-        sp = SubPlotConfig(sharex=True, sharey=True, figsize=(12, 8))
+        sp = FigureConfig(sharex=True, sharey=True, figsize=(12, 8))
         fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, subplot_config=sp)
         assert isinstance(fig, plt.Figure)

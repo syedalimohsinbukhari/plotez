@@ -188,9 +188,9 @@ Subplot Configuration
 
 .. code-block:: python
 
-   from plotez.backend.utilities import SubPlotConfig
+   from plotez.backend.utilities import FigureConfig
 
-   subplot_params = SubPlotConfig(
+   subplot_params = FigureConfig(
        share_x=True,
        share_y=True,
        fig_size=(12, 8)

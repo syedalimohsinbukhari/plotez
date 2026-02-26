@@ -37,7 +37,7 @@ Parameter Classes
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: plotez.backend.utilities.SubPlotConfig
+.. autoclass:: plotez.backend.utilities.FigureConfig
    :members:
    :undoc-members:
    :show-inheritance:

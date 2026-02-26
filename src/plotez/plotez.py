@@ -11,6 +11,7 @@ __all__ = [
     "plot_xy",
     "plot_xyy",
     "n_plotter",
+    "plot_errorband",
     "two_subplots",
 ]
 
@@ -23,11 +24,12 @@ from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
 from .backend import (
+    ErrorBandConfig,
     ErrorPlotConfig,
+    FigureConfig,
     LinePlotConfig,
     OrientationError,
     ScatterPlotConfig,
-    SubPlotConfig,
     dual_axes_data_validation,
     dual_axes_label_management,
     plot_or_scatter,
@@ -36,6 +38,93 @@ from .backend import (
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig
 axis_return = tuple[Axes, Axes] | Axes
+
+
+def plot_errorband(
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    y_lower: float | ArrayLike | None = None,
+    y_upper: float | ArrayLike | None = None,
+    x_label: str | None = None,
+    y_label: str | None = None,
+    plot_title: str | None = None,
+    data_label: str | None = None,
+    auto_label: bool = False,
+    line: bool = True,
+    band_config: ErrorBandConfig | None = None,
+    line_config: LinePlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
+    axis: Axes | None = None,
+) -> Axes:
+    """
+    Plot a line with an error band around it using the provided data and configurations.
+
+    Parameters
+    ----------
+    x_data : ArrayLike
+        Array or sequence containing x-coordinates for the plot.
+    y_data : ArrayLike
+        Array or sequence containing y-coordinates for the plot.
+    y_lower : float or ArrayLike or None, optional
+        Array, sequence, or single float value representing the lower bound of the error band.
+        If `None`, no lower bound is applied.
+    y_upper : float or ArrayLike or None, optional
+        Array, sequence, or single float value representing the upper bound of the error band.
+        If `None`, no upper bound is applied.
+    x_label : str or None, optional
+        Label for the x-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+    y_label : str or None, optional
+        Label for the y-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+    plot_title : str or None, optional
+        Title for the plot. If `None`, no title will be displayed unless auto-labeling is enabled.
+    data_label : str or None, optional
+        Label for the data series. This is used in legend generation if `auto_label` is enabled.
+    auto_label : bool, optional
+        If set to `True`, default labels for axis and title are applied, and a legend is generated. Defaults to `False`.
+    line : bool, optional
+        If set to `True`, a central line is plotted on the graph. Defaults to `True`.
+    band_config : ErrorBandConfig or None, optional
+        Configuration object defining the style of the error band. If `None`, the default styling is applied.
+    line_config : LinePlotConfig or None, optional
+        Configuration object defining the style of the central line. If `None`, the default styling is applied.
+    figure_config : FigureConfig or None, optional
+        Configuration object defining subplot settings. If `None`, the default settings are applied.
+    axis : Axes or None, optional
+        An existing matplotlib axis object on which to plot. If `None`, a new figure and axis are created.
+
+    Returns
+    -------
+    Axes
+        A matplotlib `Axes` object containing the plot.
+    """
+    x, y = np.asarray(x_data), np.asarray(y_data)
+    if y_lower is not None:
+        y_lower = np.asarray(y_lower)
+    if y_upper is not None:
+        y_upper = np.asarray(y_upper)
+
+    if axis is None:
+        sp_config = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
+        fig, axis = plt.subplots(**sp_config, squeeze=False)
+        axis = axis.flatten()
+        if isinstance(axis, np.ndarray):
+            axis = axis[0]
+
+    error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
+    line_config = line_config.get_dict() if line_config else LinePlotConfig().get_dict()
+    axis.fill_between(x, y_lower, y_upper, **error_band_config)
+    if line:
+        axis.plot(x, y, label=data_label, **line_config)
+
+    axis.set_xlabel("X" if auto_label else x_label)
+    axis.set_ylabel("Y" if auto_label else y_label)
+    axis.set_title("ErrorBand Plot" if auto_label else plot_title)
+    if auto_label:
+        axis.legend()
+
+    plt.tight_layout()
+
+    return axis
 
 
 def plot_errorbar(
@@ -48,46 +137,51 @@ def plot_errorbar(
     plot_title: str | None = None,
     data_label: str | None = None,
     auto_label: bool = False,
-    errorbar_config: LinePlotConfig | ErrorPlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    errorbar_config: ErrorPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
     axis: Axes | None = None,
 ) -> Axes:
     """
-    Create an error bar plot with customizable styling.
+    Plot an error bar graph with optional error ranges, labels, and configurations.
 
     Parameters
     ----------
-    x_data :
-        The x-coordinates of the data points.
-    y_data :
-        The y-coordinates of the data points.
-    x_err :
-        Error values for x-direction. Can be symmetric (single array) or
-        asymmetric (list of [lower, upper] arrays). Default is None.
-    y_err :
-        Error values for y-direction. Can be symmetric (single array) or asymmetric (list of [lower, upper] arrays).
-        Default is None.
-    x_label :
-        Label for the x-axis. Default is None.
-    y_label :
-        Label for the y-axis. Default is None.
-    plot_title :
-        Title for the plot. Default is None.
-    data_label :
-        Label for the data series in the legend. Default is None.
-    auto_label :
-        If True, automatically generates axis labels. Default is False.
-    errorbar_config :
-        Error bar styling parameters. Default is None.
-    subplot_config :
-        Subplot configuration parameters. Default is None.
-    axis :
-        Existing axis to plot on. If None, creates a new figure. Default is None.
+    x_data : ArrayLike
+        The x-coordinates of the data points to plot.
+    y_data : ArrayLike
+        The y-coordinates of the data points to plot.
+    x_err : float or ArrayLike or None, optional
+        The error margins for the x-coordinates.
+        Can be a scalar value, an array of individual errors for each data point, or None to omit x-errors.
+    y_err : float or ArrayLike or None, optional
+        The error margins for the y-coordinates.
+        Can be a scalar value, an array of individual errors for each data point, or None to omit y-errors.
+    x_label : str or None, optional
+        The label for the x-axis.
+        If `None` and `auto_label` argument is set to True, a default label "X" is used.
+    y_label : str or None, optional
+        The label for the y-axis.
+        If `None` and `auto_label` argument is set to True, a default label "Y" is used.
+    plot_title : str or None, optional
+        The title of the plot.
+        If `None` and `auto_label` argument is set to True, the default title "Error Bar Plot" is used.
+    data_label : str or None, optional
+        The label for the data points, which will appear in the plot legend.
+        If `None`, the legend is not displayed.
+    auto_label : bool, optional
+        If True, automatically assigns default labels for the axes and title if no labels or title are provided.
+    errorbar_config : ErrorPlotConfig or None, optional
+        Custom configurations for the error bars. If `None`, default configurations are used.
+    figure_config : FigureConfig or None, optional
+        Custom configurations for creating subplots. Ignored if `axis` is provided.
+    axis : Axes or None, optional
+        A matplotlib Axes object on which the plot will be rendered.
+        If `None`, a new subplot is created using `figure_config`.
 
     Returns
     -------
-    matplotlib.axes.Axes
-        The axis object containing the error bar plot.
+    Axes
+        The Axes object containing the error bar plot.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
     if x_err is not None:
@@ -95,19 +189,19 @@ def plot_errorbar(
     if y_err is not None:
         y_err = np.asarray(y_err)
 
-    e_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
+    errorbar_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
 
-    if subplot_config and axis:
-        warn("Only one of subplot_config and axis can be passed. Using provided axis.")
+    if figure_config and axis:
+        warn("Only one of figure_config and axis can be passed. Using provided axis.")
 
     if axis is None:
-        sp_config = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
+        sp_config = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
         fig, axis = plt.subplots(**sp_config, squeeze=False)
         axis = axis.flatten()
         if isinstance(axis, np.ndarray):
             axis = axis[0]
 
-    axis.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **e_config)
+    axis.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **errorbar_config)
 
     axis.set_xlabel("X" if auto_label else x_label)
     axis.set_ylabel("Y" if auto_label else y_label)
@@ -130,8 +224,8 @@ def plot_two_column_file(
     plot_title: str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Read a two-column file (x, y) and plot the data.
@@ -159,7 +253,7 @@ def plot_two_column_file(
     plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
         the matplotlib plotting library. If None, a default plot type will be used.
-    subplot_config :
+    figure_config :
         Dictionary of parameters for subplot configuration.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
@@ -180,7 +274,7 @@ def plot_two_column_file(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        subplot_config=subplot_config,
+        figure_config=figure_config,
         axis=axis,
     )
 
@@ -195,7 +289,7 @@ def plot_xy(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the x_data against y_data with customizable options.
@@ -221,7 +315,7 @@ def plot_xy(
     plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
         the matplotlib plotting library. If None, a default plot type will be used.
-    subplot_config :
+    figure_config :
         Dictionary of parameters for subplot configuration.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
@@ -242,7 +336,7 @@ def plot_xy(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        subplot_config=subplot_config,
+        figure_config=figure_config,
         axis=axis,
     )
 
@@ -258,8 +352,8 @@ def plot_xyy(
     data_labels: Sequence[str | None] = (None, None),
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
     axis=None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -289,7 +383,7 @@ def plot_xyy(
     plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to
         the matplotlib plotting library.
-    subplot_config :
+    figure_config :
         Dictionary of parameters for subplot configuration.
     axis :
         A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
@@ -313,7 +407,7 @@ def plot_xyy(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        subplot_config=subplot_config,
+        figure_config=figure_config,
         axis=axis,
     )
 
@@ -332,7 +426,7 @@ def plot_with_dual_axes(
     plot_title: str | None = None,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the data with options for dual axes (x or y) or single axis.
@@ -369,7 +463,7 @@ def plot_with_dual_axes(
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
         An object representing the plot data, either a `LinePlot` or `ScatterPlot`, to be passed to the matplotlib.
-    subplot_config :
+    figure_config :
         Dictionary of parameters for subplot configuration.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
@@ -398,15 +492,15 @@ def plot_with_dual_axes(
     if axis:
         ax1 = axis
     else:
-        sp_dict = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
-        _, ax1 = plt.subplots(1, 1, **sp_dict)
+        fig_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
+        _, ax1 = plt.subplots(1, 1, **fig_dict)
 
     if plot_config is not None:
-        plot_items = plot_config.get_dict()
+        plot_dict = plot_config.get_dict()
     else:
-        plot_items = LinePlotConfig().get_dict()
+        plot_dict = LinePlotConfig().get_dict()
 
-    dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_items.items()}
+    dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_dict.items()}
     plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
 
     ax2 = None
@@ -418,13 +512,13 @@ def plot_with_dual_axes(
     if use_twin_x:
         ax2 = ax1.twinx()
         if y2_data is not None:
-            dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_items.items()}
+            dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_dict.items()}
             plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
-        dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_items.items()}
+        dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_dict.items()}
         plot_or_scatter(axes=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
         ax2.set_xlabel(axis_labels[2])
 
@@ -452,8 +546,8 @@ def two_subplots(
     orientation: str = "h",
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
@@ -481,7 +575,7 @@ def two_subplots(
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
         Object containing plot styling parameters. Defaults to `LinePlot`.
-    subplot_config :
+    figure_config :
         Dictionary of parameters for subplot configuration.
     """
     if orientation == "h":
@@ -504,7 +598,7 @@ def two_subplots(
         auto_label=auto_label,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        subplot_config=subplot_config,
+        figure_config=figure_config,
     )
 
 
@@ -520,8 +614,8 @@ def n_plotter(
     subplot_title: Sequence[str] | str | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | None = None,
-    subplot_config: SubPlotConfig | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
+    figure_config: FigureConfig | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
@@ -551,12 +645,12 @@ def n_plotter(
         If `True`, it overwrites user-provided labels. Defaults to False.
     is_scatter : bool
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    subplot_config : SubPlotConfig | None
+    figure_config : FigureConfig | None
         Dictionary of parameters for subplot configuration.
     plot_config : pClass_type | None
         Object containing plot styling parameters. Defaults to `LinePlot`.
     """
-    sp_dict = subplot_config.get_dict() if subplot_config else SubPlotConfig().get_dict()
+    sp_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
@@ -583,8 +677,8 @@ def n_plotter(
         subplot_title = subplot_title if subplot_title else empty_
         plot_title = plot_title if plot_title else None
 
-    shared_y = sp_dict.get("sharey")
-    shared_x1 = sp_dict.get("sharex")
+    shared_y = sp_dict.get("sharey", False)
+    shared_x1 = sp_dict.get("sharex", False)
     shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
 
     if len(x_labels) != len(y_labels):

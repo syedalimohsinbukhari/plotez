@@ -33,12 +33,7 @@ def sample_y2_data() -> np.ndarray:
 @pytest.fixture
 def sample_x_data_list() -> List[np.ndarray]:
     """Generate list of sample x data arrays for multi-plot testing."""
-    return [
-        np.linspace(0, 10, 50),
-        np.linspace(0, 5, 30),
-        np.linspace(0, 8, 40),
-        np.linspace(0, 12, 60),
-    ]
+    return [np.linspace(0, 10, 50), np.linspace(0, 5, 30), np.linspace(0, 8, 40), np.linspace(0, 12, 60)]
 
 
 @pytest.fixture

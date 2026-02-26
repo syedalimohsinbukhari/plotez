@@ -118,7 +118,7 @@ plot_xyy(x, y1, y2,
 
 import numpy as np
 from plotez import n_plotter
-from plotez.backend import LinePlot, SubPlotConfig
+from plotez.backend import LinePlot, FigureConfig
 
 # Create 2×2 grid
 x_data = [np.linspace(0, 10, 100) for _ in range(6)]
@@ -132,7 +132,7 @@ y_data = [
 ]
 
 line_config = LinePlot(color=["red", "blue", "green", "black", "orange", "magenta"])
-subplot_config = SubPlotConfig(fig_size=(10, 6))
+subplot_config = FigureConfig(fig_size=(10, 6))
 
 fig, axs = n_plotter(x_data, y_data,
                      n_rows=2, n_cols=3, auto_label=True,
