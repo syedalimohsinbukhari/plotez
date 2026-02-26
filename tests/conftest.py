@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 # Use non-interactive backend for testing
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 
 @pytest.fixture
@@ -31,19 +31,40 @@ def sample_y2_data() -> np.ndarray:
 
 
 @pytest.fixture
+def sample_x_err() -> np.ndarray:
+    """Generate sample x-error data for error bar testing."""
+    rng = np.random.default_rng(42)
+    return 0.1 * rng.random(50)
+
+
+@pytest.fixture
+def sample_y_err() -> np.ndarray:
+    """Generate sample y-error data for error bar testing."""
+    rng = np.random.default_rng(42)
+    return 0.2 * rng.random(50)
+
+
+@pytest.fixture
+def sample_y_lower(sample_y_data) -> np.ndarray:
+    """Generate lower bound for error band testing."""
+    return sample_y_data - 0.2
+
+
+@pytest.fixture
+def sample_y_upper(sample_y_data) -> np.ndarray:
+    """Generate upper bound for error band testing."""
+    return sample_y_data + 0.2
+
+
+@pytest.fixture
 def sample_x_data_list() -> List[np.ndarray]:
-    """Generate list of sample x data arrays for multi-plot testing."""
-    return [
-        np.linspace(0, 10, 50),
-        np.linspace(0, 5, 30),
-        np.linspace(0, 8, 40),
-        np.linspace(0, 12, 60),
-    ]
+    """Generate a list of sample x data arrays for multi-plot testing."""
+    return [np.linspace(0, 10, 50), np.linspace(0, 5, 30), np.linspace(0, 8, 40), np.linspace(0, 12, 60)]
 
 
 @pytest.fixture
 def sample_y_data_list() -> List[np.ndarray]:
-    """Generate list of sample y data arrays for multi-plot testing."""
+    """Generate a list of sample y data arrays for multi-plot testing."""
     return [
         np.sin(np.linspace(0, 10, 50)),
         np.cos(np.linspace(0, 5, 30)),
@@ -55,7 +76,7 @@ def sample_y_data_list() -> List[np.ndarray]:
 @pytest.fixture
 def temp_csv_file():
     """Create a temporary CSV file with two columns."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("1.0,2.0\n")
         f.write("2.0,4.0\n")
         f.write("3.0,6.0\n")
@@ -66,13 +87,14 @@ def temp_csv_file():
 
     # Cleanup
     import os
+
     os.unlink(temp_path)
 
 
 @pytest.fixture
 def temp_csv_file_with_header():
-    """Create a temporary CSV file with header."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    """Create a temporary CSV file with a header."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         f.write("x,y\n")
         f.write("1.0,2.0\n")
         f.write("2.0,4.0\n")
@@ -83,6 +105,7 @@ def temp_csv_file_with_header():
 
     # Cleanup
     import os
+
     os.unlink(temp_path)
 
 
@@ -90,5 +113,4 @@ def temp_csv_file_with_header():
 def cleanup_plots():
     """Automatically close all matplotlib figures after each test."""
     yield
-    plt.close('all')
-
+    plt.close("all")

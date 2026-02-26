@@ -5,6 +5,42 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [v0.2.0] - 2026-02-26
+
+### Added
+- **Error Bar Plotting**: `plot_errorbar` function for error bar plots with full customization
+- **Error Band Plotting**: `plot_errorband` function for shaded error band visualization
+- **ErrorPlotConfig**: Dataclass for error bar plot styling (color, capsize, ecolor, elinewidth, capthick, etc.)
+- **ErrorBandConfig**: Dataclass for error band styling (color, alpha, hatch, edgecolor, interpolate, etc.)
+- Comprehensive test suites for `plot_errorbar` and `plot_errorband`
+- `plot_errorband` and all config classes exported from `plotez` top-level package
+- `CHANGELOG.md` symlink at repository root for GitHub visibility
+
+### Changed
+- **Renamed parameter classes** (breaking):
+  - `LinePlot` → `LinePlotConfig`
+  - `ScatterPlot` → `ScatterPlotConfig`
+  - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`, `share_x`, `share_y`)
+- **Renamed function keyword arguments** (breaking):
+  - `plot_dictionary` → `plot_config`
+  - `subplot_dictionary` / `subplot_config` → `figure_config`
+- All parameter classes converted to `dataclasses` with `_extra` dict for arbitrary kwargs
+- `populate()` class methods on all config classes for alias-based dictionary creation
+- Replaced `typing.Tuple` / `typing.List` with built-in `tuple` / `list` generics (Python ≥ 3.10)
+- Added type annotation `Axes | None` to `plot_xyy`'s `axis` parameter
+- Added `Returns` sections to all public function docstrings
+- Added `Attributes` sections to all config dataclass docstrings
+- Updated `quickstart.rst`, `api.rst`, and `README.md` to reflect current API
+- Excluded `md_SUMMARIES/` from package builds
+
+### Fixed
+- Tests using non-existent `subplot_config` kwarg (→ `figure_config`)
+- `quickstart.rst` referencing old `LinePlot`, `ScatterPlot`, `plot_errorbars`, `plot_dictionary`, `subplot_dictionary`
+- `README.md` referencing old `LinePlot`, `line_style`, `marker_size`, `mark_every`
+- `api.rst` stale note about ErrorPlotConfig inheriting from LinePlotConfig
+
 ## [v0.1.1]
 ### Changed
 - Path change for examples and images
@@ -30,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Parameter classes for plot customization:
     - `LinePlot`: Line plot parameters (line style, width, color, markers, etc.)
     - `ScatterPlot`: Scatter plot parameters (colors, sizes, markers, etc.)
-    - `SubPlots`: Subplot configuration (figure size, axis sharing)
+    - `FigureConfig`: Subplot configuration (figure size, axis sharing)
 - Custom exceptions:
     - `PlotError`: Base exception for plotting errors
     - `OrientationError`: Exception for invalid subplot orientation
@@ -42,10 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - mypy for static type checking
     - Sphinx for documentation generation
 
-## [0.1.0] - 2026-02-01 11:55 AM
-
 ### Notes
 
 - First official release of plotez
 - Evolved from the mpyez project with improved architecture and API
-
