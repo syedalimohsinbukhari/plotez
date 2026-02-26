@@ -16,12 +16,12 @@ __all__ = [
 ]
 
 from collections.abc import Sequence
+from typing import TypeVar
 from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
-from numpy.typing import ArrayLike
 
 from .backend import (
     ErrorBandConfig,
@@ -38,6 +38,7 @@ from .backend import (
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig
 axis_return = tuple[Axes, Axes] | Axes
+ArrayLike = TypeVar("ArrayLike")
 
 
 def plot_errorband(
@@ -61,35 +62,35 @@ def plot_errorband(
 
     Parameters
     ----------
-    x_data : ArrayLike
+    x_data :
         Array or sequence containing x-coordinates for the plot.
-    y_data : ArrayLike
+    y_data :
         Array or sequence containing y-coordinates for the plot.
-    y_lower : float or ArrayLike or None, optional
+    y_lower :
         Array, sequence, or single float value representing the lower bound of the error band.
         If `None`, no lower bound is applied.
-    y_upper : float or ArrayLike or None, optional
+    y_upper :
         Array, sequence, or single float value representing the upper bound of the error band.
         If `None`, no upper bound is applied.
-    x_label : str or None, optional
+    x_label :
         Label for the x-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
-    y_label : str or None, optional
+    y_label :
         Label for the y-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
-    plot_title : str or None, optional
+    plot_title :
         Title for the plot. If `None`, no title will be displayed unless auto-labeling is enabled.
-    data_label : str or None, optional
+    data_label :
         Label for the data series. This is used in legend generation if `auto_label` is enabled.
-    auto_label : bool, optional
+    auto_label :
         If set to `True`, default labels for axis and title are applied, and a legend is generated. Defaults to `False`.
     line : bool, optional
         If set to `True`, a central line is plotted on the graph. Defaults to `True`.
-    band_config : ErrorBandConfig or None, optional
+    band_config :
         Configuration object defining the style of the error band. If `None`, the default styling is applied.
-    line_config : LinePlotConfig or None, optional
+    line_config :
         Configuration object defining the style of the central line. If `None`, the default styling is applied.
-    figure_config : FigureConfig or None, optional
+    figure_config :
         Configuration object defining subplot settings. If `None`, the default settings are applied.
-    axis : Axes or None, optional
+    axis :
         An existing matplotlib axis object on which to plot. If `None`, a new figure and axis are created.
 
     Returns
@@ -146,35 +147,35 @@ def plot_errorbar(
 
     Parameters
     ----------
-    x_data : ArrayLike
+    x_data :
         The x-coordinates of the data points to plot.
-    y_data : ArrayLike
+    y_data :
         The y-coordinates of the data points to plot.
-    x_err : float or ArrayLike or None, optional
+    x_err :
         The error margins for the x-coordinates.
         Can be a scalar value, an array of individual errors for each data point, or None to omit x-errors.
-    y_err : float or ArrayLike or None, optional
+    y_err :
         The error margins for the y-coordinates.
         Can be a scalar value, an array of individual errors for each data point, or None to omit y-errors.
-    x_label : str or None, optional
+    x_label :
         The label for the x-axis.
         If `None` and `auto_label` argument is set to True, a default label "X" is used.
-    y_label : str or None, optional
+    y_label :
         The label for the y-axis.
         If `None` and `auto_label` argument is set to True, a default label "Y" is used.
-    plot_title : str or None, optional
+    plot_title :
         The title of the plot.
         If `None` and `auto_label` argument is set to True, the default title "Error Bar Plot" is used.
-    data_label : str or None, optional
+    data_label :
         The label for the data points, which will appear in the plot legend.
         If `None`, the legend is not displayed.
-    auto_label : bool, optional
+    auto_label :
         If True, automatically assigns default labels for the axes and title if no labels or title are provided.
-    errorbar_config : ErrorPlotConfig or None, optional
+    errorbar_config :
         Custom configurations for the error bars. If `None`, default configurations are used.
-    figure_config : FigureConfig or None, optional
+    figure_config :
         Custom configurations for creating subplots. Ignored if `axis` is provided.
-    axis : Axes or None, optional
+    axis :
         A matplotlib Axes object on which the plot will be rendered.
         If `None`, a new subplot is created using `figure_config`.
 

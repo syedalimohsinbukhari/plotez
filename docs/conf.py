@@ -45,11 +45,6 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 napoleon_preprocess_types = True
-napoleon_type_aliases = {
-    "array_like": ":term:`array_like`",
-    "array-like": ":term:`array-like <array_like>`",
-    "ndarray": "~numpy.ndarray",
-}
 napoleon_attr_annotations = True
 
 # Autodoc settings
@@ -70,7 +65,7 @@ intersphinx_mapping = {
 
 # Autosummary settings
 autosummary_generate = True
-autodoc_typehints = "signature"
+autodoc_typehints = "description"
 add_module_names = False
 html_show_sourcelink = False
 

@@ -18,14 +18,12 @@ __all__ = [
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Literal
-
-from matplotlib.typing import ColorType
-from numpy.typing import ArrayLike
+from typing import Any, Literal, TypeVar
 
 from plotez.backend import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
 
 label_management = tuple[str, str, str, str, list[str]]
+ArrayLike = TypeVar("ArrayLike")
 
 
 def _populate(_class, dictionary: dict[str, Any], mapping):
@@ -34,11 +32,11 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
 
     Parameters
     ----------
-    _class : type
+    _class :
         The dataclass type to instantiate.
-    dictionary : dict[str, Any]
+    dictionary :
         Raw parameter dictionary, possibly using shorthand keys.
-    mapping : dict[str, str]
+    mapping :
         Alias-to-canonical-name mapping for shorthand keys.
 
     Returns
@@ -58,32 +56,9 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
 
 @dataclass
 class LinePlotConfig:
-    """
-    Configuration class for line plots.
+    """Configuration class for line plots."""
 
-    Attributes
-    ----------
-    color : str or ColorType or Sequence[ColorType] or None
-        Line color(s).
-    linewidth : float or Sequence[float] or None
-        Line width(s).
-    linestyle : str or Sequence[str] or None
-        Line style(s), e.g. ``'-'``, ``'--'``, ``'-.'``, ``':'``.
-    alpha : float or Sequence[float] or None
-        Opacity value(s) in the range ``[0, 1]``.
-    marker : str or Sequence[str] or None
-        Marker style(s), e.g. ``'o'``, ``'s'``, ``'^'``.
-    markersize : float or Sequence[float] or None
-        Marker size(s).
-    markerfacecolor : str or Sequence[str] or None
-        Marker face color(s).
-    markeredgecolor : str or Sequence[str] or None
-        Marker edge color(s).
-    markeredgewidth : float or Sequence[float] or None
-        Marker edge width(s).
-    """
-
-    color: str | ColorType | Sequence[ColorType] | None = None
+    color: str | None = None
     linewidth: float | Sequence[float] | None = None
     linestyle: str | Sequence[str] | None = None
     alpha: float | Sequence[float] | None = None
@@ -116,33 +91,12 @@ class LinePlotConfig:
 
 @dataclass
 class ErrorBandConfig:
-    """
-    Configuration class for error bands (shaded fill regions).
-
-    Attributes
-    ----------
-    color : str or None
-        Color for the error band.
-    alpha : float
-        Opacity of the band. Defaults to ``0.25``.
-    linewidth : float or None
-        Width of the band edge line.
-    edgecolor : str or ColorType or None
-        Color of the band edge.
-    linestyle : str or None
-        Style of the band edge line.
-    hatch : str or None
-        Hatch pattern, e.g. `'/'`, `'|'`, `'*'`.
-    interpolate : bool
-        If ``True``, interpolate between data points for smoother bands.
-    step : str or None
-        Step style: ``'pre'``, ``'post'``, or ``'mid'``.
-    """
+    """Configuration class for error bands (shaded fill regions)."""
 
     color: str | None = None
     alpha: float = 0.25
     linewidth: float | None = None
-    edgecolor: str | ColorType | None = None
+    edgecolor: str | None = None
     linestyle: str | None = None
     hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
     interpolate: bool = False
@@ -170,36 +124,7 @@ class ErrorBandConfig:
 
 @dataclass
 class ErrorPlotConfig:
-    """
-    Configuration class for error bar plots.
-
-    Attributes
-    ----------
-    color : str or None
-        Color of the data line.
-    linewidth : float or None
-        Width of the data line.
-    linestyle : str or None
-        Style of the data line.
-    alpha : float or None
-        Opacity of the data line.
-    ecolor : str or None
-        Color of the error bar lines (can differ from the data line color).
-    elinewidth : float or None
-        Width of the error bar lines.
-    marker : str or None
-        Marker style for data points.
-    markersize : float or None
-        Size of the markers.
-    markerfacecolor : str or None
-        Face color of the markers.
-    markeredgecolor : str or None
-        Edge color of the markers.
-    capsize : float or None
-        Length of the error bar caps in points.
-    capthick : float or None
-        Thickness of the error bar caps.
-    """
+    """Configuration class for error bar plots."""
 
     # Core signal identity
     color: str | None = None
@@ -244,26 +169,7 @@ class ErrorPlotConfig:
 
 @dataclass
 class ScatterPlotConfig:
-    """
-    Configuration class for scatter plots.
-
-    Attributes
-    ----------
-    c : str or None
-        Marker color(s).
-    s : float or None
-        Marker size(s) in points² .
-    alpha : float or None
-        Opacity of the markers.
-    marker : str or None
-        Marker style, e.g. ``'o'``, ``'s'``, ``'^'``.
-    cmap : str or None
-        Colormap name for mapping scalar ``c`` values.
-    edgecolors : str or None
-        Edge color(s) of the markers.
-    facecolors : str or None
-        Face color(s) of the markers.
-    """
+    """Configuration class for scatter plots."""
 
     c: str | None = None
     s: float | None = None
@@ -296,28 +202,7 @@ class ScatterPlotConfig:
 
 @dataclass
 class FigureConfig:
-    """
-    Configuration class for matplotlib figure / subplot creation.
-
-    Attributes
-    ----------
-    nrows : int
-        Number of subplot rows. Defaults to ``1``.
-    ncols : int
-        Number of subplot columns. Defaults to ``1``.
-    figsize : tuple[float, float]
-        Width and height of the figure in inches. Defaults to ``(6.4, 4.8)``.
-    sharex : bool
-        If ``True``, subplots share the x-axis.
-    sharey : bool
-        If ``True``, subplots share the y-axis.
-    constrained_layout : bool
-        If ``True``, use a constrained layout engine.
-    wspace : float or None
-        Horizontal spacing between subplots.
-    hspace : float or None
-        Vertical spacing between subplots.
-    """
+    """Configuration class for matplotlib figure / subplot creation."""
 
     nrows: int = 1
     ncols: int = 1
@@ -351,6 +236,9 @@ class FigureConfig:
         return f"{self.__class__.__name__}({param_str})"
 
 
+LSE = LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig | ErrorBandConfig
+
+
 def plot_or_scatter(axes, scatter: bool):
     """
     Return the plot or scatter method based on the specified plot type.
@@ -370,22 +258,23 @@ def plot_or_scatter(axes, scatter: bool):
     return axes.scatter if scatter else axes.plot
 
 
-def split_dictionary(plot_instance):
+def split_dictionary(
+    plot_instance: LSE,
+) -> tuple[LSE, LSE]:
     """
     Split a config instance's parameters into two separate instances.
 
     Parameters
     ----------
-    plot_instance : LinePlotConfig or ScatterPlotConfig or ErrorPlotConfig
+    plot_instance :
         An instance with parameters stored as lists or tuples.
         Each parameter should be a list or tuple containing exactly two values, corresponding to settings for the
         two resulting instances.
 
     Returns
     -------
-    tuple[LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig, LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig]
-        Two instances of the same type as `plot_instance`,
-        with parameters split based on the values in `plot_instance`.
+    Tuple
+        Two instances of the same type as `plot_instance`, with parameters split based on the values in `plot_instance`.
         The first instance (`instance1`) and second instance (`instance2`) will have their attributes set according
         to the first and second elements, respectively, from each list or tuple in `plot_instance`.
 
