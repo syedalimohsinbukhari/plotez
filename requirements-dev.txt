@@ -22,6 +22,6 @@ tomli
 
 # DOCS
 myst-parser
-pydata-sphinx-theme
+cloud-sptheme
 sphinx
 sphinx-copybutton
