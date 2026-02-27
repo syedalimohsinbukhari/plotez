@@ -23,3 +23,5 @@ submodules:
 python:
     install:
         -   requirements: ./requirements-dev.txt
+        -   method: pip
+            path: .
