@@ -4,6 +4,8 @@ PlotEZ - Mundane plotting made easy.
 This module provides simplified plotting functions for common visualization tasks.
 """
 
+from __future__ import annotations
+
 __all__ = [
     "plot_errorbar",
     "plot_two_column_file",
@@ -16,12 +18,12 @@ __all__ = [
 ]
 
 from collections.abc import Sequence
-from typing import TypeVar
 from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
+from numpy.typing import ArrayLike
 
 from .backend import (
     ErrorBandConfig,
@@ -34,11 +36,11 @@ from .backend import (
     dual_axes_label_management,
     plot_or_scatter,
 )
+from .backend.utilities import _internal_axes_logic
 
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig
 axis_return = tuple[Axes, Axes] | Axes
-ArrayLike = TypeVar("ArrayLike")
 
 
 def plot_errorband(
@@ -67,11 +69,9 @@ def plot_errorband(
     y_data :
         Array or sequence containing y-coordinates for the plot.
     y_lower :
-        Array, sequence, or single float value representing the lower bound of the error band.
-        If `None`, no lower bound is applied.
+        Array of absolute y-values for the lower band edge. NOT error offsets - use ``y_data - error`` if needed.
     y_upper :
-        Array, sequence, or single float value representing the upper bound of the error band.
-        If `None`, no upper bound is applied.
+        Array of absolute y-values for the upper band edge. NOT error offsets - use ``y_data + error`` if needed.
     x_label :
         Label for the x-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
     y_label :
@@ -98,34 +98,33 @@ def plot_errorband(
     Axes
         A matplotlib `Axes` object containing the plot.
     """
+    if figure_config and axis:
+        warn("Only one of figure_config and axis can be passed. Using provided axis.")
+
     x, y = np.asarray(x_data), np.asarray(y_data)
     if y_lower is not None:
         y_lower = np.asarray(y_lower)
     if y_upper is not None:
         y_upper = np.asarray(y_upper)
 
-    if axis is None:
-        sp_config = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
-        fig, axis = plt.subplots(**sp_config, squeeze=False)
-        axis = axis.flatten()
-        if isinstance(axis, np.ndarray):
-            axis = axis[0]
-
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
     line_config = line_config.get_dict() if line_config else LinePlotConfig().get_dict()
-    axis.fill_between(x, y_lower, y_upper, **error_band_config)
-    if line:
-        axis.plot(x, y, label=data_label, **line_config)
 
-    axis.set_xlabel("X" if auto_label else x_label)
-    axis.set_ylabel("Y" if auto_label else y_label)
-    axis.set_title("ErrorBand Plot" if auto_label else plot_title)
+    ax = _internal_axes_logic(axis, figure_config)
+    ax.fill_between(x, y_lower, y_upper, **error_band_config)
+
+    if line:
+        ax.plot(x, y, label=data_label, **line_config)
+
+    ax.set_xlabel("X" if auto_label else x_label)
+    ax.set_ylabel("Y" if auto_label else y_label)
+    ax.set_title("ErrorBand Plot" if auto_label else plot_title)
     if auto_label:
-        axis.legend()
+        ax.legend()
 
     plt.tight_layout()
 
-    return axis
+    return ax
 
 
 def plot_errorbar(
@@ -148,15 +147,19 @@ def plot_errorbar(
     Parameters
     ----------
     x_data :
-        The x-coordinates of the data points to plot.
+        The x-coordinates of the data points.
     y_data :
-        The y-coordinates of the data points to plot.
+        The y-coordinates of the data points.
     x_err :
-        The error margins for the x-coordinates.
-        Can be a scalar value, an array of individual errors for each data point, or None to omit x-errors.
+        Error margins for x-coordinates. Can be:
+        - Scalar: symmetric error for all points
+        - 1D array (N,): symmetric errors, one per point
+        - 2D array (2, N): asymmetric [lower_errors, upper_errors]
     y_err :
-        The error margins for the y-coordinates.
-        Can be a scalar value, an array of individual errors for each data point, or None to omit y-errors.
+        Error margins for y-coordinates. Can be:
+        - Scalar: symmetric error for all points
+        - 1D array (N,): symmetric errors, one per point
+        - 2D array (2, N): asymmetric [lower_errors, upper_errors]
     x_label :
         The label for the x-axis.
         If `None` and `auto_label` argument is set to True, a default label "X" is used.
@@ -184,35 +187,34 @@ def plot_errorbar(
     Axes
         The Axes object containing the error bar plot.
     """
-    x, y = np.asarray(x_data), np.asarray(y_data)
-    if x_err is not None:
-        x_err = np.asarray(x_err)
-    if y_err is not None:
-        y_err = np.asarray(y_err)
-
-    errorbar_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
-
     if figure_config and axis:
         warn("Only one of figure_config and axis can be passed. Using provided axis.")
 
-    if axis is None:
-        sp_config = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
-        fig, axis = plt.subplots(**sp_config, squeeze=False)
-        axis = axis.flatten()
-        if isinstance(axis, np.ndarray):
-            axis = axis[0]
+    x, y = np.asarray(x_data), np.asarray(y_data)
+    if x_err is not None:
+        x_err = np.asarray(x_err)
+        if x_err.ndim == 2 and x_err.shape[0] != 2:
+            raise ValueError(f"Asymmetric x_err must have shape (2, N), got {x_err.shape}")
 
-    axis.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **errorbar_config)
+    if y_err is not None:
+        y_err = np.asarray(y_err)
+        if y_err.ndim == 2 and y_err.shape[0] != 2:
+            raise ValueError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
 
-    axis.set_xlabel("X" if auto_label else x_label)
-    axis.set_ylabel("Y" if auto_label else y_label)
-    axis.set_title("Error Bar Plot" if auto_label else plot_title)
+    errorbar_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
+
+    ax = _internal_axes_logic(axis, figure_config)
+    ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **errorbar_config)
+
+    ax.set_xlabel("X" if auto_label else x_label)
+    ax.set_ylabel("Y" if auto_label else y_label)
+    ax.set_title("Error Bar Plot" if auto_label else plot_title)
     if data_label:
-        axis.legend()
+        ax.legend()
 
     plt.tight_layout()
 
-    return axis
+    return ax
 
 
 def plot_two_column_file(
@@ -640,11 +642,11 @@ def n_plotter(
     y_data: ArrayLike,
     n_rows: int,
     n_cols: int,
-    x_labels: Sequence[str] | str | None = None,
-    y_labels: Sequence[str] | str | None = None,
-    data_labels: Sequence[str] | str | None = None,
+    x_labels: str | Sequence[str] | None = None,
+    y_labels: str | Sequence[str] | None = None,
+    data_labels: str | Sequence[str] | None = None,
     plot_title: str | None = None,
-    subplot_title: Sequence[str] | str | None = None,
+    subplot_title: str | Sequence[str] | None = None,
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -655,32 +657,32 @@ def n_plotter(
 
     Parameters
     ----------
-    x_data : ArrayLike
+    x_data :
         List of x-axis data arrays for each subplot.
-    y_data : ArrayLike
+    y_data :
         List of y-axis data arrays for each subplot.
-    n_rows : int
+    n_rows :
         Number of rows in the subplot grid.
-    n_cols : int
+    n_cols :
         Number of columns in the subplot grid.
-    x_labels : Sequence[str] | str | None
+    x_labels :
         List of labels for the x-axes of each subplot.
-    y_labels : Sequence[str] | str | None
+    y_labels :
         List of labels for the y-axes of each subplot.
-    data_labels : Sequence[str] | str | None
+    data_labels :
         List of labels for the data series in each subplot.
-    plot_title : str | None
+    plot_title :
         Title of the plot.
-    subplot_title : Sequence[str] | str | None
+    subplot_title :
         Titles for the subplots, if required.
-    auto_label : bool
+    auto_label :
         Automatically assigns labels to subplots if `True`.
         If `True`, it overwrites user-provided labels. Defaults to False.
-    is_scatter : bool
+    is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
-    plot_config : LinePlotConfig | ScatterPlotConfig | None
+    plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config : FigureConfig | None
+    figure_config :
         Configuration object for subplot/figure settings.
 
     Returns

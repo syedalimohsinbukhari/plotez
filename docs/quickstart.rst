@@ -25,7 +25,7 @@ With Custom Labels
 .. include:: ../examples/README_example1A.py
    :code: python
    :start-line: 3
-   :end-line: 15
+   :end-line: 18
 
 .. image:: ../examples/images/README_example1A.png
 
@@ -141,7 +141,7 @@ Line Plots
 .. code-block:: python
 
    from plotez import plot_xy
-   from plotez.backend.utilities import LinePlotConfig
+   from plotez.backend import LinePlotConfig
 
    x = np.linspace(0, 10, 100)
    y = np.sin(x)
@@ -162,7 +162,7 @@ Scatter Plots
 
 .. code-block:: python
 
-   from plotez.backend.utilities import ScatterPlotConfig
+   from plotez.backend import ScatterPlotConfig
 
    scatter_params = ScatterPlotConfig(
        c='blue',
@@ -178,7 +178,7 @@ Subplot Configuration
 
 .. code-block:: python
 
-   from plotez.backend.utilities import FigureConfig
+   from plotez.backend import FigureConfig
 
    subplot_params = FigureConfig(
        sharex=True,
@@ -199,20 +199,25 @@ PlotEZ can directly plot two-column CSV files:
 
 .. code-block:: python
 
-   from plotez import plot_two_column_file
+    import matplotlib.pyplot as plt
+    from plotez import plot_two_column_file
 
-   # Basic usage
-   plot_two_column_file('data.csv')
+    plot_two_column_file("data.csv")
 
-   # With options
-   plot_two_column_file(
-       'data.csv',
-       delimiter=',',
-       skip_header=True,
-       x_label='X Values',
-       y_label='Y Values',
-       plot_title='Data from CSV'
-   )
+
+.. image:: ../examples/images/QUICKSTART_from_files__no_style.png
+
+We can also add some customization to the function
+
+.. code-block:: python
+
+    import matplotlib.pyplot as plt
+    from plotez import plot_two_column_file as ptcf
+
+    ptcf("data.csv", delimiter=",", skip_header=True,
+         x_label="X Values", y_label="Y Values", plot_title="Data from CSV")
+
+.. image:: ../examples/images/QUICKSTART_from_files__with_style.png
 
 Error Bar Plots
 ---------------
@@ -223,73 +228,36 @@ and the ``plot_errorbar`` function.
 Basic Error Bars
 ~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. include:: ../examples/QUICKSTART_basic_errorbar.py
+   :code: python
+   :start-line: 3
+   :end-line: 22
 
-   import numpy as np
-   from plotez import plot_errorbar
-   from plotez.backend.utilities import ErrorPlotConfig
-
-   # Generate sample data with errors
-   x = np.linspace(0, 10, 20)
-   y = np.sin(x)
-   x_err = 0.1 * np.random.rand(len(x))
-   y_err = 0.1 * np.random.rand(len(y))
-
-   # Simple error bar plot
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err)
-
-   # With custom styling
-   ep = ErrorPlotConfig(linestyle='--', capsize=5, color='blue')
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+.. image:: ../examples/images/QUICKSTART_basic_errorbar.png
 
 Enhanced Error Bar Styling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ErrorPlotConfig provides access to all line styling options
-plus specialized error bar parameters:
+ErrorPlotConfig provides access to all line styling options plus specialized error bar parameters:
 
-.. code-block:: python
+.. include:: ../examples/QUICKSTART_style_errorbar.py
+   :code: python
+   :start-line: 3
+   :end-line: 37
 
-   # Full customization with enhanced error bar styling
-   ep = ErrorPlotConfig(
-       # Line styling
-       linestyle='-',
-       linewidth=2,
-       color='darkblue',
-       marker='o',
-       markersize=6,
-       alpha=0.7,
-
-       # Error bar specific styling
-       capsize=8,           # Length of error bar caps
-       elinewidth=2,        # Width of error bar lines
-       ecolor='red',        # Color of error bars (can differ from line color)
-       capthick=2           # Thickness of error bar caps
-   )
-
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+.. image:: ../examples/images/QUICKSTART_style_errorbar.png
 
 Creating ErrorPlotConfig from Dictionary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the ``populate()`` class method to create ErrorPlotConfig instances from parameter dictionaries:
 
-.. code-block:: python
+.. include:: ../examples/QUICKSTART_epc_from_dict.py
+   :code: python
+   :start-line: 3
+   :end-line: 33
 
-   # Using parameter aliases
-   params = {
-       'ls': '--',          # linestyle
-       'lw': 2,             # linewidth
-       'color': 'purple',
-       'marker': 's',
-       'ms': 6,             # markersize
-       'capsize': 7,
-       'elinewidth': 2,
-       'ecolor': 'crimson'
-   }
-
-   ep = ErrorPlotConfig.populate(params)
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+.. image:: ../examples/images/QUICKSTART_epc_from_dict.png
 
 Error Band Plots
 ----------------
@@ -297,25 +265,12 @@ Error Band Plots
 PlotEZ also supports shaded error band plots through the ``ErrorBandConfig`` class
 and the ``plot_errorband`` function.
 
-.. code-block:: python
+.. include:: ../examples/README_example5.py
+   :code: python
+   :start-line: 3
+   :end-line: 27
 
-   import numpy as np
-   from plotez import plot_errorband
-   from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
-
-   x = np.linspace(0, 10, 50)
-   y = np.sin(x)
-   y_low = y - 0.2
-   y_upp = y + 0.2
-
-   band_config = ErrorBandConfig(color='cyan', edgecolor='k', linestyle='--', hatch='\\')
-   line_config = LinePlotConfig(color='gold', linestyle='--', linewidth=2,
-                                marker='o', markersize=5, markeredgecolor='k')
-
-   ax = plot_errorband(x, y, y_low, y_upp,
-                       data_label=r'$\sin(x)$',
-                       band_config=band_config,
-                       line_config=line_config)
+.. image:: ../examples/images/README_example5.png
 
 Next Steps
 ----------

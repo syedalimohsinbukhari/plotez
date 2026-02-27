@@ -4,6 +4,8 @@ PlotEZ Backend Utilities.
 Utility classes and functions for plot parameter management and data validation.
 """
 
+from __future__ import annotations
+
 __all__ = [
     "LinePlotConfig",
     "ScatterPlotConfig",
@@ -18,12 +20,16 @@ __all__ = [
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Literal, TypeVar
+from typing import Any, Literal
+
+import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
+from numpy.typing import ArrayLike
 
 from plotez.backend import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
 
 label_management = tuple[str, str, str, str, list[str]]
-ArrayLike = TypeVar("ArrayLike")
 
 
 def _populate(_class, dictionary: dict[str, Any], mapping):
@@ -58,7 +64,7 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
 class LinePlotConfig:
     """Configuration class for line plots."""
 
-    color: str | None = None
+    color: str | Sequence[str] | None = None
     linewidth: float | Sequence[float] | None = None
     linestyle: str | Sequence[str] | None = None
     alpha: float | Sequence[float] | None = None
@@ -145,6 +151,7 @@ class ErrorPlotConfig:
     # Visual refinement
     capsize: float | None = None
     capthick: float | None = None
+    errorevery: int | tuple | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -419,3 +426,40 @@ def dual_axes_label_management(
         plot_title = plot_title or ""
 
     return x1y1_label, x1y2_label, x2y1_label, plot_title, axis_labels
+
+
+def _internal_axes_logic(axis: Axes | None, figure_config: FigureConfig | None) -> Any:
+    """
+    Evaluate and prepares the axis for plotting based on the provided configuration or existing axis.
+
+    This function checks whether an axis object is provided.
+    If it is not provided, the function creates a new axis using the specified figure configuration.
+    When an axis is supplied, it validates and returns it  directly.
+    This logic ensures a consistent and reusable interface for managing axes in a plotting environment.
+
+    Parameters
+    ----------
+    axis :
+        An existing axis object. If provided, this axis will be returned as-is after validation.
+        When not provided (`None`), a new axis object will be created using `figure_config`.
+
+    figure_config :
+        A configuration object containing parameters for figure creation.
+        If `axis` is `None`, this is used to create a new axis. If `axis` is not `None`, this parameter is ignored.
+
+    Returns
+    -------
+    Any
+        The evaluated or newly created axis object for plotting.
+        If a new axis is created, it will return it as either a single axis instance or an axis extracted from an
+        array of axes, depending on the configuration.
+    """
+    if axis is None:
+        sp_config = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
+        fig, ax = plt.subplots(**sp_config, squeeze=False)
+        ax = ax.flatten()
+        if isinstance(ax, np.ndarray):
+            ax = ax[0]
+    else:
+        ax = axis
+    return ax

@@ -389,6 +389,46 @@ class TestPlotErrorbar:
             result = plot_errorbar(sample_x_data, sample_y_data, figure_config=fc, axis=ax)
         assert result == ax
 
+    def test_errorbar_logarithmic_axes(self):
+        """Test error bar plotting with logarithmic x and y axes."""
+        x = np.logspace(0, 3, 20)  # 1 to 1000
+        y = np.logspace(1, 4, 20)  # 10 to 10000
+        y_err = y * 0.1  # 10% relative error
+
+        fig, ax = plt.subplots()
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        result = plot_errorbar(x, y, y_err=y_err, axis=ax)
+        assert result == ax
+        assert ax.get_xscale() == "log"
+        assert ax.get_yscale() == "log"
+
+    def test_errorbar_very_large_errors(self):
+        """Test error bar plotting with very large errors that exceed axis limits."""
+        x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        y = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
+        y_err = np.array([100.0, 200.0, 300.0, 400.0, 500.0])  # errors >> data values
+
+        fig, ax = plt.subplots()
+        result = plot_errorbar(x, y, y_err=y_err, axis=ax)
+        assert result == ax
+        # Verify the plot was created successfully despite huge error bars
+        assert len(ax.containers) > 0
+
+    def test_errorbar_asymmetric_x_and_y(self):
+        """Test error bar plotting with asymmetric errors on both x and y axes."""
+        x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        y = np.array([2.0, 4.0, 6.0, 8.0, 10.0])
+        # Asymmetric errors: shape (2, N) — [lower_errors, upper_errors]
+        x_err = np.array([[0.1, 0.2, 0.15, 0.1, 0.25], [0.3, 0.4, 0.35, 0.2, 0.5]])  # lower x errors  # upper x errors
+        y_err = np.array([[0.5, 1.0, 0.8, 0.6, 1.2], [1.0, 1.5, 1.2, 0.9, 2.0]])  # lower y errors  # upper y errors
+
+        fig, ax = plt.subplots()
+        result = plot_errorbar(x, y, x_err=x_err, y_err=y_err, axis=ax)
+        assert result == ax
+        # Verify a single errorbar container was created
+        assert len(ax.containers) == 1
+
 
 class TestPlotErrorband:
     """Test plot_errorband function."""
