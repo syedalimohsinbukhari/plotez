@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v0.2.0] - 2026-02-26
+## [v0.2.0] - 27-Feb-2026
 
 ### Added
 - **Error Bar Plotting**: `plot_errorbar` function for error bar plots with full customization
@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md` referencing old `LinePlot`, `line_style`, `marker_size`, `mark_every`
 - `api.rst` stale note about ErrorPlotConfig inheriting from LinePlotConfig
 
-## [v0.1.1]
+## [v0.1.1] 16-Feb-2026
 ### Changed
 - Path change for examples and images
 - Updated README
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed parameter formatting to improve code readability.
 - Adjusted GitHub Actions workflows (`black` linting and naming).
 
-## [v0.1.0] - 2026-02-01 13:04 PM
+## [v0.1.0] - 16-Feb-2026
 
 ### Added
 
