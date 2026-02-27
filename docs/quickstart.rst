@@ -11,30 +11,24 @@ Simple X vs Y Plot
 
 The simplest way to create a plot:
 
-.. code-block:: python
+.. include:: ../examples/README_example1.py
+   :code: python
+   :start-line: 3
+   :end-line: 13
 
-   import numpy as np
-   from plotez import plot_xy
 
-   # Generate data
-   x = np.linspace(0, 10, 100)
-   y = np.sin(x)
-
-   # Create plot
-   plot_xy(x, y, auto_label=True)
+.. image:: ../examples/images/README_example1.png
 
 With Custom Labels
 ~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. include:: ../examples/README_example1A.py
+   :code: python
+   :start-line: 3
+   :end-line: 15
 
-   plot_xy(
-       x, y,
-       x_label='Time (s)',
-       y_label='Amplitude',
-       plot_title='Sine Wave',
-       data_label='sin(x)'
-   )
+.. image:: ../examples/images/README_example1A.png
+
 
 Dual-Axis Plots
 ---------------
@@ -42,24 +36,12 @@ Dual-Axis Plots
 Dual Y-Axis
 ~~~~~~~~~~~
 
-Plot two datasets with different y-scales:
+.. include:: ../examples/README_example2.py
+   :code: python
+   :start-line: 3
+   :end-line: 21
 
-.. code-block:: python
-
-   from plotez import plot_xyy
-
-   x = np.linspace(0, 10, 100)
-   y1 = np.sin(x)
-   y2 = np.exp(x / 10)
-
-   plot_xyy(
-       x, y1, y2,
-       x_label='Time',
-       y1_label='Sine',
-       y2_label='Exponential',
-       data_labels=['sin(x)', 'exp(x/10)'],
-       plot_title='Dual Y-Axis Example'
-   )
+.. image:: ../examples/images/README_example2.png
 
 Dual X-Axis
 ~~~~~~~~~~~

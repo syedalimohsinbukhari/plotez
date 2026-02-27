@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `subplot_dictionary` / `subplot_config` → `figure_config`
 - All parameter classes converted to `dataclasses` with `_extra` dict for arbitrary kwargs
 - `populate()` class methods on all config classes for alias-based dictionary creation
-- Replaced `typing.Tuple` / `typing.List` with built-in `tuple` / `list` generics (Python ≥ 3.10)
+- Replaced `typing.Tuple` / `typing.List` with built-in `tuple` / `list` generics (Python >= 3.10)
 - Added type annotation `Axes | None` to `plot_xyy`'s `axis` parameter
 - Added `Returns` sections to all public function docstrings
 - Added `Attributes` sections to all config dataclass docstrings

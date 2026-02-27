@@ -56,10 +56,3 @@ Quick Example
        ecolor='red'  # Different color for error bars
    )
    plot_errorbars(x_sparse, y_sparse, y_err=y_err, plot_dictionary=ep)
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

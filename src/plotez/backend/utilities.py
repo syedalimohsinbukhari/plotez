@@ -258,9 +258,7 @@ def plot_or_scatter(axes, scatter: bool):
     return axes.scatter if scatter else axes.plot
 
 
-def split_dictionary(
-    plot_instance: LSE,
-) -> tuple[LSE, LSE]:
+def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
     """
     Split a config instance's parameters into two separate instances.
 
