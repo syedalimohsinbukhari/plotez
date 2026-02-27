@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.2.0] - 27-Feb-2026
 
 ### Added
+
 - **Error Bar Plotting**: `plot_errorbar` function for error bar plots with full customization
 - **Error Band Plotting**: `plot_errorband` function for shaded error band visualization
 - **ErrorPlotConfig**: Dataclass for error bar plot styling (color, capsize, ecolor, elinewidth, capthick, etc.)
@@ -19,13 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CHANGELOG.md` symlink at repository root for GitHub visibility
 
 ### Changed
+
 - **Renamed parameter classes** (breaking):
-  - `LinePlot` → `LinePlotConfig`
-  - `ScatterPlot` → `ScatterPlotConfig`
-  - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`, `share_x`, `share_y`)
+    - `LinePlot` → `LinePlotConfig`
+    - `ScatterPlot` → `ScatterPlotConfig`
+    - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`,
+      `share_x`, `share_y`)
 - **Renamed function keyword arguments** (breaking):
-  - `plot_dictionary` → `plot_config`
-  - `subplot_dictionary` / `subplot_config` → `figure_config`
+    - `plot_dictionary` → `plot_config`
+    - `subplot_dictionary` / `subplot_config` → `figure_config`
 - All parameter classes converted to `dataclasses` with `_extra` dict for arbitrary kwargs
 - `populate()` class methods on all config classes for alias-based dictionary creation
 - Replaced `typing.Tuple` / `typing.List` with built-in `tuple` / `list` generics (Python >= 3.10)
@@ -36,13 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Excluded `md_SUMMARIES/` from package builds
 
 ### Fixed
+
 - Tests using non-existent `subplot_config` kwarg (→ `figure_config`)
 - `quickstart.rst` referencing old `LinePlot`, `ScatterPlot`, `plot_errorbars`, `plot_dictionary`, `subplot_dictionary`
 - `README.md` referencing old `LinePlot`, `line_style`, `marker_size`, `mark_every`
 - `api.rst` stale note about ErrorPlotConfig inheriting from LinePlotConfig
 
 ## [v0.1.1] 16-Feb-2026
+
 ### Changed
+
 - Path change for examples and images
 - Updated README
 - Updated type hints
