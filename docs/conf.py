@@ -2,16 +2,25 @@
 
 import os
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath("../src"))
-
-from src.plotez.version import __version__
 
 # -- Project information -----------------------------------------------------
 project = "plotez"
 copyright = "2026, Syed Ali Mohsin Bukhari"
 author = "Syed Ali Mohsin Bukhari"
-release = __version__
+
+
+def get_version():
+    """Get the version from the version.py file."""
+    version_file = Path(__file__).resolve().parents[1] / "src" / "plotez" / "version.py"
+    namespace = {}
+    exec(version_file.read_text(), namespace)
+    return namespace["__version__"]
+
+
+release = get_version()
 
 # -- General configuration ---------------------------------------------------
 extensions = [
