@@ -5,11 +5,13 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../src"))
 
+from src.plotez.version import __version__
+
 # -- Project information -----------------------------------------------------
 project = "plotez"
 copyright = "2026, Syed Ali Mohsin Bukhari"
 author = "Syed Ali Mohsin Bukhari"
-release = "0.1.0"
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 extensions = [
