@@ -27,7 +27,7 @@ from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
-from plotez.backend import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
+from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
 
 label_management = tuple[str, str, str, str, list[str]]
 

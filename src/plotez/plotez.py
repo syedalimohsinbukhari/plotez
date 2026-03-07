@@ -22,6 +22,7 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pretty_errors
 from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
@@ -37,6 +38,9 @@ from .backend import (
     plot_or_scatter,
 )
 from .backend.utilities import _internal_axes_logic
+
+p_config = pretty_errors.config
+
 
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig
@@ -55,7 +59,7 @@ def plot_errorband(
     auto_label: bool = False,
     line: bool = True,
     band_config: ErrorBandConfig | None = None,
-    line_config: LinePlotConfig | None = None,
+    line_config: LinePlotConfig | dict | None = None,
     figure_config: FigureConfig | None = None,
     axis: Axes | None = None,
 ) -> Axes:
@@ -108,13 +112,21 @@ def plot_errorband(
         y_upper = np.asarray(y_upper)
 
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
+    if isinstance(line_config, dict):
+        line_config = LinePlotConfig.populate(line_config)
     line_config = line_config.get_dict() if line_config else LinePlotConfig().get_dict()
 
     ax = _internal_axes_logic(axis, figure_config)
     ax.fill_between(x, y_lower, y_upper, **error_band_config)
 
     if line:
-        ax.plot(x, y, label=data_label, **line_config)
+        label = data_label or line_config.get("label") or "data"
+
+        if data_label and "label" in line_config:
+            warn("Both `data_label` and `line_config['label']` are provided. Using `data_label`.")
+
+        line_config.pop("label", None)
+        ax.plot(x, y, label=label, **line_config)
 
     ax.set_xlabel("X" if auto_label else x_label)
     ax.set_ylabel("Y" if auto_label else y_label)

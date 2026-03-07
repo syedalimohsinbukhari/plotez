@@ -147,8 +147,7 @@ fig, axs = n_plotter(x_data, y_data,
 ```python
 import numpy as np
 
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import plot_errorbar, epc
 
 # Generate sample data with errors
 x = np.linspace(0, 10, 20)
@@ -156,17 +155,17 @@ x_err = 0.4
 y = np.sin(x)
 y_err = 0.1 * np.random.rand(len(y))
 
-# Enhanced error bar styling
-ep = ErrorPlotConfig(
-    linestyle=':',
-    linewidth=2,
-    color='darkblue',
+# Build config with the epc() convenience wrapper (short aliases accepted)
+ep = epc(
+    ls=':',
+    lw=2,
+    c='darkblue',
     marker='d',
-    markersize=6,
+    ms=6,
     capsize=8,
-    elinewidth=2,  # Error bar line width
-    ecolor='red',  # Error bar color (different from line!)
-    capthick=2  # Error bar cap thickness
+    elinewidth=2,  # error bar line width
+    ecolor='red',  # error bar colour (different from the line!)
+    capthick=2,
 )
 plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
 ```
@@ -226,11 +225,14 @@ make html
 
 ## Project Status
 
-- Type hints are corrected throughout the codebase
-- Test suite implemented (80%+ coverage)
-- Documentation structure created
-- Development tools configured (pytest, mypy, sphinx)
-- PEP 561 compliance (py.typed marker)
+| Item           | Status                                                         |
+|----------------|----------------------------------------------------------------|
+| Latest version | v0.2.0                                                         |
+| Python support | 3.10 · 3.11 · 3.12                                             |
+| Test coverage  | 85%+                                                           |
+| Type hints     | ✅ PEP 561 compliant (`py.typed`)                               |
+| Documentation  | [Read the Docs](https://plotez.readthedocs.io) *(coming soon)* |
+| License        | MIT                                                            |
 
 ## Contributing
 

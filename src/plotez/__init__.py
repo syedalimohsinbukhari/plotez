@@ -4,7 +4,23 @@ PlotEZ - Mundane plotting made easy.
 A Python library for simplified matplotlib plotting.
 """
 
-from .backend import ErrorBandConfig, ErrorPlotConfig, FigureConfig, LinePlotConfig, ScatterPlotConfig
+from .backend import (
+    ErrorBandConfig,
+    ErrorPlotConfig,
+    FigureConfig,
+    LinePlotConfig,
+    ScatterPlotConfig,
+    ebc,
+    epc,
+    error_band_configuration,
+    error_plot_configuration,
+    fgc,
+    figure_configuration,
+    line_plot_configuration,
+    lpc,
+    scatter_plot_configuration,
+    spc,
+)
 from .plotez import (
     n_plotter,
     plot_errorband,
@@ -18,6 +34,7 @@ from .plotez import (
 from .version import __version__
 
 __all__ = [
+    # Plotting functions
     "plot_two_column_file",
     "plot_xy",
     "plot_xyy",
@@ -26,10 +43,24 @@ __all__ = [
     "n_plotter",
     "plot_errorbar",
     "plot_errorband",
+    # Config classes
     "ErrorBandConfig",
     "ErrorPlotConfig",
     "FigureConfig",
     "LinePlotConfig",
     "ScatterPlotConfig",
+    # Convenience / wrapper functions (long-form)
+    "line_plot_configuration",
+    "error_plot_configuration",
+    "error_band_configuration",
+    "scatter_plot_configuration",
+    "figure_configuration",
+    # Convenience / wrapper functions (short aliases)
+    "lpc",
+    "epc",
+    "ebc",
+    "spc",
+    "fgc",
+    # Version
     "__version__",
 ]

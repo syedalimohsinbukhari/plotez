@@ -4,14 +4,13 @@ Installation
 Requirements
 ------------
 
-PlotEZ requires Python 3.10 or later and depends on:
+PlotEZ requires **Python 3.10 or later** and the following runtime dependencies:
 
-* matplotlib
+* `matplotlib <https://matplotlib.org>`_ – core plotting engine
+* `numpy <https://numpy.org>`_ – numerical array support
 
 Installing from PyPI
 --------------------
-
-Once published, you can install plotez using pip:
 
 .. code-block:: bash
 
@@ -19,8 +18,6 @@ Once published, you can install plotez using pip:
 
 Installing from Source
 ----------------------
-
-To install from source:
 
 .. code-block:: bash
 
@@ -31,29 +28,47 @@ To install from source:
 Development Installation
 ------------------------
 
-For development work, install with development dependencies:
-
 .. code-block:: bash
 
    git clone https://github.com/syedalimohsinbukhari/plotez.git
    cd plotez
    pip install -e ".[dev]"
 
-This installs additional tools for testing and documentation:
+This installs the following additional tools:
 
-* pytest - Testing framework
-* pytest-cov - Coverage reporting
-* mypy - Static type checking
-* sphinx - Documentation generation
-* sphinx-rtd-theme - ReadTheDocs theme
++------------------+----------------------------------------+
+| Package          | Purpose                                |
++==================+========================================+
+| pytest           | Testing framework                      |
++------------------+----------------------------------------+
+| pytest-cov       | Coverage reporting                     |
++------------------+----------------------------------------+
+| mypy             | Static type checking                   |
++------------------+----------------------------------------+
+| black            | Code formatting                        |
++------------------+----------------------------------------+
+| isort            | Import sorting                         |
++------------------+----------------------------------------+
+| flake8           | Style linting                          |
++------------------+----------------------------------------+
+| pydocstyle       | Docstring linting                      |
++------------------+----------------------------------------+
+| pre-commit       | Git hook management                    |
++------------------+----------------------------------------+
+| sphinx           | Documentation generation               |
++------------------+----------------------------------------+
+| sphinx-copybutton| Copy-button for code blocks            |
++------------------+----------------------------------------+
+| myst-parser      | Markdown support in Sphinx             |
++------------------+----------------------------------------+
+| build            | PEP 517 package builder                |
++------------------+----------------------------------------+
 
 Verifying Installation
 ----------------------
 
-To verify the installation:
 
 .. code-block:: python
 
    import plotez
    print(plotez.__version__)
-

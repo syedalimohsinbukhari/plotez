@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Top-level wrapper aliases**: `lpc`, `epc`, `ebc`, `spc`, `fgc` and their long-form equivalents
+  (`line_plot_configuration`, `error_plot_configuration`, `error_band_configuration`,
+  `scatter_plot_configuration`, `figure_configuration`) are now exported from the top-level
+  `plotez` namespace — no need to import from `plotez.backend` directly
+- **`docs/api.rst`** — new "Convenience / Wrapper Functions" section with alias table and
+  `autofunction` directives for all five wrapper functions
+- **`docs/api.rst`** — new "Shorthand Key Reference" section with RST tables documenting every
+  accepted alias for line, error-bar, scatter, and figure parameters
+- **`docs/quickstart.rst`** — new "Convenience / Wrapper Functions" section with before/after
+  examples showing `epc()`, `lpc()`, `fgc()`, `ebc()`, and `spc()`
+
+### Changed
+
+- **`docs/index.rst`** — Quick Example updated to use current API (`plot_errorbar` + `epc()`) instead of old `plot_errorbars` + `LinePlot` dict
+- **`Project Status`** section replaced with a concise Markdown status table (version, Python support, coverage, docs link, license)
+- **`docs/installation.rst`** — Requirements section corrected to list actual runtime deps
+  (`matplotlib`, `numpy`)
+  - a dev-dependency list replaced with a full table matching `requirements-dev.txt` (adds `black`, `isort`, `flake8`, `pydocstyle`, `pre-commit`, `sphinx-copybutton`, `myst-parser`, `build`
+- **`README.md`** — "Project Status" section replaced with a concise Markdown status table (version, Python support, coverage, docs link, license); Error Bar Plots example updated to use `epc()` with shorthand keyword aliases
+
 ## [v0.2.0] - 27-Feb-2026
 
 ### Added

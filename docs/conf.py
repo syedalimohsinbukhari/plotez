@@ -78,7 +78,3 @@ autosummary_generate = True
 autodoc_typehints = "description"
 add_module_names = False
 html_show_sourcelink = False
-
-numpydoc_show_class_members = False
-numpydod_show_inherited_class_members = True
-numpydoc_class_members_toctree = False

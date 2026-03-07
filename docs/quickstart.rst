@@ -272,6 +272,61 @@ and the ``plot_errorband`` function.
 
 .. image:: ../examples/images/README_example5.png
 
+Convenience / Wrapper Functions
+--------------------------------
+
+PlotEZ ships factory functions that let you build config objects using short, familiar matplotlib
+keyword aliases without importing the dataclass names. They live at the top-level ``plotez``
+namespace, so a single import covers everything.
+
+**Without wrappers** (explicit dataclass):
+
+.. code-block:: python
+
+   from plotez import plot_errorbar
+   from plotez import ErrorPlotConfig
+
+   ep = ErrorPlotConfig(
+       color='darkblue',
+       linestyle=':',
+       linewidth=2,
+       marker='d',
+       markersize=6,
+       capsize=8,
+       elinewidth=2,
+       ecolor='red',
+   )
+
+**With wrappers** (``epc`` short alias, same result):
+
+.. code-block:: python
+
+   from plotez import plot_errorbar, epc
+
+   ep = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6,
+            capsize=8, elinewidth=2, ecolor='red')
+
+The same pattern applies to all other config types:
+
+.. code-block:: python
+
+   from plotez import lpc, fgc, ebc, spc
+
+   # Line config
+   line = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
+
+   # Figure / subplot layout
+   layout = fgc(figsize=(10, 4), sharex=True)
+
+   # Error band
+   band = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
+
+   # Scatter
+   dots = spc(c='orange', s=40, alpha=0.7, marker='^')
+
+See the :doc:`api` page for the full parameter lists and the
+:ref:`Shorthand Key Reference <shorthand-key-reference>` table.
+
 Next Steps
 ----------
 
