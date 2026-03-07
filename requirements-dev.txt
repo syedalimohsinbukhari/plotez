@@ -25,3 +25,6 @@ myst-parser
 cloud-sptheme
 sphinx
 sphinx-copybutton
+
+# OTHERS
+pretty-errors
