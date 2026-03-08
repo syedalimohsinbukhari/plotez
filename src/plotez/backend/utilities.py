@@ -10,7 +10,6 @@ __all__ = [
     "LinePlotConfig",
     "ScatterPlotConfig",
     "ErrorPlotConfig",
-    "FigureConfig",
     "ErrorBandConfig",
     "plot_or_scatter",
     "split_dictionary",
@@ -24,7 +23,7 @@ from warnings import warn
 
 from numpy.typing import ArrayLike
 
-from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS, SUBPLOT_ATTRS
+from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 
 label_management = tuple[str, str, str, str, list[str]]
 
@@ -190,42 +189,6 @@ class ScatterPlotConfig:
     def populate(cls, dictionary: dict[str, Any]) -> "ScatterPlotConfig":
         """Create a ScatterPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
         return _populate(_class=cls, dictionary=dictionary, mapping=SCATTER_ATTRS)
-
-    def get_dict(self) -> dict[str, Any]:
-        """Get all parameters as dict for matplotlib."""
-        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
-        result.update(self._extra)
-        return result
-
-    def __repr__(self):
-        """Pretty repr showing both explicit and extra params."""
-        all_params = self.get_dict()
-        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
-        return f"{self.__class__.__name__}({param_str})"
-
-
-@dataclass
-class FigureConfig:
-    """Configuration class for matplotlib figure / subplot creation."""
-
-    nrows: int = 1
-    ncols: int = 1
-    figsize: tuple[float, float] = (6.4, 4.8)
-
-    sharex: bool = False
-    sharey: bool = False
-
-    constrained_layout: bool = False
-    wspace: float | None = None
-    hspace: float | None = None
-
-    # For extra params - pass as dict to this field directly
-    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
-
-    @classmethod
-    def populate(cls, dictionary: dict[str, Any]) -> "FigureConfig":
-        """Create a FigureConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(_class=cls, dictionary=dictionary, mapping=SUBPLOT_ATTRS)
 
     def get_dict(self) -> dict[str, Any]:
         """Get all parameters as dict for matplotlib."""
@@ -435,7 +398,7 @@ def _auto_handler(
         provided_labels.append("x1y2_label")
     if x2y1_label is not None:
         provided_labels.append("x2y1_label")
-    if not all(x is None for x in axis_labels):
+    if axis_labels is not None and not all(x is None for x in axis_labels):
         provided_labels.append("axis_labels")
 
     if provided_labels:

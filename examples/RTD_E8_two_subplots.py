@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import FigureConfig, two_subplots
+from plotez import two_subplots
 
 x = np.linspace(0, 10, 100)
 y1 = np.sin(x)
@@ -14,7 +14,7 @@ two_subplots(
     y_data=[y1, y2],
     orientation="v",
     subplot_title=["Sine", "Cosine"],
-    figure_config=FigureConfig(figsize=(6, 8)),
+    figure_kwargs={"figsize": (6, 8)},
 )
 
 # plt.show()

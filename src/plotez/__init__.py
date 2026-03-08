@@ -7,7 +7,6 @@ A Python library for simplified matplotlib plotting.
 from .backend import (
     ErrorBandConfig,
     ErrorPlotConfig,
-    FigureConfig,
     LinePlotConfig,
     ScatterPlotConfig,
     ebc,
@@ -44,7 +43,6 @@ __all__ = [
     # Config classes
     "ErrorBandConfig",
     "ErrorPlotConfig",
-    "FigureConfig",
     "LinePlotConfig",
     "ScatterPlotConfig",
     # Convenience / wrapper functions (long-form)

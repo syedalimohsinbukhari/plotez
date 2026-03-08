@@ -151,7 +151,7 @@ apply per-subplot, cycling if the list is shorter than the panel count.
 Shared Axes
 ~~~~~~~~~~~
 
-Pass a ``FigureConfig`` with ``sharex=True`` / ``sharey=True`` to lock axis
+Pass ``figure_kwargs={"sharex": True, "sharey": True}`` to lock axis
 ranges across all panels — redundant tick labels are hidden automatically.
 
 .. literalinclude:: ../examples/RTD_E10_shared_axes.py
@@ -169,7 +169,7 @@ Config Classes
 ~~~~~~~~~~~~~~
 
 ``LinePlotConfig`` (and its siblings ``ErrorPlotConfig``, ``ErrorBandConfig``,
-``ScatterPlotConfig``, ``FigureConfig``) give full IDE autocomplete and are
+``ScatterPlotConfig``) give full IDE autocomplete and are
 reusable across multiple plots. Any matplotlib parameter not covered by a
 named field can be forwarded via the ``_extra`` dict.
 
