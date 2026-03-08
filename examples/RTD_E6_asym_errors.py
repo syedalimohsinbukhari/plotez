@@ -9,7 +9,7 @@ x = np.linspace(0, 10, 20)
 y = x**2 / 10
 
 # Shape (2, N): [lower_errors, upper_errors]
-y_err = np.array([0.1 * y, 0.35 * y])  # Lower errors (10% of value)  # Upper errors (35% of value)
+y_err = np.array([0.1 * y, 0.35 * y])  # Lower (10% of value)  # Upper  (35% of value)
 plot_errorbar(x, y, y_err=y_err, auto_label=True)
 
 # plt.show()

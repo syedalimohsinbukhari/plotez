@@ -35,7 +35,7 @@ in the legend; all label strings support LaTeX notation (e.g. ``r'$\sin(x)$'``).
 
 .. literalinclude:: ../examples/RTD_E2_custom_labels.py
    :language: python
-   :lines: 3-12
+   :lines: 3-18
 
 .. image:: ../examples/rtd_images/RTD_E2_custom_labels.png
 
@@ -81,7 +81,7 @@ parameters. ``ecolor`` sets the error bar colour independently from the line col
 
 .. literalinclude:: ../examples/RTD_E5_errorbar_customized.py
    :language: python
-   :lines: 3-24
+   :lines: 3-32
 
 .. image:: ../examples/rtd_images/RTD_E5_errorbar_customized.png
 
@@ -128,7 +128,7 @@ labels each panel individually.
 
 .. literalinclude:: ../examples/RTD_E8_two_subplots.py
    :language: python
-   :lines: 3-19
+   :lines: 3-20
 
 .. image:: ../examples/rtd_images/RTD_E8_two_subplots.png
 
@@ -156,7 +156,7 @@ ranges across all panels — redundant tick labels are hidden automatically.
 
 .. literalinclude:: ../examples/RTD_E10_shared_axes.py
    :language: python
-   :lines: 3-18
+   :lines: 3-29
 
 .. image:: ../examples/rtd_images/RTD_E10_shared_axes.png
 
@@ -173,14 +173,17 @@ Config Classes
 reusable across multiple plots. Any matplotlib parameter not covered by a
 named field can be forwarded via the ``_extra`` dict.
 
-.. literalinclude:: ../examples/RTD_E5_errorbar_customized.py
+.. literalinclude:: ../examples/RTD_E5-2_errorbar_customized.py
    :language: python
-   :lines: 3-24
+   :lines: 3-33
+
+.. image:: ../examples/rtd_images/RTD_E5-2_errorbar_customized.png
+
 
 ----
 
 Shorthand Helpers
-~~~~~~~~~~~~~~~~~
+-----------------
 
 ``lpc``, ``epc``, ``ebc``, ``spc``, and ``fgc`` are factory functions that accept
 familiar matplotlib aliases (``c``, ``lw``, ``ls``, ``ms``, ``mec``, ``mfc``) and
@@ -190,11 +193,10 @@ return the corresponding config object — no class import required.
 
    from plotez import lpc, epc, ebc, spc, fgc
 
-   line   = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
-   ep     = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6,
-                capsize=8, elinewidth=2, ecolor='red')
-   band   = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
-   dots   = spc(c='orange', s=40, alpha=0.7, marker='^')
+   line = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
+   ep = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6, capsize=8, elinewidth=2, ecolor='red')
+   band = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
+   dots = spc(c='orange', s=40, alpha=0.7, marker='^')
    layout = fgc(figsize=(10, 4), sharex=True)
 
 See the :doc:`api` page for the full shorthand key reference.

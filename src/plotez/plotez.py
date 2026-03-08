@@ -693,12 +693,12 @@ def two_subplots(
     OrientationError
         If ``orientation`` is not ``'h'`` or ``'v'``.
     """
-    if orientation == "h":
+    if orientation in ["h", "horizontal"]:
         n_rows, n_cols = 1, 2
-    elif orientation == "v":
+    elif orientation in ["v", "vertical"]:
         n_rows, n_cols = 2, 1
     else:
-        raise OrientationError("The orientation must be either 'h' or 'v'.")
+        raise OrientationError("The orientation must be either 'h/horizontal' or 'v/vertical'.")
 
     return n_plotter(
         x_data=x_data,

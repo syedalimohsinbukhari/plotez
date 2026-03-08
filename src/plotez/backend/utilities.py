@@ -353,11 +353,9 @@ def dual_axes_label_management(
     Notes
     -----
     When `auto_label=True`, all user-provided labels are **replaced** with:
-    - Dual Y-axis defaults: axis_labels=['X', 'Y₁', 'Y₂'],
-      x1y1_label='X₁ vs Y₁', x1y2_label='X₁ vs Y₂'
-    - Dual X-axis defaults: axis_labels=['X₁', 'Y', 'X₂'],
-      x1y1_label='Y vs X₁', x2y1_label='Y vs X₂'
-    - plot_title='Plot'
+      - Dual Y-axis defaults: axis_labels=['X', 'Y₁', 'Y₂'], x1y1_label='X₁ vs. Y₁', x1y2_label='X₁ vs. Y₂'
+      - Dual X-axis defaults: axis_labels=['X₁', 'Y', 'X₂'], x1y1_label='Y vs. X₁', x2y1_label='Y vs. X₂'
+      - plot_title='Plot'
 
     When `auto_label=False`, missing labels are replaced with empty strings.
     """

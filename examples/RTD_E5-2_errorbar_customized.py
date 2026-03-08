@@ -19,6 +19,7 @@ ep = ErrorPlotConfig(
     ecolor="crimson",  # Error bar color (different!)
     elinewidth=1.5,
     markerfacecolor="gold",
+    _extra={"markevery": 2},  # The `_extra` keyword can take non-defined matplotlib keywords
 )
 plot_errorbar(
     x_data=x,
@@ -32,5 +33,5 @@ plot_errorbar(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E5_errorbar_customized.png", dpi=300)
+plt.savefig("./rtd_images/RTD_E5-2_errorbar_customized.png", dpi=300)
 plt.close()
