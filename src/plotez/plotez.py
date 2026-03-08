@@ -28,7 +28,6 @@ from numpy.typing import ArrayLike
 from .backend import (
     ErrorBandConfig,
     ErrorPlotConfig,
-    FigureConfig,
     LinePlotConfig,
     ScatterPlotConfig,
     dual_axes_data_validation,
@@ -108,7 +107,7 @@ def plot_errorband(
     if axis:
         ax = axis
     else:
-        f, ax = plt.subplots(**figure_kwargs)
+        f, ax = plt.subplots(**(figure_kwargs or {}))
 
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
     if isinstance(line_config, dict):
@@ -134,7 +133,7 @@ def plot_errorband(
 
     plt.tight_layout()
 
-    return ax if axis else f, ax
+    return ax if axis else (f, ax)
 
 
 def plot_errorbar(
@@ -190,7 +189,7 @@ def plot_errorbar(
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A matplotlib Axes object on which the plot will be rendered.
-        If `None`, a new subplot is created using `figure_config`.
+        If `None`, a new subplot is created using ``figure_kwargs``.
 
     Returns
     -------
@@ -211,9 +210,11 @@ def plot_errorbar(
     # IDE complain hack
     f, ax = None, None
     if axis:
+        if figure_kwargs:
+            warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
         ax = axis
     else:
-        f, ax = plt.subplots(**figure_kwargs)
+        f, ax = plt.subplots(**(figure_kwargs or {}))
 
     errorbar_config = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
     ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **errorbar_config)
@@ -226,7 +227,7 @@ def plot_errorbar(
 
     plt.tight_layout()
 
-    return ax if axis else f, ax
+    return ax if axis else (f, ax)
 
 
 def plot_two_column_file(
@@ -240,7 +241,7 @@ def plot_two_column_file(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Read a two-column file (x, y) and plot the data.
@@ -267,8 +268,8 @@ def plot_two_column_file(
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
 
@@ -299,7 +300,7 @@ def plot_two_column_file(
         auto_label=auto_label,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        figure_config=figure_config,
+        figure_kwargs=figure_kwargs,
         axis=axis,
     )
 
@@ -314,7 +315,7 @@ def plot_xy(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the x_data against y_data with customizable options.
@@ -339,8 +340,8 @@ def plot_xy(
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
 
@@ -365,7 +366,7 @@ def plot_xy(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        figure_config=figure_config,
+        figure_kwargs=figure_kwargs,
         axis=axis,
     )
 
@@ -382,7 +383,7 @@ def plot_xyy(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -411,8 +412,8 @@ def plot_xyy(
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
 
@@ -439,7 +440,7 @@ def plot_xyy(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        figure_config=figure_config,
+        figure_kwargs=figure_kwargs,
         axis=axis,
     )
 
@@ -456,7 +457,7 @@ def plot_xxy(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -485,8 +486,8 @@ def plot_xxy(
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
 
@@ -507,7 +508,7 @@ def plot_xxy(
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        figure_config=figure_config,
+        figure_kwargs=figure_kwargs,
         axis=axis,
     )
 
@@ -526,7 +527,7 @@ def plot_with_dual_axes(
     plot_title: str | None = None,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
     """Plot the data with options for dual axes (x or y) or single axis.
@@ -563,8 +564,8 @@ def plot_with_dual_axes(
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         The axis object to draw the plots on. If not passed, a new axis object will be created internally.
 
@@ -597,8 +598,7 @@ def plot_with_dual_axes(
     if axis:
         ax1 = axis
     else:
-        fig_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
-        _, ax1 = plt.subplots(**fig_dict)
+        _, ax1 = plt.subplots(**(figure_kwargs or {}))
 
     if plot_config is not None:
         plot_dict = plot_config.get_dict()
@@ -652,7 +652,7 @@ def two_subplots(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
@@ -680,8 +680,8 @@ def two_subplots(
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
 
     Returns
     -------
@@ -713,7 +713,7 @@ def two_subplots(
         auto_label=auto_label,
         is_scatter=is_scatter,
         plot_config=plot_config,
-        figure_config=figure_config,
+        figure_kwargs=figure_kwargs,
     )
 
 
@@ -730,7 +730,7 @@ def n_plotter(
     auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_config: FigureConfig | None = None,
+    figure_kwargs: dict | None = None,
 ) -> tuple[plt.Figure, Axes]:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
@@ -762,15 +762,15 @@ def n_plotter(
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
         Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
-    figure_config :
-        Configuration object for subplot/figure settings.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
 
     Returns
     -------
     tuple[Figure, Axes]
         A tuple of ``(figure, axes_array)`` containing the matplotlib Figure and flattened array of Axes.
     """
-    sp_dict = figure_config.get_dict() if figure_config else FigureConfig().get_dict()
+    sp_dict = dict(figure_kwargs) if figure_kwargs else {}
     sp_dict.pop("nrows", None)
     sp_dict.pop("ncols", None)
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
