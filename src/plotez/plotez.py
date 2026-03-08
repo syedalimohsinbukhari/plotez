@@ -22,7 +22,6 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pretty_errors
 from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
@@ -31,14 +30,12 @@ from .backend import (
     ErrorPlotConfig,
     FigureConfig,
     LinePlotConfig,
-    OrientationError,
     ScatterPlotConfig,
     dual_axes_data_validation,
     dual_axes_label_management,
     plot_or_scatter,
 )
-
-p_config = pretty_errors.config
+from .backend.error_handling import OrientationError
 
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig

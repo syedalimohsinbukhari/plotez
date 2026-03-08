@@ -3,12 +3,23 @@
 from collections.abc import Sequence
 from typing import Literal
 
-from .utilities import ErrorBandConfig, ErrorPlotConfig, FigureConfig, LinePlotConfig, ScatterPlotConfig
+from .utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
+
+__all__ = [
+    "line_plot_configuration",
+    "scatter_plot_configuration",
+    "error_plot_configuration",
+    "error_band_configuration",
+    "lpc",
+    "spc",
+    "epc",
+    "ebc",
+]
 
 
 def line_plot_configuration(
-    c: str | None = None,
-    lw: float | None = None,
+    c: str | Sequence[str] | None = None,
+    lw: float | Sequence[float] | None = None,
     ls: str | Sequence[str] | None = None,
     alpha: float | Sequence[float] | None = None,
     marker: str | Sequence[str] | None = None,
@@ -231,61 +242,7 @@ def scatter_plot_configuration(
     )
 
 
-def figure_configuration(
-    nrows: int = 1,
-    ncols: int = 1,
-    figsize: tuple[float, float] = (6.4, 4.8),
-    sharex: bool = False,
-    sharey: bool = False,
-    constrained_layout: bool = False,
-    wspace: float | None = None,
-    hspace: float | None = None,
-    **kwargs,
-):
-    """
-    Create a configuration object for figure and subplot layout.
-
-    Parameters
-    ----------
-    nrows :
-        Number of rows in the subplot grid.
-    ncols :
-        Number of columns in the subplot grid.
-    figsize :
-        Figure dimensions (width, height) in inches.
-    sharex :
-        Controls sharing of x-axis among subplots.
-    sharey :
-        Controls sharing of y-axis among subplots.
-    constrained_layout : bool, optional, default=False
-        Whether to use constrained layout for better spacing.
-    wspace :
-        Width spacing between subplots as a fraction of the subplot width.
-    hspace :
-        Height spacing between subplots as a fraction of the subplot height.
-    **kwargs :
-        Additional keyword arguments passed to the figure creation function.
-
-    Returns
-    -------
-    FigureConfig
-        Configuration object for figure and subplot layout.
-    """
-    return FigureConfig(
-        nrows=nrows,
-        ncols=ncols,
-        figsize=figsize,
-        sharex=sharex,
-        sharey=sharey,
-        constrained_layout=constrained_layout,
-        wspace=wspace,
-        hspace=hspace,
-        _extra=kwargs,
-    )
-
-
 lpc = line_plot_configuration
 epc = error_plot_configuration
 ebc = error_band_configuration
 spc = scatter_plot_configuration
-fgc = figure_configuration
