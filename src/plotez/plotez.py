@@ -110,7 +110,7 @@ def plot_errorband(
 
     # IDE complain hack
     f, ax = None, None
-    if axis:
+    if axis is not None:
         ax = axis
     else:
         f, ax = plt.subplots(**(figure_kwargs or {}))
@@ -123,7 +123,7 @@ def plot_errorband(
     ax.fill_between(x, y_lower, y_upper, **error_band_config)
 
     if line:
-        label = data_label or line_config.get("label") or "data"
+        label = data_label or line_config.get("label") or None
 
         if data_label and "label" in line_config:
             warn("Both `data_label` and `line_config['label']` are provided. Using `data_label`.")
@@ -134,7 +134,7 @@ def plot_errorband(
     ax.set_xlabel("X" if auto_label else x_label)
     ax.set_ylabel("Y" if auto_label else y_label)
     ax.set_title("ErrorBand Plot" if auto_label else plot_title)
-    if auto_label or data_label and line:
+    if auto_label or (data_label and line):
         ax.legend()
 
     plt.tight_layout()
@@ -215,7 +215,7 @@ def plot_errorbar(
 
     # IDE complain hack
     f, ax = None, None
-    if axis:
+    if axis is not None:
         if figure_kwargs:
             warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
         ax = axis
@@ -617,7 +617,7 @@ def plot_with_dual_axes(
         axis_labels=axis_labels,
     )
 
-    if axis:
+    if axis is not None:
         ax1 = axis
     else:
         _, ax1 = plt.subplots(**(figure_kwargs or {}))
@@ -639,13 +639,27 @@ def plot_with_dual_axes(
     if use_twin_x:
         ax2 = ax1.twinx()
         if y2_data is not None:
-            dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_dict.items()}
+            dict2 = {
+                key: (
+                    value[1]
+                    if isinstance(value, list) and len(value) > 1
+                    else (value[0] if isinstance(value, list) else value)
+                )
+                for key, value in plot_dict.items()
+            }
             plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
-        dict2 = {key: (value[1] if len(value) > 1 else value[0]) for key, value in plot_dict.items()}
+        dict2 = {
+            key: (
+                value[1]
+                if isinstance(value, list) and len(value) > 1
+                else (value[0] if isinstance(value, list) else value)
+            )
+            for key, value in plot_dict.items()
+        }
         plot_or_scatter(axes=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
         ax2.set_xlabel(axis_labels[2])
 
@@ -805,7 +819,13 @@ def n_plotter(
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
     axs = axs.flatten()
 
-    main_dict = [{key: value[c % len(value)] for key, value in plot_items.items()} for c in range(n_cols * n_rows)]
+    main_dict = [
+        {
+            key: (value[c % len(value)] if isinstance(value, (list, tuple)) else value)
+            for key, value in plot_items.items()
+        }
+        for c in range(n_cols * n_rows)
+    ]
 
     if auto_label:
         if any([i for i in [x_labels, y_labels, plot_title, subplot_title, data_labels]]):

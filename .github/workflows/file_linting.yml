@@ -1,47 +1,47 @@
 name: file_linting
 
 on:
-    push:
-        branches-ignore:
-            - doc
+  push:
+    branches-ignore:
+      - doc
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                python-version: [ "3.10", "3.11" , "3.12"]
-        steps:
-            -   uses: actions/checkout@v4
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.11" , "3.12" ]
+    steps:
+      - uses: actions/checkout@v4
 
-            -   name: Set up Python ${{ matrix.python-version }}
-                uses: actions/setup-python@v4
-                with:
-                    python-version: ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-            -   name: Install dependencies
-                run: |
-                    python -m pip install --upgrade pip
-                    pip install pylint black isort pydocstyle flake8
-                    pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint black isort pydocstyle flake8
+          pip install -r requirements.txt
 
-            -   name: Check code formatting with Black
-                run: |
-                    black --check --color --line-length 120 src/plotez/ tests/
+      - name: Check code formatting with Black
+        run: |
+          black --check --color --line-length 120 src/plotez/ tests/
 
-            -   name: Check import sorting with isort
-                run: |
-                    isort --check-only --profile black --line-length 120 src/plotez/ tests/
+      - name: Check import sorting with isort
+        run: |
+          isort --check-only --profile black --line-length 120 src/plotez/ tests/
 
-            -   name: Check docstring quality with pydocstyle
-                run: |
-                    pydocstyle --convention=numpy --add-ignore=D100,D104,D105,D107 src/plotez/
+      - name: Check docstring quality with pydocstyle
+        run: |
+          pydocstyle --convention=numpy --add-ignore=D100,D104,D105,D107 src/plotez/
 
-            -   name: Lint with flake8
-                run: |
-                    flake8 --max-line-length=120 --extend-ignore=E203,W503 src/plotez/ tests/
+      - name: Lint with flake8
+        run: |
+          flake8 --max-line-length=120 --extend-ignore=E203,W503 src/plotez/ tests/
 
-            -   name: Analysing the code with Pylint
-                run: |
-                    pylint --rcfile=./.pylintrc --fail-under=7 $(git ls-files 'src/plotez/**/*.py')
+      - name: Analysing the code with Pylint
+        run: |
+          pylint --rcfile=./.pylintrc --fail-under=7 $(git ls-files 'src/plotez/**/*.py')

@@ -81,7 +81,7 @@ def error_band_configuration(
     ec: str | None = None,
     ls: str | None = None,
     hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None,
-    interpolate: bool = False,
+    interpolate: bool | None = None,
     step: str | Literal["pre", "post", "mid"] | None = None,
     **kwargs,
 ):
@@ -238,7 +238,7 @@ def scatter_plot_configuration(
         Configuration object for scatter plots.
     """
     return ScatterPlotConfig(
-        c=c, s=s, alpha=alpha, marker=marker, cmap=cmap, edgecolors=ec, facecolors=fc, _extra=kwargs
+        color=c, s=s, alpha=alpha, marker=marker, cmap=cmap, edgecolors=ec, facecolors=fc, _extra=kwargs
     )
 
 

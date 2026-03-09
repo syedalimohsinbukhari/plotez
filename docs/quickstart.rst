@@ -185,19 +185,18 @@ named field can be forwarded via the ``_extra`` dict.
 Shorthand Helpers
 -----------------
 
-``lpc``, ``epc``, ``ebc``, ``spc``, and ``fgc`` are factory functions that accept
+``lpc``, ``epc``, ``ebc``, and ``spc`` are factory functions that accept
 familiar matplotlib aliases (``c``, ``lw``, ``ls``, ``ms``, ``mec``, ``mfc``) and
 return the corresponding config object — no class import required.
 
 .. code-block:: python
 
-   from plotez import lpc, epc, ebc, spc, fgc
+   from plotez import lpc, epc, ebc, spc
 
    line = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
    ep = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6, capsize=8, elinewidth=2, ecolor='red')
    band = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
    dots = spc(c='orange', s=40, alpha=0.7, marker='^')
-   layout = fgc(figsize=(10, 4), sharex=True)
 
 See the :doc:`api` page for the full shorthand key reference.
 
