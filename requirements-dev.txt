@@ -25,3 +25,4 @@ myst-parser
 cloud-sptheme
 sphinx
 sphinx-copybutton
+sphinx-rtd-theme

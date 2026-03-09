@@ -24,8 +24,9 @@ with minimal boilerplate code.
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
+- **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
-- **Well Tested**: Comprehensive test suite with 85%+ coverage
+- **Well Tested**: Comprehensive test suite with 80%+ coverage
 
 ## Installation
 
@@ -52,28 +53,46 @@ pip install -e ".[dev]"
 ## Quick Start
 
 ```python
-"""Basic plotting example."""
-
 import numpy as np
 from plotez import plot_xy
 
-# Generate data
 x = np.linspace(0, 10, 100)
 y = np.sin(x)
-
-# Create a plot with automatic labeling
 plot_xy(x, y, auto_label=True)
 ```
 
-![Example1 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example1.png)
+![README_E1_simple](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E1_simple.png)
+
+That's it. Three lines for a labeled plot.
 
 ## Examples
 
-### Dual Y-Axis Plot
+### Scientific Error Bars
 
 ```python
-"""Demonstration of dual-y axis capability."""
+import numpy as np
+from plotez import plot_errorbar
+from plotez.backend import ErrorPlotConfig
 
+rng = np.random.default_rng(1234)
+
+x = np.linspace(0, 10, 20)
+y = np.sin(x)
+y_err = 0.2 * rng.random(size=y.shape)
+
+ep = ErrorPlotConfig(color="darkblue", marker="o", capsize=5, ecolor="red", markerfacecolor="lime")
+plot_errorbar(x, y, y_err=y_err, errorbar_config=ep, auto_label=True)
+```
+
+![README_E2_scientific_errorbars](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E2_scientific_errorbars.png)
+
+Professional error bars in a few lines of config. `ecolor` sets the error bar colour independently from the line colour.
+
+---
+
+### Dual Y-Axis
+
+```python
 import numpy as np
 from plotez import plot_xyy
 
@@ -82,120 +101,106 @@ y1 = np.sin(x)
 y2 = np.exp(-x / 10)
 
 plot_xyy(x, y1, y2,
-         x_label="Time", y1_label="Sine", y2_label="Exponential",
-         data_labels=["sin(x)", "exp(-x/10)"], plot_title="Dual Y-Axis Example")
+         x_label="Time (s)", y1_label="Signal (V)", y2_label="Decay",
+         data_labels=["Oscillation", "Envelope"])
 ```
 
-![Example2 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2.png)
+![README_E3_dual_y_axis](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E3_dual_y_axis.png)
 
+Dual axes done right. No `ax.twinx()` gymnastics.
+
+---
+
+### Multi-Panel Grid
 
 ```python
-"""Demonstration of dual-y axis capability with custom plot configuration."""
-
-import matplotlib.pyplot as plt
 import numpy as np
+from plotez import n_plotter
 
+x_data = [np.linspace(0, 10, 100) for _ in range(4)]
+y_data = [np.sin(x_data[0]), np.cos(x_data[1]),
+          np.tan(x_data[2] / 5), x_data[3] ** 2 / 100]
+
+n_plotter(x_data, y_data, n_rows=2, n_cols=2, auto_label=True)
+```
+
+![README_E4_multi_panel_grid](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E4_multi_panel_grid.png)
+
+Four plots, one function call.
+
+---
+
+### Error Bands
+
+Use `ErrorBandConfig` and `LinePlotConfig` for explicit, IDE-friendly configuration:
+
+```python
+import numpy as np
+from plotez import plot_errorband
+from plotez.backend import ErrorBandConfig, LinePlotConfig
+
+x = np.linspace(0, 10, 50)
+y = np.sin(x)
+y_lower = y - 0.2
+y_upper = y + 0.2
+
+band_config = ErrorBandConfig(color="darkblue", alpha=0.25)
+plot_config = LinePlotConfig(color="gold", linewidth=2, linestyle="--",
+                             marker="o", markersize=5, markeredgecolor="k")
+
+plot_errorband(x, y, y_lower, y_upper,
+               data_label="Measurement", band_config=band_config, line_config=plot_config)
+```
+
+![README_E5-1_error_band](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E5-1_error_band.png)
+
+The same result using the `ebc` / `lpc` shorthand aliases — familiar matplotlib parameter names, no class imports needed:
+
+```python
+import numpy as np
+from plotez import ebc, lpc, plot_errorband
+
+x = np.linspace(0, 10, 50)
+y = np.sin(x)
+y_lower = y - 0.2
+y_upper = y + 0.2
+
+band_config = ebc(c="darkblue", alpha=0.25)
+plot_config = lpc(c="gold", lw=2, ls="--", marker="o", ms=5, mec="k")
+
+plot_errorband(x, y, y_lower, y_upper,
+               data_label="Measurement", band_config=band_config, line_config=plot_config)
+```
+
+![README_E5-2_error_band](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E5-2_error_band.png)
+
+---
+
+### Full Customization
+
+```python
+import numpy as np
 from plotez import plot_xyy
 from plotez.backend import LinePlotConfig
 
 x = np.linspace(0, 10, 50)
-y1 = np.sin(x)
-y2 = np.exp(-x / 10)
+y1, y2 = np.sin(x), np.cos(x)
 
-plot_config = LinePlotConfig(linestyle=["--", "-."], color=["red", "cyan"], marker=["o", "s"],
-                             markersize=[10, 10], markeredgecolor=["k", "k"], _extra={"markevery": [3, 5]})
-
-plot_xyy(x, y1, y2,
-         x_label="Time", y1_label="Sine", y2_label="Exponential", data_labels=["sin(x)", "exp(-x/10)"],
-         plot_config=plot_config)
-```
-
-![Example2A Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example2A.png)
-
-### Multi-Panel Plots
-
-```python
-"""Demonstration of multi-panel layout capability with customizations."""
-
-import numpy as np
-from plotez import n_plotter
-from plotez.backend import LinePlotConfig, FigureConfig
-
-# Create 2×2 grid
-x_data = [np.linspace(0, 10, 100) for _ in range(6)]
-y_data = [
-    np.sin(x_data[0]),
-    np.cos(x_data[1]),
-    np.tan(x_data[2] / 5),
-    x_data[3]**2 / 100,
-    1 / np.cos(x_data[4]),
-    x_data[5]
-]
-
-line_config = LinePlotConfig(color=["red", "blue", "green", "black", "orange", "magenta"])
-fig_config = FigureConfig(figsize=(10, 6))
-
-fig, axs = n_plotter(x_data, y_data,
-                     n_rows=2, n_cols=3, auto_label=True,
-                     plot_config=line_config, figure_config=fig_config)
-```
-
-![Example3 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example3.png)
-
-### Error Bar Plots
-
-```python
-import numpy as np
-
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
-
-# Generate sample data with errors
-x = np.linspace(0, 10, 20)
-x_err = 0.4
-y = np.sin(x)
-y_err = 0.1 * np.random.rand(len(y))
-
-# Enhanced error bar styling
-ep = ErrorPlotConfig(
-    linestyle=':',
-    linewidth=2,
-    color='darkblue',
-    marker='d',
-    markersize=6,
-    capsize=8,
-    elinewidth=2,  # Error bar line width
-    ecolor='red',  # Error bar color (different from line!)
-    capthick=2  # Error bar cap thickness
+config = LinePlotConfig(
+    linestyle=["--", "-."],
+    color=["crimson", "gold"],
+    marker=["o", "s"],
+    markersize=[8, 8],
+    markeredgecolor=["black", "black"],
+    _extra={"markevery": [5, 5]},
 )
-plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+
+plot_xyy(x, y1, y2, plot_config=config, auto_label=True)
 ```
-![Example4 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example4.png)
 
-### Error Band Plots
+![README_E6_full_customization](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E6_full_customization.png)
 
-```python
-"""Demonstration of error band plotting with custom configurations."""
-import numpy as np
-
-from plotez import plot_errorband
-from plotez.backend import ErrorBandConfig, LinePlotConfig
-
-rng = np.random.default_rng(1234)
-
-x = np.linspace(0, 10, 50)
-y = np.sin(x)
-y_low = y - 0.2
-y_upp = y + 0.2
-
-error_config = ErrorBandConfig(color="cyan", edgecolor="k", linestyle="--", hatch="\\")
-line_config = LinePlotConfig(color="gold", linestyle="--", linewidth=2,
-                             marker="o", markersize=5, markeredgecolor="k")
-
-ax = plot_errorband(x, y, y_low, y_upp,
-                    data_label=r"$\sin(X)$", band_config=error_config, line_config=line_config)
-```
-![Example5 Plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/images/README_example5.png)
+Config classes for when defaults aren't enough. Use `_extra` to pass any matplotlib parameter not covered by the dataclass fields.
 
 ## Development
 
@@ -226,11 +231,14 @@ make html
 
 ## Project Status
 
-- Type hints are corrected throughout the codebase
-- Test suite implemented (80%+ coverage)
-- Documentation structure created
-- Development tools configured (pytest, mypy, sphinx)
-- PEP 561 compliance (py.typed marker)
+| Item           | Status                                         |
+|----------------|------------------------------------------------|
+| Latest version | v0.2.1                                         |
+| Python support | 3.10 · 3.11 · 3.12                             |
+| Test coverage  | 80%+                                           |
+| Type hints     | PEP 561 compliant (`py.typed`)                 |
+| Documentation  | [Read the Docs](https://plotez.readthedocs.io) |
+| License        | MIT                                            |
 
 ## Contributing
 

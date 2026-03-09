@@ -15,8 +15,16 @@ from plotez import (
     plot_xyy,
     two_subplots,
 )
-from plotez.backend.error_handling import OrientationError
-from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, FigureConfig, LinePlotConfig, ScatterPlotConfig
+from plotez.backend.error_handling import (
+    AxisLabelError,
+    ColumnCountError,
+    EmptyDataError,
+    OrientationError,
+    ShapeError,
+    TwinXDataError,
+    TwinYDataError,
+)
+from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 
 
 class TestPlotTwoColumnFile:
@@ -48,12 +56,12 @@ class TestPlotTwoColumnFile:
         assert isinstance(result, Axes) or isinstance(result, tuple)
 
     def test_plot_two_column_file_invalid_columns(self, tmp_path):
-        """Test that an invalid file raises ValueError."""
-        # Create file with 3 columns
+        """Test that an invalid file raises ColumnCountError."""
+        # Create a file with 3 columns
         invalid_file = tmp_path / "invalid.csv"
         invalid_file.write_text("1,2,3\n4,5,6\n")
 
-        with pytest.raises(ValueError, match="exactly two columns"):
+        with pytest.raises(ColumnCountError, match="exactly two columns"):
             plot_two_column_file(str(invalid_file))
 
 
@@ -61,7 +69,7 @@ class TestPlotXY:
     """Test plot_xy function."""
 
     def test_plot_xy_basic(self, sample_x_data, sample_y_data):
-        """Test basic x vs y plotting."""
+        """Test basic x vs. y plotting."""
         result = plot_xy(sample_x_data, sample_y_data)
         assert isinstance(result, Axes)
 
@@ -95,9 +103,8 @@ class TestPlotXY:
         assert isinstance(result, Axes)
 
     def test_plot_xy_with_subplot_dict(self, sample_x_data, sample_y_data):
-        """Test plotting with subplot configuration."""
-        sp = FigureConfig(figsize=(10, 6))
-        result = plot_xy(sample_x_data, sample_y_data, figure_config=sp)
+        """Test plotting with figure kwargs."""
+        result = plot_xy(sample_x_data, sample_y_data, figure_kwargs={"figsize": (10, 6)})
         assert isinstance(result, Axes)
 
     def test_plot_xy_on_existing_axis(self, sample_x_data, sample_y_data):
@@ -245,7 +252,7 @@ class TestTwoSubplots:
         assert isinstance(fig, plt.Figure)
 
     def test_two_subplots_invalid_orientation(self, sample_x_data, sample_y_data):
-        """Test that invalid orientation raises error."""
+        """Test that invalid orientation raises an error."""
         x_list = [sample_x_data, sample_x_data]
         y_list = [sample_y_data, sample_y_data * 2]
 
@@ -311,9 +318,14 @@ class TestNPlotter:
         assert isinstance(fig, plt.Figure)
 
     def test_n_plotter_with_subplot_dict(self, sample_x_data_list, sample_y_data_list):
-        """Test n_plotter with subplot configuration."""
-        sp = FigureConfig(sharex=True, sharey=True, figsize=(12, 8))
-        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, figure_config=sp)
+        """Test n_plotter with figure kwargs."""
+        fig, axs = n_plotter(
+            sample_x_data_list,
+            sample_y_data_list,
+            n_rows=2,
+            n_cols=2,
+            figure_kwargs={"sharex": True, "sharey": True, "figsize": (12, 8)},
+        )
         assert isinstance(fig, plt.Figure)
 
 
@@ -323,32 +335,32 @@ class TestPlotErrorbar:
     def test_errorbar_basic(self, sample_x_data, sample_y_data):
         """Test basic error bar plotting without errors."""
         result = plot_errorbar(sample_x_data, sample_y_data)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_y_err(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting with y errors."""
         result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_x_err(self, sample_x_data, sample_y_data, sample_x_err):
         """Test error bar plotting with x errors."""
         result = plot_errorbar(sample_x_data, sample_y_data, x_err=sample_x_err)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_both_errors(self, sample_x_data, sample_y_data, sample_x_err, sample_y_err):
         """Test error bar plotting with both x and y errors."""
         result = plot_errorbar(sample_x_data, sample_y_data, x_err=sample_x_err, y_err=sample_y_err)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_scalar_errors(self, sample_x_data, sample_y_data):
         """Test error bar plotting with scalar error values."""
         result = plot_errorbar(sample_x_data, sample_y_data, x_err=0.1, y_err=0.2)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_auto_label(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting with auto labeling."""
         result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, auto_label=True)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_labels(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting with custom labels."""
@@ -361,19 +373,18 @@ class TestPlotErrorbar:
             plot_title="Error Bar Test",
             data_label="Data",
         )
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorbar_with_config(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting with ErrorPlotConfig."""
         ep = ErrorPlotConfig(capsize=5, ecolor="red", color="blue", linewidth=2)
         result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, errorbar_config=ep)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
-    def test_errorbar_with_figure_config(self, sample_x_data, sample_y_data, sample_y_err):
-        """Test error bar plotting with FigureConfig."""
-        fc = FigureConfig(figsize=(10, 6))
-        result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, figure_config=fc)
-        assert isinstance(result, Axes)
+    def test_errorbar_with_figure_kwargs(self, sample_x_data, sample_y_data, sample_y_err):
+        """Test error bar plotting with figure kwargs."""
+        result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, figure_kwargs={"figsize": (10, 6)})
+        assert isinstance(result, tuple)
 
     def test_errorbar_on_existing_axis(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting on an existing axis."""
@@ -381,13 +392,52 @@ class TestPlotErrorbar:
         result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, axis=ax)
         assert result == ax
 
-    def test_errorbar_figure_config_and_axis_warns(self, sample_x_data, sample_y_data):
-        """Test that passing both figure_config and axis emits a warning."""
+    def test_errorbar_figure_kwargs_and_axis_warns(self, sample_x_data, sample_y_data):
+        """Test that passing both figure_kwargs and axis emits a warning."""
         fig, ax = plt.subplots()
-        fc = FigureConfig(figsize=(10, 6))
         with pytest.warns(UserWarning):
-            result = plot_errorbar(sample_x_data, sample_y_data, figure_config=fc, axis=ax)
+            result = plot_errorbar(sample_x_data, sample_y_data, figure_kwargs={"figsize": (10, 6)}, axis=ax)
         assert result == ax
+
+    def test_errorbar_logarithmic_axes(self):
+        """Test error bar plotting with logarithmic x and y axes."""
+        x = np.logspace(0, 3, 20)  # 1 to 1000
+        y = np.logspace(1, 4, 20)  # 10 to 10,000
+        y_err = y * 0.1  # 10% relative error
+
+        fig, ax = plt.subplots()
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        result = plot_errorbar(x, y, y_err=y_err, axis=ax)
+        assert result == ax
+        assert ax.get_xscale() == "log"
+        assert ax.get_yscale() == "log"
+
+    def test_errorbar_very_large_errors(self):
+        """Test error bar plotting with very large errors that exceed axis limits."""
+        x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        y = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
+        y_err = np.array([100.0, 200.0, 300.0, 400.0, 500.0])  # errors >> data values
+
+        fig, ax = plt.subplots()
+        result = plot_errorbar(x, y, y_err=y_err, axis=ax)
+        assert result == ax
+        # Verify the plot was created successfully despite huge error bars
+        assert len(ax.containers) > 0
+
+    def test_errorbar_asymmetric_x_and_y(self):
+        """Test error bar plotting with asymmetric errors on both x and y axes."""
+        x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+        y = np.array([2.0, 4.0, 6.0, 8.0, 10.0])
+        # Asymmetric errors: shape (2, N) — [lower_errors, upper_errors]
+        x_err = np.array([[0.1, 0.2, 0.15, 0.1, 0.25], [0.3, 0.4, 0.35, 0.2, 0.5]])  # lower x errors  # upper x errors
+        y_err = np.array([[0.5, 1.0, 0.8, 0.6, 1.2], [1.0, 1.5, 1.2, 0.9, 2.0]])  # lower y errors  # upper y errors
+
+        fig, ax = plt.subplots()
+        result = plot_errorbar(x, y, x_err=x_err, y_err=y_err, axis=ax)
+        assert result == ax
+        # Verify a single errorbar container was created
+        assert len(ax.containers) == 1
 
 
 class TestPlotErrorband:
@@ -396,30 +446,30 @@ class TestPlotErrorband:
     def test_errorband_basic(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
         """Test basic error band plotting."""
         result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_lower_only(self, sample_x_data, sample_y_data, sample_y_lower):
-        """Test error band with lower bound and y_data as upper."""
+        """Test the error band with the lower bound and y_data as the upper."""
         result = plot_errorband(sample_x_data, sample_y_data, y_lower=sample_y_lower, y_upper=sample_y_data)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_upper_only(self, sample_x_data, sample_y_data, sample_y_upper):
-        """Test error band with upper bound and y_data as lower."""
+        """Test the error band with the upper bound and y_data as the lower."""
         result = plot_errorband(sample_x_data, sample_y_data, y_lower=sample_y_data, y_upper=sample_y_upper)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_scalar_bounds(self, sample_x_data, sample_y_data):
-        """Test error band with scalar bounds."""
+        """Test the error band with scalar bounds."""
         result = plot_errorband(sample_x_data, sample_y_data, y_lower=-0.5, y_upper=0.5)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_auto_label(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band with auto labeling."""
+        """Test the error band with auto labeling."""
         result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, auto_label=True)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_with_labels(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band with custom labels."""
+        """Test the error band with custom labels."""
         result = plot_errorband(
             sample_x_data,
             sample_y_data,
@@ -430,30 +480,31 @@ class TestPlotErrorband:
             plot_title="Band Test",
             data_label="Series",
         )
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_no_line(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band without the central line."""
+        """Test the error band without the central line."""
         result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, line=False)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_with_band_config(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
         """Test error band with ErrorBandConfig."""
         bc = ErrorBandConfig(color="cyan", alpha=0.3, edgecolor="black", linestyle="--")
         result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, band_config=bc)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
     def test_errorband_with_line_config(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band with LinePlotConfig for the central line."""
+        """Test the error band with LinePlotConfig for the central line."""
         lc = LinePlotConfig(color="gold", linestyle="--", linewidth=2)
         result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, line_config=lc)
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
 
-    def test_errorband_with_figure_config(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band with FigureConfig."""
-        fc = FigureConfig(figsize=(10, 6))
-        result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, figure_config=fc)
-        assert isinstance(result, Axes)
+    def test_errorband_with_figure_kwargs(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
+        """Test error band with figure kwargs."""
+        result = plot_errorband(
+            sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, figure_kwargs={"figsize": (10, 6)}
+        )
+        assert isinstance(result, tuple)
 
     def test_errorband_on_existing_axis(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
         """Test error band on an existing axis."""
@@ -462,10 +513,9 @@ class TestPlotErrorband:
         assert result == ax
 
     def test_errorband_with_all_configs(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
-        """Test error band with all config objects provided."""
+        """Test the error band with all config objects provided."""
         bc = ErrorBandConfig(color="cyan", alpha=0.5, hatch="//")
         lc = LinePlotConfig(color="red", linewidth=2, marker="o", markersize=4)
-        fc = FigureConfig(figsize=(12, 6))
         result = plot_errorband(
             sample_x_data,
             sample_y_data,
@@ -473,8 +523,153 @@ class TestPlotErrorband:
             sample_y_upper,
             band_config=bc,
             line_config=lc,
-            figure_config=fc,
+            figure_kwargs={"figsize": (12, 6)},
             data_label="Test",
             auto_label=True,
         )
-        assert isinstance(result, Axes)
+        assert isinstance(result, tuple)
+
+
+class TestCustomExceptions:
+    """Test custom exception classes."""
+
+    def test_shape_error_for_bad_x_err_shape(self, sample_x_data, sample_y_data):
+        """Test that ShapeError is raised for x_err with wrong shape."""
+        bad_x_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # 3xN instead of 2xN
+
+        with pytest.raises(ShapeError, match="Asymmetric x_err must have shape"):
+            plot_errorbar(sample_x_data, sample_y_data, x_err=bad_x_err)
+
+    def test_shape_error_for_bad_y_err_shape(self, sample_x_data, sample_y_data):
+        """Test that ShapeError is raised for y_err with wrong shape."""
+        bad_y_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # 3xN instead of 2xN
+
+        with pytest.raises(ShapeError, match="Asymmetric y_err must have shape"):
+            plot_errorbar(sample_x_data, sample_y_data, y_err=bad_y_err)
+
+    def test_empty_data_error_for_empty_x_data(self):
+        """Test that EmptyDataError is raised for empty x data."""
+        with pytest.raises(EmptyDataError, match="Primary x or y data is empty"):
+            plot_with_dual_axes([], [1, 2, 3], auto_label=False, axis_labels=["X", "Y1", "Y2"])
+
+    def test_empty_data_error_for_empty_y_data(self):
+        """Test that EmptyDataError is raised for empty y data."""
+        with pytest.raises(EmptyDataError, match="Primary x or y data is empty"):
+            plot_with_dual_axes([1, 2, 3], [], auto_label=False, axis_labels=["X", "Y1", "Y2"])
+
+    def test_axis_label_error_for_too_few_labels(self, sample_x_data, sample_y_data):
+        """Test that AxisLabelError is raised when axis_labels has fewer than 3 elements."""
+        with pytest.raises(AxisLabelError, match="axis_labels should have a length of 3"):
+            plot_with_dual_axes(sample_x_data, sample_y_data, auto_label=False, axis_labels=["X", "Y"])
+
+    def test_axis_label_error_for_too_many_labels(self, sample_x_data, sample_y_data):
+        """Test that AxisLabelError is raised when axis_labels has more than 3 elements."""
+        with pytest.raises(AxisLabelError, match="axis_labels should have a length of 3"):
+            plot_with_dual_axes(sample_x_data, sample_y_data, auto_label=False, axis_labels=["X", "Y1", "Y2", "Extra"])
+
+    def test_twin_x_data_error_for_x2_data_with_twin_y(self, sample_x_data, sample_y_data):
+        """Test that TwinXDataError is raised when x2_data is given with use_twin_x=True."""
+        with pytest.raises(TwinXDataError, match="Dual Y-axis plot requested but 'x2_data' given"):
+            plot_with_dual_axes(
+                sample_x_data,
+                sample_y_data,
+                x2_data=sample_x_data,
+                use_twin_x=True,
+                auto_label=False,
+                axis_labels=["X", "Y1", "Y2"],
+            )
+
+    def test_twin_y_data_error_for_y2_data_with_twin_x(self, sample_x_data, sample_y_data):
+        """Test that TwinYDataError is raised when y2_data is given with use_twin_x=False."""
+        with pytest.raises(TwinYDataError, match="Dual X-axis plot requested but 'y2_data' given"):
+            plot_with_dual_axes(
+                sample_x_data,
+                sample_y_data,
+                y2_data=sample_y_data,
+                use_twin_x=False,
+                auto_label=False,
+                axis_labels=["X1", "Y", "X2"],
+            )
+
+    def test_column_count_error_already_tested(self, tmp_path):
+        """Verify ColumnCountError is already tested in TestPlotTwoColumnFile."""
+        # This is a reference test - the actual test is in TestPlotTwoColumnFile
+        invalid_file = tmp_path / "invalid.csv"
+        invalid_file.write_text("1,2,3\n4,5,6\n")
+
+        with pytest.raises(ColumnCountError, match="exactly two columns"):
+            plot_two_column_file(str(invalid_file))
+
+    def test_orientation_error_already_tested(self, sample_x_data, sample_y_data):
+        """Verify OrientationError is already tested in TestTwoSubplots."""
+        # This is a reference test - the actual test is in TestTwoSubplots
+        x_list = [sample_x_data, sample_x_data]
+        y_list = [sample_y_data, sample_y_data * 2]
+
+        with pytest.raises(OrientationError, match="orientation must be either"):
+            two_subplots(x_list, y_list, orientation="diagonal")
+
+    def test_shape_error_inheritance(self):
+        """Test that ShapeError properly inherits from DataError and PlotError."""
+        from plotez.backend.error_handling import DataError, PlotError
+
+        assert issubclass(ShapeError, DataError)
+        assert issubclass(ShapeError, PlotError)
+
+    def test_empty_data_error_inheritance(self):
+        """Test that EmptyDataError properly inherits from DataError and PlotError."""
+        from plotez.backend.error_handling import DataError, PlotError
+
+        assert issubclass(EmptyDataError, DataError)
+        assert issubclass(EmptyDataError, PlotError)
+
+    def test_column_count_error_inheritance(self):
+        """Test that ColumnCountError properly inherits from DataError and PlotError."""
+        from plotez.backend.error_handling import DataError, PlotError
+
+        assert issubclass(ColumnCountError, DataError)
+        assert issubclass(ColumnCountError, PlotError)
+
+    def test_axis_label_error_inheritance(self):
+        """Test that AxisLabelError properly inherits from ConfigurationError and PlotError."""
+        from plotez.backend.error_handling import ConfigurationError, PlotError
+
+        assert issubclass(AxisLabelError, ConfigurationError)
+        assert issubclass(AxisLabelError, PlotError)
+
+    def test_twin_x_data_error_inheritance(self):
+        """Test that TwinXDataError properly inherits from ConfigurationError and PlotError."""
+        from plotez.backend.error_handling import ConfigurationError, PlotError
+
+        assert issubclass(TwinXDataError, ConfigurationError)
+        assert issubclass(TwinXDataError, PlotError)
+
+    def test_twin_y_data_error_inheritance(self):
+        """Test that TwinYDataError properly inherits from ConfigurationError and PlotError."""
+        from plotez.backend.error_handling import ConfigurationError, PlotError
+
+        assert issubclass(TwinYDataError, ConfigurationError)
+        assert issubclass(TwinYDataError, PlotError)
+
+    def test_catch_shape_error_as_data_error(self, sample_x_data, sample_y_data):
+        """Test that ShapeError can be caught as DataError."""
+        from plotez.backend.error_handling import DataError
+
+        bad_x_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+        with pytest.raises(DataError):
+            plot_errorbar(sample_x_data, sample_y_data, x_err=bad_x_err)
+
+    def test_catch_empty_data_error_as_plot_error(self):
+        """Test that EmptyDataError can be caught as PlotError."""
+        from plotez.backend.error_handling import PlotError
+
+        with pytest.raises(PlotError):
+            plot_with_dual_axes([], [1, 2, 3], auto_label=False, axis_labels=["X", "Y1", "Y2"])
+
+    def test_catch_axis_label_error_as_configuration_error(self, sample_x_data, sample_y_data):
+        """Test that AxisLabelError can be caught as ConfigurationError."""
+        from plotez.backend.error_handling import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            plot_with_dual_axes(sample_x_data, sample_y_data, auto_label=False, axis_labels=["X", "Y"])

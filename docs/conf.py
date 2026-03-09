@@ -24,7 +24,7 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = "cloud"
+html_theme = "sphinx_rtd_theme"
 html_title = f"{project} v{release}"
 html_static_path = ["_static"]
 html_last_updated_fmt = "%b %d, %Y"
@@ -58,13 +58,13 @@ napoleon_preprocess_types = True
 napoleon_attr_annotations = True
 
 # Autodoc settings
-autodoc_default_options = {
-    "members": True,
-    "member-order": "bysource",
-    "special-members": "__init__",
-    "undoc-members": True,
-    "exclude-members": "__weakref__",
+autodoc_default_options = {"members": True, "member-order": "groupwise", "undoc-members": True}
+autodoc_type_aliases = {
+    "ArrayLike": "~numpy.typing.ArrayLike",
+    "Sequence": "~collections.abc.Sequence",
+    "LSE": "~plotez.backend.utilities.LSE",
 }
+autodoc_typehints_format = "short"
 
 # Intersphinx mapping
 # intersphinx_mapping = {
@@ -78,7 +78,3 @@ autosummary_generate = True
 autodoc_typehints = "description"
 add_module_names = False
 html_show_sourcelink = False
-
-numpydoc_show_class_members = False
-numpydod_show_inherited_class_members = True
-numpydoc_class_members_toctree = False

@@ -11,7 +11,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license-files = ["LICENSE"]
 dynamic = ["version"]
-dependencies = ["matplotlib"]
+dependencies = ["matplotlib", "numpy"]
 keywords = ["plotting", "visualization", "data visualization", "python plotting"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -29,7 +29,7 @@ version = { attr = "plotez.version.__version__" }
 [tool.your_package.contacts]
 emails = ["ali.mohsin@ist.edu.pk", "syedali.b+github@outlook.com"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest",
     "pytest-cov",
@@ -42,7 +42,10 @@ dev = [
     "flake8",
     "pre-commit",
     "tomli",
-    "build"
+    "build",
+    "sphinx-copybutton",
+    "sphinx-rtd-theme",
+    "myst-parser"
 ]
 
 [project.urls]

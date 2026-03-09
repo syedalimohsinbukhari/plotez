@@ -1,325 +1,332 @@
 Quick Start Guide
 =================
 
-This guide introduces the basic usage of PlotEZ with practical examples.
+This guide walks through ``plotez`` from the simplest possible plot up to real-world workflows.
+Every example corresponds to a runnable script in the ``examples/`` directory.
+
+.. contents:: Sections
+   :local:
+   :depth: 1
+
+----
 
 Basic Plotting
 --------------
 
-Simple X vs Y Plot
-~~~~~~~~~~~~~~~~~~
+Minimal Example
+~~~~~~~~~~~~~~~
 
-The simplest way to create a plot:
+The absolute minimum code to produce a labeled plot. ``auto_label=True`` generates
+``"X"``, ``"Y"``, and ``"Plot"`` as axis and title labels automatically.
 
-.. include:: ../examples/README_example1.py
-   :code: python
-   :start-line: 3
-   :end-line: 13
+.. literalinclude:: ../examples/RTD_E1_simple.py
+   :language: python
+   :lines: 3-11
 
+.. image:: ../examples/rtd_images/RTD_E1_simple.png
 
-.. image:: ../examples/images/README_example1.png
+----
 
-With Custom Labels
-~~~~~~~~~~~~~~~~~~
+Custom Labels
+~~~~~~~~~~~~~
 
-.. include:: ../examples/README_example1A.py
-   :code: python
-   :start-line: 3
-   :end-line: 15
+Replace auto-generated labels with meaningful scientific ones. ``data_label`` appears
+in the legend; all label strings support LaTeX notation (e.g. ``r'$\sin(x)$'``).
 
-.. image:: ../examples/images/README_example1A.png
+.. literalinclude:: ../examples/RTD_E2_custom_labels.py
+   :language: python
+   :lines: 3-18
 
+.. image:: ../examples/rtd_images/RTD_E2_custom_labels.png
 
-Dual-Axis Plots
----------------
+----
 
-Dual Y-Axis
+Scatter Plot
+~~~~~~~~~~~~
+
+Pass ``is_scatter=True`` to switch from a line to a scatter plot — same function,
+same parameters, one flag.
+
+.. literalinclude:: ../examples/RTD_E3_scatter_plot.py
+   :language: python
+   :lines: 3-13
+
+.. image:: ../examples/rtd_images/RTD_E3_scatter_plot.png
+
+----
+
+Error Visualization
+-------------------
+
+Basic Error Bars
+~~~~~~~~~~~~~~~~
+
+``y_err`` (and ``x_err``) can be a scalar (same error everywhere) or an array
+(per-point errors). Caps are shown by default and controlled via ``capsize``.
+
+.. literalinclude:: ../examples/RTD_E4_errorbar.py
+   :language: python
+   :lines: 3-15
+
+.. image:: ../examples/rtd_images/RTD_E4_errorbar.png
+
+----
+
+Styled Error Bars
+~~~~~~~~~~~~~~~~~
+
+``ErrorPlotConfig`` exposes every line styling option plus specialized error bar
+parameters. ``ecolor`` sets the error bar colour independently from the line colour;
+``elinewidth`` sets the error bar line thickness.
+
+.. literalinclude:: ../examples/RTD_E5_errorbar_customized.py
+   :language: python
+   :lines: 3-32
+
+.. image:: ../examples/rtd_images/RTD_E5_errorbar_customized.png
+
+----
+
+Asymmetric Errors
+~~~~~~~~~~~~~~~~~
+
+Pass a ``(2, N)`` array to ``y_err`` (or ``x_err``) for different lower and upper
+uncertainties — first row is lower errors, second row is upper errors.
+
+.. literalinclude:: ../examples/RTD_E6_asym_errors.py
+   :language: python
+   :lines: 3-14
+
+.. image:: ../examples/rtd_images/RTD_E6_asym_errors.png
+
+----
+
+Error Bands
 ~~~~~~~~~~~
 
-.. include:: ../examples/README_example2.py
-   :code: python
-   :start-line: 3
-   :end-line: 21
+For dense, continuous data shaded bands are cleaner than individual error bars.
+``y_lower`` and ``y_upper`` are absolute values (not offsets); ``band_config``
+controls the fill and ``line_config`` controls the central line.
 
-.. image:: ../examples/images/README_example2.png
+.. literalinclude:: ../examples/RTD_E7_errorbands.py
+   :language: python
+   :lines: 3-26
 
-Dual X-Axis
-~~~~~~~~~~~
+.. image:: ../examples/rtd_images/RTD_E7_errorbands.png
 
-Use ``plot_with_dual_axes`` directly for dual x-axis plots:
+----
 
-.. code-block:: python
-
-   from plotez import plot_with_dual_axes
-
-   x1 = np.linspace(0, 10, 100)
-   x2 = np.linspace(0, 20, 100)
-   y = np.sin(x1)
-
-   plot_with_dual_axes(
-       x1, y,
-       x2_data=x2,
-       use_twin_x=False,
-       auto_label=True
-   )
-
-Multi-Panel Plots
------------------
+Multi-Panel Layouts
+-------------------
 
 Two Subplots
 ~~~~~~~~~~~~
 
-Create horizontal or vertical subplot arrangements:
+``two_subplots`` wraps ``n_plotter`` for the common two-panel case.
+Use ``orientation='h'`` for side-by-side or ``'v'`` for stacked; ``subplot_title``
+labels each panel individually.
 
-.. code-block:: python
+.. literalinclude:: ../examples/RTD_E8_two_subplots.py
+   :language: python
+   :lines: 3-20
 
-   from plotez import two_subplots
+.. image:: ../examples/rtd_images/RTD_E8_two_subplots.png
 
-   x1 = np.linspace(0, 10, 100)
-   x2 = np.linspace(0, 5, 50)
-   y1 = np.sin(x1)
-   y2 = np.cos(x2)
+----
 
-   # Horizontal layout
-   fig, axs = two_subplots(
-       [x1, x2], [y1, y2],
-       orientation='h',
-       auto_label=True
-   )
+Grid of Four
+~~~~~~~~~~~~
 
-   # Vertical layout
-   fig, axs = two_subplots(
-       [x1, x2], [y1, y2],
-       orientation='v',
-       plot_title='Two Subplots Example'
-   )
+``n_plotter`` handles arbitrary N×M grids. Config parameters passed as lists
+apply per-subplot, cycling if the list is shorter than the panel count.
 
-N×M Grid
-~~~~~~~~
+.. literalinclude:: ../examples/RTD_E9_grid_of_four.py
+   :language: python
+   :lines: 3-22
 
-Create arbitrary grid layouts:
+.. image:: ../examples/rtd_images/RTD_E9_grid_of_four.png
 
-.. code-block:: python
+----
 
-   from plotez import n_plotter
+Shared Axes
+~~~~~~~~~~~
 
-   # Create 2×2 grid
-   x_data = [np.linspace(0, 10, 100) for _ in range(4)]
-   y_data = [
-       np.sin(x_data[0]),
-       np.cos(x_data[1]),
-       np.tan(x_data[2] / 5),
-       x_data[3]**2 / 100
-   ]
+Pass ``figure_kwargs={"sharex": True, "sharey": True}`` to lock axis
+ranges across all panels — redundant tick labels are hidden automatically.
 
-   fig, axs = n_plotter(
-       x_data, y_data,
-       n_rows=2, n_cols=2,
-       auto_label=True
-   )
+.. literalinclude:: ../examples/RTD_E10_shared_axes.py
+   :language: python
+   :lines: 3-29
 
-Scatter Plots
+.. image:: ../examples/rtd_images/RTD_E10_shared_axes.png
+
+----
+
+Customization
 -------------
 
-Any plot function can create scatter plots:
+Config Classes
+~~~~~~~~~~~~~~
+
+``LinePlotConfig`` (and its siblings ``ErrorPlotConfig``, ``ErrorBandConfig``,
+``ScatterPlotConfig``) give full IDE autocomplete and are
+reusable across multiple plots. Any matplotlib parameter not covered by a
+named field can be forwarded via the ``_extra`` dict.
+
+.. literalinclude:: ../examples/RTD_E5-2_errorbar_customized.py
+   :language: python
+   :lines: 3-33
+
+.. image:: ../examples/rtd_images/RTD_E5-2_errorbar_customized.png
+
+
+----
+
+Shorthand Helpers
+-----------------
+
+``lpc``, ``epc``, ``ebc``, ``spc``, and ``fgc`` are factory functions that accept
+familiar matplotlib aliases (``c``, ``lw``, ``ls``, ``ms``, ``mec``, ``mfc``) and
+return the corresponding config object — no class import required.
 
 .. code-block:: python
 
-   from plotez import plot_xy
+   from plotez import lpc, epc, ebc, spc, fgc
 
-   x = np.random.randn(100)
-   y = np.random.randn(100)
+   line = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
+   ep = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6, capsize=8, elinewidth=2, ecolor='red')
+   band = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
+   dots = spc(c='orange', s=40, alpha=0.7, marker='^')
+   layout = fgc(figsize=(10, 4), sharex=True)
 
-   plot_xy(x, y, is_scatter=True, auto_label=True)
+See the :doc:`api` page for the full shorthand key reference.
 
-Customization with Parameter Classes
--------------------------------------
+----
 
-Line Plots
-~~~~~~~~~~
+Error Handling
+--------------
 
-.. code-block:: python
+PlotEZ provides domain-specific exceptions for clear, catchable error handling. All exceptions
+are available from ``plotez.backend.error_handling``.
 
-   from plotez import plot_xy
-   from plotez.backend.utilities import LinePlotConfig
-
-   x = np.linspace(0, 10, 100)
-   y = np.sin(x)
-
-   # Create custom line plot parameters
-   line_params = LinePlotConfig(
-       linestyle='-',
-       linewidth=2,
-       color='#FF5733',
-       marker='o',
-       markersize=4
-   )
-
-   plot_xy(x, y, plot_config=line_params)
-
-Scatter Plots
-~~~~~~~~~~~~~
+Exception Hierarchy
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from plotez.backend.utilities import ScatterPlotConfig
+   from plotez.backend.error_handling import (
+       PlotError,           # Base for all plotting errors
+       DataError,           # Base for data-related errors
+       ConfigurationError,  # Base for config/parameter errors
 
-   scatter_params = ScatterPlotConfig(
-       c='blue',
-       s=50,
-       marker='s',
-       alpha=0.6
+       # Data errors
+       ShapeError,          # Invalid array shape (e.g., bad error array)
+       EmptyDataError,      # Empty required data
+       ColumnCountError,    # File doesn't have 2 columns
+
+       # Configuration errors
+       OrientationError,    # Invalid plot orientation
+       AxisLabelError,      # axis_labels has wrong length
+       TwinXDataError,      # x2_data given with use_twin_x=True
+       TwinYDataError,      # y2_data given with use_twin_x=False
+
+       # Warnings
+       LabelConflictWarning # auto_label overriding user labels
    )
 
-   plot_xy(x, y, is_scatter=True, plot_config=scatter_params)
+Catching Specific Exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Subplot Configuration
-~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   from plotez.backend.utilities import FigureConfig
-
-   subplot_params = FigureConfig(
-       sharex=True,
-       sharey=True,
-       figsize=(12, 8)
-   )
-
-   fig, axs = two_subplots(
-       [x, x], [y, y*2],
-       orientation='h',
-       figure_config=subplot_params
-   )
-
-Plotting from Files
--------------------
-
-PlotEZ can directly plot two-column CSV files:
-
-.. code-block:: python
-
-   from plotez import plot_two_column_file
-
-   # Basic usage
-   plot_two_column_file('data.csv')
-
-   # With options
-   plot_two_column_file(
-       'data.csv',
-       delimiter=',',
-       skip_header=True,
-       x_label='X Values',
-       y_label='Y Values',
-       plot_title='Data from CSV'
-   )
-
-Error Bar Plots
----------------
-
-PlotEZ provides comprehensive error bar plotting capabilities through the ``ErrorPlotConfig`` class
-and the ``plot_errorbar`` function.
-
-Basic Error Bars
-~~~~~~~~~~~~~~~~
+Catch specific errors for precise error handling:
 
 .. code-block:: python
 
    import numpy as np
    from plotez import plot_errorbar
-   from plotez.backend.utilities import ErrorPlotConfig
+   from plotez.backend.error_handling import ShapeError
 
-   # Generate sample data with errors
-   x = np.linspace(0, 10, 20)
-   y = np.sin(x)
-   x_err = 0.1 * np.random.rand(len(x))
-   y_err = 0.1 * np.random.rand(len(y))
+   x = np.array([1, 2, 3])
+   y = np.array([1, 2, 3])
+   bad_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Wrong shape!
 
-   # Simple error bar plot
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err)
+   try:
+       plot_errorbar(x, y, x_err=bad_err)
+   except ShapeError as e:
+       print(f"Invalid error array: {e}")
 
-   # With custom styling
-   ep = ErrorPlotConfig(linestyle='--', capsize=5, color='blue')
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+Catching by Base Class
+~~~~~~~~~~~~~~~~~~~~~~
 
-Enhanced Error Bar Styling
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-ErrorPlotConfig provides access to all line styling options
-plus specialized error bar parameters:
+Use base classes to catch multiple related errors:
 
 .. code-block:: python
 
-   # Full customization with enhanced error bar styling
-   ep = ErrorPlotConfig(
-       # Line styling
-       linestyle='-',
-       linewidth=2,
-       color='darkblue',
-       marker='o',
-       markersize=6,
-       alpha=0.7,
+   from plotez import plot_with_dual_axes
+   from plotez.backend.error_handling import DataError, ConfigurationError
 
-       # Error bar specific styling
-       capsize=8,           # Length of error bar caps
-       elinewidth=2,        # Width of error bar lines
-       ecolor='red',        # Color of error bars (can differ from line color)
-       capthick=2           # Thickness of error bar caps
-   )
+   try:
+       # Your plotting code here
+       plot_with_dual_axes([], [1, 2, 3], auto_label=False,
+                          axis_labels=['X', 'Y'])
+   except DataError:
+       print("Data-related error occurred")
+   except ConfigurationError:
+       print("Configuration error occurred")
 
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+Filtering Warnings
+~~~~~~~~~~~~~~~~~~
 
-Creating ErrorPlotConfig from Dictionary
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Use the ``populate()`` class method to create ErrorPlotConfig instances from parameter dictionaries:
+Use Python's ``warnings`` module to filter or escalate custom warnings:
 
 .. code-block:: python
 
-   # Using parameter aliases
-   params = {
-       'ls': '--',          # linestyle
-       'lw': 2,             # linewidth
-       'color': 'purple',
-       'marker': 's',
-       'ms': 6,             # markersize
-       'capsize': 7,
-       'elinewidth': 2,
-       'ecolor': 'crimson'
-   }
+   import warnings
+   from plotez.backend.error_handling import LabelConflictWarning
 
-   ep = ErrorPlotConfig.populate(params)
-   plot_errorbar(x, y, x_err=x_err, y_err=y_err, errorbar_config=ep)
+   # Suppress label conflict warnings
+   warnings.filterwarnings('ignore', category=LabelConflictWarning)
 
-Error Band Plots
-----------------
+   # Or escalate them to errors
+   warnings.filterwarnings('error', category=LabelConflictWarning)
 
-PlotEZ also supports shaded error band plots through the ``ErrorBandConfig`` class
-and the ``plot_errorband`` function.
+----
 
-.. code-block:: python
+Real-World Workflows
+--------------------
 
-   import numpy as np
-   from plotez import plot_errorband
-   from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
+Plotting from CSV Files
+~~~~~~~~~~~~~~~~~~~~~~~
 
-   x = np.linspace(0, 10, 50)
-   y = np.sin(x)
-   y_low = y - 0.2
-   y_upp = y + 0.2
+``plot_two_column_file`` reads any two-column delimited file directly —
+no pandas boilerplate. The file must have exactly two columns (x, y);
+use ``skip_header=True`` to ignore a header row.
 
-   band_config = ErrorBandConfig(color='cyan', edgecolor='k', linestyle='--', hatch='\\')
-   line_config = LinePlotConfig(color='gold', linestyle='--', linewidth=2,
-                                marker='o', markersize=5, markeredgecolor='k')
+.. literalinclude:: ../examples/RTD_E11_from_files.py
+   :language: python
+   :lines: 3-17
 
-   ax = plot_errorband(x, y, y_low, y_upp,
-                       data_label=r'$\sin(x)$',
-                       band_config=band_config,
-                       line_config=line_config)
+.. image:: ../examples/rtd_images/RTD_E11_from_files.png
+
+----
+
+Mixing with Matplotlib
+~~~~~~~~~~~~~~~~~~~~~~
+
+All ``plotez`` functions accept an ``axis`` keyword so you can drop them
+into any existing matplotlib figure. They return the ``Axes`` object for
+further customisation.
+
+.. literalinclude:: ../examples/RTD_E12_matplotlib_integration.py
+   :language: python
+   :lines: 3-20
+
+.. image:: ../examples/rtd_images/RTD_E12_matplotlib_integration.png
+
+----
 
 Next Steps
 ----------
 
-* Explore the :doc:`api` for complete function signatures
-* Check out the :doc:`CHANGELOG` for version history
-* Review the test suite for more usage examples
+* See :doc:`api` for complete function and config-class signatures.
+* Check :doc:`CHANGELOG` for version history.
+* Browse the ``examples/`` directory for all runnable scripts.
