@@ -26,7 +26,7 @@ with minimal boilerplate code.
 - **Extensive Customization**: Full control over plot appearance via parameter classes
 - **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
-- **Well Tested**: Comprehensive test suite with 85%+ coverage
+- **Well Tested**: Comprehensive test suite with 80%+ coverage
 
 ## Installation
 
@@ -235,8 +235,8 @@ make html
 |----------------|------------------------------------------------|
 | Latest version | v0.2.1                                         |
 | Python support | 3.10 · 3.11 · 3.12                             |
-| Test coverage  | 85%+                                           |
-| Type hints     | ✅ PEP 561 compliant (`py.typed`)               |
+| Test coverage  | 80%+                                           |
+| Type hints     | PEP 561 compliant (`py.typed`)                 |
 | Documentation  | [Read the Docs](https://plotez.readthedocs.io) |
 | License        | MIT                                            |
 
