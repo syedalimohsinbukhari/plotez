@@ -67,11 +67,11 @@ autodoc_type_aliases = {
 autodoc_typehints_format = "short"
 
 # Intersphinx mapping
-# intersphinx_mapping = {
-#     "python": ("https://docs.python.org/3", None),
-#     "numpy": ("https://numpy.org/doc/stable/", None),
-#     "matplotlib": ("https://matplotlib.org/stable/", None),
-# }
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+}
 
 # Autosummary settings
 autosummary_generate = True

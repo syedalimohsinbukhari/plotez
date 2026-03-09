@@ -108,7 +108,7 @@ class ErrorBandConfig:
     edgecolor: str | None = None
     linestyle: str | None = None
     hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
-    interpolate: bool = False
+    interpolate: bool | None = None
     step: str | Literal["pre", "post", "mid"] | None = None
 
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -181,7 +181,7 @@ class ErrorPlotConfig:
 class ScatterPlotConfig:
     """Configuration class for scatter plots."""
 
-    c: str | None = None
+    color: str | None = None
     s: float | None = None
     alpha: float | None = None
     marker: str | None = None
@@ -254,13 +254,22 @@ def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
     ------
     ValueError
         If any parameter in `plot_instance` is not a list or tuple with exactly two elements.
+
+    Notes
+    -----
+        The parameters with only one element are broadcast to both instances rather than raising an error.
     """
     parameters = plot_instance.get_dict()
     params_instance1, params_instance2 = {}, {}
 
-    # Split each parameter into two separate dictionaries for the two instances
     for param_name, values in parameters.items():
-        params_instance1[param_name], params_instance2[param_name] = values[:2]
+        if isinstance(values, (list, tuple)) and len(values) >= 2:
+            params_instance1[param_name] = values[0]
+            params_instance2[param_name] = values[1]
+        else:
+            # Scalar or single-element: both instances get the same value
+            params_instance1[param_name] = values
+            params_instance2[param_name] = values
 
     instance1 = plot_instance.__class__.populate(params_instance1)
     instance2 = plot_instance.__class__.populate(params_instance2)
@@ -274,7 +283,7 @@ def dual_axes_data_validation(
     y1_data: ArrayLike,
     y2_data: ArrayLike,
     use_twin_x: bool,
-    axis_labels: str | list[str],
+    axis_labels: Sequence[str] | None,
 ) -> None:
     """
     Validate the data and parameters for dual-axes plotting.
@@ -308,6 +317,10 @@ def dual_axes_data_validation(
     TwinYDataError
         If ``y2_data`` is provided when ``use_twin_x`` is ``False``.
     """
+    if isinstance(axis_labels, str):
+        raise AxisLabelError(
+            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
+        )
     if len(axis_labels) != 3:
         raise AxisLabelError("The axis_labels should have a length of 3.")
     if len(x1_data) == 0 or len(y1_data) == 0:
@@ -369,10 +382,12 @@ def dual_axes_label_management(
     When `auto_label=False`, missing labels are replaced with empty strings.
     """
     # Warn if the user provided labels but `auto_label` is True
+    if isinstance(axis_labels, str):
+        raise AxisLabelError(
+            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
+        )
     if auto_label:
         _auto_handler(axis_labels=axis_labels, x1y1_label=x1y1_label, x1y2_label=x1y2_label, x2y1_label=x2y1_label)
-    if auto_label:
-        # Auto-label OVERWRITES everything
         if use_twin_x:
             axis_labels = ["X", r"$Y_1$", r"$Y_2$"]
             x1y1_label = r"$X_1$ vs $Y_1$"

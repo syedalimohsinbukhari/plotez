@@ -98,7 +98,7 @@ class TestPlotXY:
 
     def test_plot_xy_with_scatterplot_dict(self, sample_x_data, sample_y_data):
         """Test scatter plotting with ScatterPlot dictionary."""
-        sp = ScatterPlotConfig(s=50, c="blue", marker="o")
+        sp = ScatterPlotConfig(s=50, color="blue", marker="o")
         result = plot_xy(sample_x_data, sample_y_data, is_scatter=True, plot_config=sp)
         assert isinstance(result, Axes)
 

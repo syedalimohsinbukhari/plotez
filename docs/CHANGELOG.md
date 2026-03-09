@@ -5,45 +5,47 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.1] - 09-Mar-2026
 
 ### Added
 
 - **Custom Exception Hierarchy**: Comprehensive domain-specific exceptions for better error handling
-  - **Base exceptions**: `PlotError` (base for all plotting errors), `DataError` (data-related errors),
-    `ConfigurationError` (config/parameter errors)
-  - **Data exceptions**: `ShapeError` (invalid array shapes), `EmptyDataError` (empty required data),
-    `ColumnCountError` (invalid file column count)
-  - **Configuration exceptions**: `AxisLabelError` (wrong axis_labels length), `TwinXDataError`
-    (invalid x2_data for dual-Y plots), `TwinYDataError` (invalid y2_data for dual-X plots)
+  - **Base exceptions**: `PlotError` (base for all plotting errors), `DataError` (data-related errors), `ConfigurationError` (config/parameter errors)
+  - **Data exceptions**: `ShapeError` (invalid array shapes), `EmptyDataError` (empty required data), `ColumnCountError` (invalid file column count)
+  - **Configuration exceptions**: `AxisLabelError` (wrong axis_labels length), `TwinXDataError` (invalid x2_data for dual-Y plots), `TwinYDataError` (invalid y2_data for dual-X plots)
   - **Custom warning**: `LabelConflictWarning` (for `auto_label` overriding user labels)
   - All exceptions available from `plotez.backend.error_handling` module
   - 19 new tests in `TestCustomExceptions` class for comprehensive exception coverage
-- **Top-level wrapper aliases**: `lpc`, `epc`, `ebc`, `spc`, `fgc` and their long-form equivalents
-  (`line_plot_configuration`, `error_plot_configuration`, `error_band_configuration`,
-  `scatter_plot_configuration`, `figure_configuration`) are now exported from the top-level
-  `plotez` namespace — no need to import from `plotez.backend` directly
-- **`docs/api.rst`** — new "Convenience / Wrapper Functions" section with alias table and
-  `autofunction` directives for all five wrapper functions
-- **`docs/api.rst`** — new "Shorthand Key Reference" section with RST tables documenting every
-  accepted alias for line, error-bar, scatter, and figure parameters
-- **`docs/quickstart.rst`** — new "Convenience / Wrapper Functions" section with before/after
-  examples showing `epc()`, `lpc()`, `fgc()`, `ebc()`, and `spc()`
+- **Top-level wrapper aliases**: `lpc`, `epc`, `ebc`, `spc`, and their long-form equivalents (`line_plot_configuration`, `error_plot_configuration`, `error_band_configuration`, `scatter_plot_configuration`) are now exported from the top-level `plotez` namespace — no need to import from `plotez.backend` directly
+- **Comprehensive wrapper function tests**: New `tests/test_wrappers.py` module with 34 tests covering:
+  - All four wrapper functions (`lpc`, `epc`, `ebc`, `spc`) and their long-form equivalents
+  - Parameter mapping from shorthand aliases to full parameter names
+  - Edge cases (None values, zero values, sequences, extra kwargs)
+  - Config object independence and integration scenarios
+  - Achieves 100% coverage for `backend/_wrappers.py` module
+- **`docs/api.rst`** — new "Convenience / Wrapper Functions" section with alias table and `autofunction` directives for all wrapper functions
+- **`docs/api.rst`** — new "Shorthand Key Reference" section with RST tables documenting every accepted alias for line, error-bar, scatter, and figure parameters
+- **`docs/quickstart.rst`** — new "Convenience / Wrapper Functions" section with before/after examples showing `epc()`, `lpc()`, `ebc()`, and `spc()`
 
 ### Changed
 
+- **Code organization**: `src/plotez/plotez.py` reorganized with logical section headers for improved readability:
+  - Error Visualization Functions (`plot_errorband`, `plot_errorbar`)
+  - File I/O Functions (`plot_two_column_file`)
+  - Simple Plotting Functions (`plot_xy`)
+  - Dual-Axis Plotting Functions (`plot_xyy`, `plot_xxy`, `plot_with_dual_axes`)
+  - Multi-Panel Plotting Functions (`two_subplots`, `n_plotter`)
 - **Exception handling**: Replaced generic `ValueError` exceptions with specific custom exceptions
   - `plot_errorbar`: `ValueError` → `ShapeError` for invalid error array shapes
   - `plot_two_column_file`: `ValueError` → `ColumnCountError` for invalid file format
-  - `dual_axes_data_validation`: `ValueError` → `AxisLabelError`, `EmptyDataError`,
-    `TwinXDataError`, `TwinYDataError` for specific validation failures
+  - `dual_axes_data_validation`: `ValueError` → `AxisLabelError`, `EmptyDataError`, `TwinXDataError`, `TwinYDataError` for specific validation failures
   - `_auto_handler`: `UserWarning` → `LabelConflictWarning` for label override warnings
 - **`docs/index.rst`** — Quick Example updated to use current API (`plot_errorbar` + `epc()`) instead of old `plot_errorbars` + `LinePlot` dict
 - **`Project Status`** section replaced with a concise Markdown status table (version, Python support, coverage, docs link, license)
-- **`docs/installation.rst`** — Requirements section corrected to list actual runtime deps
-  (`matplotlib`, `numpy`)
-  - a dev-dependency list replaced with a full table matching `requirements-dev.txt` (adds `black`, `isort`, `flake8`, `pydocstyle`, `pre-commit`, `sphinx-copybutton`, `myst-parser`, `build`
+- **`docs/installation.rst`** — Requirements section corrected to list actual runtime deps (`matplotlib`, `numpy`)
+  - Dev-dependency list replaced with a full table matching `requirements-dev.txt` (adds `black`, `isort`, `flake8`, `pydocstyle`, `pre-commit`, `sphinx-copybutton`, `myst-parser`, `build`)
 - **`README.md`** — "Project Status" section replaced with a concise Markdown status table (version, Python support, coverage, docs link, license); Error Bar Plots example updated to use `epc()` with shorthand keyword aliases
+- **Test coverage**: Overall project coverage increased to 91% (from ~85%), with `backend/_wrappers.py` achieving 100% coverage
 
 ## [v0.2.0] - 27-Feb-2026
 
@@ -62,8 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Renamed parameter classes** (breaking):
     - `LinePlot` → `LinePlotConfig`
     - `ScatterPlot` → `ScatterPlotConfig`
-    - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`,
-      `share_x`, `share_y`)
+    - `FigureConfig` field names now use matplotlib-native names (`figsize`, `sharex`, `sharey` instead of `fig_size`, `share_x`, `share_y`)
 - **Renamed function keyword arguments** (breaking):
     - `plot_dictionary` → `plot_config`
     - `subplot_dictionary` / `subplot_config` → `figure_config`
@@ -115,7 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `PlotError`: Base exception for plotting errors
     - `OrientationError`: Exception for invalid subplot orientation
 - Comprehensive test suite with 70%+ code coverage
-- Type hints throughout the codebase (PEP 561 compliant with py.typed marker)
+- Type hints throughout the codebase (PEP 561 compliant with `py.typed` marker)
 - Development tools integration:
     - pytest for testing
     - pytest-cov for coverage reporting

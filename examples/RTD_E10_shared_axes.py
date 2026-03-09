@@ -15,7 +15,7 @@ line_plot_cfg = LinePlotConfig(
     color=["red", "blue", "green", "gold"],
     markeredgecolor=["k"] * 4,
     marker=["o", "s", "d", "^"],
-    **{"markevery": [5, 2, 3, 10]},
+    _extra={"markevery": [5, 2, 3, 10]},
 )
 
 n_plotter(
