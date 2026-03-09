@@ -169,7 +169,7 @@ def error_plot_configuration(
     mec :
         Marker edge color.
     capsize :
-        Length of error bar caps in points.
+        Length of the error bar caps in points.
     capthick :
         Thickness of error bar caps.
     errorevery :

@@ -11,7 +11,19 @@ from ._wrappers import (
     spc,
 )
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from .error_handling import OrientationError
+from .error_handling import (
+    AxisLabelError,
+    ColumnCountError,
+    ConfigurationError,
+    DataError,
+    EmptyDataError,
+    LabelConflictWarning,
+    OrientationError,
+    PlotError,
+    ShapeError,
+    TwinXDataError,
+    TwinYDataError,
+)
 from .utilities import (
     ErrorBandConfig,
     ErrorPlotConfig,
@@ -36,11 +48,27 @@ __all__ = [
     "LINE_ATTRS",
     "SCATTER_ATTRS",
     "ERROR_BAND_ATTRS",
+    # Base errors
+    "PlotError",
+    "DataError",
+    "ConfigurationError",
+    # Data errors
+    "ShapeError",
+    "EmptyDataError",
+    "ColumnCountError",
+    # Configuration errors
     "OrientationError",
+    "AxisLabelError",
+    "TwinXDataError",
+    "TwinYDataError",
+    # Warnings
+    "LabelConflictWarning",
+    # Config classes
     "ErrorPlotConfig",
     "ErrorBandConfig",
     "LinePlotConfig",
     "ScatterPlotConfig",
+    # Utilities
     "dual_axes_data_validation",
     "dual_axes_label_management",
     "plot_or_scatter",

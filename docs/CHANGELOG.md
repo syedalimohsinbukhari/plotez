@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Custom Exception Hierarchy**: Comprehensive domain-specific exceptions for better error handling
+  - **Base exceptions**: `PlotError` (base for all plotting errors), `DataError` (data-related errors),
+    `ConfigurationError` (config/parameter errors)
+  - **Data exceptions**: `ShapeError` (invalid array shapes), `EmptyDataError` (empty required data),
+    `ColumnCountError` (invalid file column count)
+  - **Configuration exceptions**: `AxisLabelError` (wrong axis_labels length), `TwinXDataError`
+    (invalid x2_data for dual-Y plots), `TwinYDataError` (invalid y2_data for dual-X plots)
+  - **Custom warning**: `LabelConflictWarning` (for `auto_label` overriding user labels)
+  - All exceptions available from `plotez.backend.error_handling` module
+  - 19 new tests in `TestCustomExceptions` class for comprehensive exception coverage
 - **Top-level wrapper aliases**: `lpc`, `epc`, `ebc`, `spc`, `fgc` and their long-form equivalents
   (`line_plot_configuration`, `error_plot_configuration`, `error_band_configuration`,
   `scatter_plot_configuration`, `figure_configuration`) are now exported from the top-level
@@ -22,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Exception handling**: Replaced generic `ValueError` exceptions with specific custom exceptions
+  - `plot_errorbar`: `ValueError` → `ShapeError` for invalid error array shapes
+  - `plot_two_column_file`: `ValueError` → `ColumnCountError` for invalid file format
+  - `dual_axes_data_validation`: `ValueError` → `AxisLabelError`, `EmptyDataError`,
+    `TwinXDataError`, `TwinYDataError` for specific validation failures
+  - `_auto_handler`: `UserWarning` → `LabelConflictWarning` for label override warnings
 - **`docs/index.rst`** — Quick Example updated to use current API (`plot_errorbar` + `epc()`) instead of old `plot_errorbars` + `LinePlot` dict
 - **`Project Status`** section replaced with a concise Markdown status table (version, Python support, coverage, docs link, license)
 - **`docs/installation.rst`** — Requirements section corrected to list actual runtime deps

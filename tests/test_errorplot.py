@@ -3,9 +3,6 @@
 from plotez.backend.utilities import ErrorPlotConfig
 
 
-# TODO:
-# Fix has for dataclasses
-# Fix alias for plotting
 class TestErrorPlot:
     """Test ErrorPlotConfig class."""
 

@@ -203,6 +203,94 @@ See the :doc:`api` page for the full shorthand key reference.
 
 ----
 
+Error Handling
+--------------
+
+PlotEZ provides domain-specific exceptions for clear, catchable error handling. All exceptions
+are available from ``plotez.backend.error_handling``.
+
+Exception Hierarchy
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from plotez.backend.error_handling import (
+       PlotError,           # Base for all plotting errors
+       DataError,           # Base for data-related errors
+       ConfigurationError,  # Base for config/parameter errors
+
+       # Data errors
+       ShapeError,          # Invalid array shape (e.g., bad error array)
+       EmptyDataError,      # Empty required data
+       ColumnCountError,    # File doesn't have 2 columns
+
+       # Configuration errors
+       OrientationError,    # Invalid plot orientation
+       AxisLabelError,      # axis_labels has wrong length
+       TwinXDataError,      # x2_data given with use_twin_x=True
+       TwinYDataError,      # y2_data given with use_twin_x=False
+
+       # Warnings
+       LabelConflictWarning # auto_label overriding user labels
+   )
+
+Catching Specific Exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Catch specific errors for precise error handling:
+
+.. code-block:: python
+
+   import numpy as np
+   from plotez import plot_errorbar
+   from plotez.backend.error_handling import ShapeError
+
+   x = np.array([1, 2, 3])
+   y = np.array([1, 2, 3])
+   bad_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # Wrong shape!
+
+   try:
+       plot_errorbar(x, y, x_err=bad_err)
+   except ShapeError as e:
+       print(f"Invalid error array: {e}")
+
+Catching by Base Class
+~~~~~~~~~~~~~~~~~~~~~~
+
+Use base classes to catch multiple related errors:
+
+.. code-block:: python
+
+   from plotez import plot_with_dual_axes
+   from plotez.backend.error_handling import DataError, ConfigurationError
+
+   try:
+       # Your plotting code here
+       plot_with_dual_axes([], [1, 2, 3], auto_label=False,
+                          axis_labels=['X', 'Y'])
+   except DataError:
+       print("Data-related error occurred")
+   except ConfigurationError:
+       print("Configuration error occurred")
+
+Filtering Warnings
+~~~~~~~~~~~~~~~~~~
+
+Use Python's ``warnings`` module to filter or escalate custom warnings:
+
+.. code-block:: python
+
+   import warnings
+   from plotez.backend.error_handling import LabelConflictWarning
+
+   # Suppress label conflict warnings
+   warnings.filterwarnings('ignore', category=LabelConflictWarning)
+
+   # Or escalate them to errors
+   warnings.filterwarnings('error', category=LabelConflictWarning)
+
+----
+
 Real-World Workflows
 --------------------
 

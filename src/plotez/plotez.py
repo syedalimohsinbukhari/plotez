@@ -12,6 +12,7 @@ __all__ = [
     "plot_with_dual_axes",
     "plot_xy",
     "plot_xyy",
+    "plot_xxy",
     "n_plotter",
     "plot_errorband",
     "two_subplots",
@@ -34,7 +35,7 @@ from .backend import (
     dual_axes_label_management,
     plot_or_scatter,
 )
-from .backend.error_handling import OrientationError
+from .backend.error_handling import ColumnCountError, OrientationError, ShapeError
 
 # safeguard
 lPsP = LinePlotConfig | ScatterPlotConfig
@@ -200,12 +201,12 @@ def plot_errorbar(
     if x_err is not None:
         x_err = np.asarray(x_err)
         if x_err.ndim == 2 and x_err.shape[0] != 2:
-            raise ValueError(f"Asymmetric x_err must have shape (2, N), got {x_err.shape}")
+            raise ShapeError(f"Asymmetric x_err must have shape (2, N), got {x_err.shape}")
 
     if y_err is not None:
         y_err = np.asarray(y_err)
         if y_err.ndim == 2 and y_err.shape[0] != 2:
-            raise ValueError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
+            raise ShapeError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
 
     # IDE complain hack
     f, ax = None, None
@@ -286,7 +287,7 @@ def plot_two_column_file(
     data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)
 
     if data.shape[1] != 2:
-        raise ValueError("The file must contain exactly two columns of data.")
+        raise ColumnCountError("The file must contain exactly two columns of data.")
 
     x_data, y_data = data.T
 
@@ -460,7 +461,7 @@ def plot_xxy(
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
 ) -> axis_return:
-    """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
+    """Plot two sets of x-data (`x1_data` and `x2_data`) against the same y-data (`y_data`) on the same plot.
 
     Parameters
     ----------
@@ -543,23 +544,24 @@ def plot_with_dual_axes(
     y2_data :
         Data for the secondary y-axis (used for dual y-axis plots).
     x1y1_label :
-        Label for the plot of X1 vs. Y1. If None and `auto_label` is True, defaults to 'X1 vs Y1'.
+        Label for the plot of X1 vs. Y1.
+        If None, and `auto_label` is True, defaults to 'X1 vs Y1'.
     x1y2_label :
-        Label for the plot of X1 vs. Y2 (when using dual Y-axes). If None and `auto_label` is True,
-        defaults to 'X1 vs Y2'.
+        Label for the plot of X1 vs. Y2 (when using dual Y-axes).
+        If None, and `auto_label` is True, defaults to 'X1 vs Y2'.
     x2y1_label :
         Label for the plot of X2 vs. Y1 (when using dual X-axes).
-        If None and `auto_label` is True, defaults to 'X2 vs Y1'.
+        If None, and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x :
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot. Default is False.
     auto_label :
         If True, automatically assigns labels if none are provided. Default is False.
     axis_labels :
         List of axis labels in the form [x_label, y_label1, y_label2].
-        If None and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
+        If None, and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
     plot_title :
-        Title of the plot. If None and `auto_label` is True, defaults to 'Plot'.
-        If None and `auto_label` is False, no title is added.
+        Title of the plot.
+        If None, and `auto_label` is True, defaults to 'Plot'.
     is_scatter :
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :

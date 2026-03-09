@@ -27,6 +27,7 @@ Features
 * **File Integration**: Direct plotting from CSV files
 * **Extensive Customization**: Full control over plot appearance via independent config dataclasses
 * **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``, ``fgc``) available at top level
+* **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 * **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 * **Well Tested**: Comprehensive test suite with 85%+ coverage
 

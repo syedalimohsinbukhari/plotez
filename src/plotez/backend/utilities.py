@@ -24,6 +24,13 @@ from warnings import warn
 from numpy.typing import ArrayLike
 
 from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS
+from plotez.backend.error_handling import (
+    AxisLabelError,
+    EmptyDataError,
+    LabelConflictWarning,
+    TwinXDataError,
+    TwinYDataError,
+)
 
 label_management = tuple[str, str, str, str, list[str]]
 
@@ -292,21 +299,23 @@ def dual_axes_data_validation(
 
     Raises
     ------
-    ValueError
-        If any of the following conditions are met:
-        - `axis_labels` does not have exactly three elements.
-        - `x1_data` or `y1_data` is empty.
-        - `x2_data` is provided when `use_twin_x` is True.
-        - `y2_data` is provided when `use_twin_x` is False.
+    AxisLabelError
+        If ``axis_labels`` does not have exactly three elements.
+    EmptyDataError
+        If ``x1_data`` or ``y1_data`` is empty.
+    TwinXDataError
+        If ``x2_data`` is provided when ``use_twin_x`` is ``True``.
+    TwinYDataError
+        If ``y2_data`` is provided when ``use_twin_x`` is ``False``.
     """
     if len(axis_labels) != 3:
-        raise ValueError("The axis_labels should have a length of 3.")
+        raise AxisLabelError("The axis_labels should have a length of 3.")
     if len(x1_data) == 0 or len(y1_data) == 0:
-        raise ValueError("Primary x or y data is empty. Please provide valid data.")
+        raise EmptyDataError("Primary x or y data is empty. Please provide valid data.")
     if use_twin_x and x2_data is not None:
-        raise ValueError("Dual Y-axis plot requested but 'x2_data' given.")
+        raise TwinXDataError("Dual Y-axis plot requested but 'x2_data' given.")
     if not use_twin_x and y2_data is not None:
-        raise ValueError("Dual X-axis plot requested but 'y2_data' given.")
+        raise TwinYDataError("Dual X-axis plot requested but 'y2_data' given.")
 
 
 def dual_axes_label_management(
@@ -402,6 +411,6 @@ def _auto_handler(
     if provided_labels:
         warn(
             message=f"`auto_label=True` will override provided labels: {', '.join(provided_labels)}",
-            category=UserWarning,
+            category=LabelConflictWarning,
             stacklevel=2,
         )
