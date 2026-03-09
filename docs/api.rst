@@ -37,10 +37,6 @@ Parameter Classes
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: plotez.backend.utilities.FigureConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Utility Functions
 ~~~~~~~~~~~~~~~~~
@@ -72,8 +68,6 @@ Each function also has a **short alias** that can be used interchangeably:
 +------------------------------+---------------+
 | ``scatter_plot_configuration``| ``spc``      |
 +------------------------------+---------------+
-| ``figure_configuration``     | ``fgc``       |
-+------------------------------+---------------+
 
 .. autofunction:: plotez.backend._wrappers.line_plot_configuration
 
@@ -82,8 +76,6 @@ Each function also has a **short alias** that can be used interchangeably:
 .. autofunction:: plotez.backend._wrappers.error_band_configuration
 
 .. autofunction:: plotez.backend._wrappers.scatter_plot_configuration
-
-.. autofunction:: plotez.backend._wrappers.figure_configuration
 
 .. _shorthand-key-reference:
 

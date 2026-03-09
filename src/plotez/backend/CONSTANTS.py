@@ -19,6 +19,5 @@ ERROR_ATTRS = LINE_ATTRS | {
 
 SCATTER_ATTRS = {"c": "color", "s": "size", "ec": "edgecolors", "fc": "facecolors"}
 
-SUBPLOT_ATTRS = {"sharex": "sharex", "sharey": "sharey", "figsize": "figsize"}
 
 ERROR_BAND_ATTRS = {"color": "color"}

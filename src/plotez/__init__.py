@@ -7,15 +7,12 @@ A Python library for simplified matplotlib plotting.
 from .backend import (
     ErrorBandConfig,
     ErrorPlotConfig,
-    FigureConfig,
     LinePlotConfig,
     ScatterPlotConfig,
     ebc,
     epc,
     error_band_configuration,
     error_plot_configuration,
-    fgc,
-    figure_configuration,
     line_plot_configuration,
     lpc,
     scatter_plot_configuration,
@@ -46,7 +43,6 @@ __all__ = [
     # Config classes
     "ErrorBandConfig",
     "ErrorPlotConfig",
-    "FigureConfig",
     "LinePlotConfig",
     "ScatterPlotConfig",
     # Convenience / wrapper functions (long-form)
@@ -54,13 +50,11 @@ __all__ = [
     "error_plot_configuration",
     "error_band_configuration",
     "scatter_plot_configuration",
-    "figure_configuration",
     # Convenience / wrapper functions (short aliases)
     "lpc",
     "epc",
     "ebc",
     "spc",
-    "fgc",
     # Version
     "__version__",
 ]

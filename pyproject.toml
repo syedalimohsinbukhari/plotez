@@ -11,7 +11,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license-files = ["LICENSE"]
 dynamic = ["version"]
-dependencies = ["matplotlib", "numpy", "pretty-errors"]
+dependencies = ["matplotlib", "numpy"]
 keywords = ["plotting", "visualization", "data visualization", "python plotting"]
 classifiers = [
     "Programming Language :: Python :: 3",
