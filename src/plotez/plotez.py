@@ -42,6 +42,11 @@ lPsP = LinePlotConfig | ScatterPlotConfig
 axis_return = tuple[Axes, Axes] | Axes
 
 
+# =============================================================================
+# Error Visualization Functions
+# =============================================================================
+
+
 def plot_errorband(
     x_data: ArrayLike,
     y_data: ArrayLike,
@@ -231,6 +236,11 @@ def plot_errorbar(
     return ax if axis else (f, ax)
 
 
+# =============================================================================
+# File I/O Functions
+# =============================================================================
+
+
 def plot_two_column_file(
     file_name: str,
     delimiter: str = ",",
@@ -306,6 +316,11 @@ def plot_two_column_file(
     )
 
 
+# =============================================================================
+# Simple Plotting Functions
+# =============================================================================
+
+
 def plot_xy(
     x_data: ArrayLike,
     y_data: ArrayLike,
@@ -370,6 +385,11 @@ def plot_xy(
         figure_kwargs=figure_kwargs,
         axis=axis,
     )
+
+
+# =============================================================================
+# Dual-Axis Plotting Functions
+# =============================================================================
 
 
 def plot_xyy(
@@ -640,6 +660,11 @@ def plot_with_dual_axes(
     plt.tight_layout()
 
     return (ax1, ax2) if ax2 else ax1
+
+
+# =============================================================================
+# Multi-Panel Plotting Functions
+# =============================================================================
 
 
 def two_subplots(
