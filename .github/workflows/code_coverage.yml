@@ -36,14 +36,16 @@ jobs:
         run: |
           pytest --cov=plotez --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
 
-      - name: Upload results to Codecov
+      - name: Upload coverage to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_SECRET_PLOTEZ }}
+          files: coverage.xml
 
       - name: Upload test results to Codecov
         if: ${{ !cancelled() }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_SECRET_PLOTEZ }}
+          files: junit.xml

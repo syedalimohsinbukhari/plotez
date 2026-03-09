@@ -319,7 +319,7 @@ def dual_axes_data_validation(
     """
     if isinstance(axis_labels, str):
         raise AxisLabelError(
-            "axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
+            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
         )
     if len(axis_labels) != 3:
         raise AxisLabelError("The axis_labels should have a length of 3.")
@@ -384,7 +384,7 @@ def dual_axes_label_management(
     # Warn if the user provided labels but `auto_label` is True
     if isinstance(axis_labels, str):
         raise AxisLabelError(
-            "axis_labels must be a list of 3 strings, not a plain string. " f"Did you mean ['{axis_labels}']?"
+            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
         )
     if auto_label:
         _auto_handler(axis_labels=axis_labels, x1y1_label=x1y1_label, x1y2_label=x1y2_label, x2y1_label=x2y1_label)
