@@ -1,5 +1,8 @@
 name: file_linting
 
+permissions:
+  contents: read
+
 on:
   push:
     branches-ignore:
