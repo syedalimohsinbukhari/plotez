@@ -17,7 +17,7 @@ ERROR_ATTRS = LINE_ATTRS | {
     "capthick": "capthick",
 }
 
-SCATTER_ATTRS = {"c": "color", "s": "size", "ec": "edgecolors", "fc": "facecolors"}
+SCATTER_ATTRS = {"c": "color", "s": "s", "ec": "edgecolors", "fc": "facecolors"}
 
 
 ERROR_BAND_ATTRS = {"color": "color"}

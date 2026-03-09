@@ -828,7 +828,7 @@ def n_plotter(
     ]
 
     if auto_label:
-        if any([x_labels, y_labels, plot_title, subplot_title, data_labels]):
+        if any((x_labels, y_labels, plot_title, subplot_title, data_labels)):
             warn("auto_label selected, it takes preference over user-provided labels.")
         x_labels = [rf"X$_{i + 1}$" for i in range(n_cols * n_rows)]
         y_labels = [rf"Y$_{i + 1}$" for i in range(n_cols * n_rows)]
