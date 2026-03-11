@@ -7,14 +7,16 @@ Utility classes and functions for plot parameter management and data validation.
 from __future__ import annotations
 
 __all__ = [
-    "LinePlotConfig",
-    "ScatterPlotConfig",
-    "ErrorPlotConfig",
-    "ErrorBandConfig",
-    "plot_or_scatter",
-    "split_dictionary",
     "dual_axes_data_validation",
     "dual_axes_label_management",
+    "ErrorBandConfig",
+    "ErrorPlotConfig",
+    "HistogramConfig",
+    "label_management",
+    "LinePlotConfig",
+    "plot_or_scatter",
+    "ScatterPlotConfig",
+    "split_dictionary",
 ]
 
 from dataclasses import dataclass, field
@@ -23,7 +25,7 @@ from warnings import warn
 
 from numpy.typing import ArrayLike
 
-from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, LINE_ATTRS, SCATTER_ATTRS
+from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 from plotez.backend.error_handling import (
     AxisLabelError,
     EmptyDataError,
@@ -207,6 +209,42 @@ class ScatterPlotConfig:
         """Pretty repr showing both explicit and extra params."""
         all_params = self.get_dict()
         param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
+        return f"{self.__class__.__name__}({param_str})"
+
+
+@dataclass
+class HistogramConfig:
+    """Configuration class for histogram plots."""
+
+    bins: int | None = None
+    density: bool | None = None
+    histtype: str | None = None
+    color: str | None = None
+    alpha: float | None = None
+    edgecolor: str | None = None
+    facecolor: str | None = None
+    linewidth: float | None = None
+    orientation: str | None = None
+    cumulative: bool | None = None
+    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
+
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    @classmethod
+    def populate(cls, dictionary: dict[str, Any]):
+        """Create a HistogramConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=HIST_ATTRS)
+
+    def get_dict(self) -> dict[str, Any]:
+        """Get all parameters are dict for matplotlib."""
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
+        result.update(self._extra)
+        return result
+
+    def __repr__(self):
+        """Pretty repr showing both explicit and extra params."""
+        all_params = self.get_dict()
+        param_str = ", ".join(f"{k}={v!r}" for k, v in all_params.items())
         return f"{self.__class__.__name__}({param_str})"
 
 

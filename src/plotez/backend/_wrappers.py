@@ -3,17 +3,19 @@
 from collections.abc import Sequence
 from typing import Literal
 
-from .utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
+from .utilities import ErrorBandConfig, ErrorPlotConfig, HistogramConfig, LinePlotConfig, ScatterPlotConfig
 
 __all__ = [
-    "line_plot_configuration",
-    "scatter_plot_configuration",
-    "error_plot_configuration",
-    "error_band_configuration",
-    "lpc",
-    "spc",
-    "epc",
     "ebc",
+    "epc",
+    "error_band_configuration",
+    "error_plot_configuration",
+    "hgc",
+    "histogram_config",
+    "line_plot_configuration",
+    "lpc",
+    "scatter_plot_configuration",
+    "spc",
 ]
 
 
@@ -242,7 +244,39 @@ def scatter_plot_configuration(
     )
 
 
+def histogram_config(
+    bins: int | None = None,
+    density: bool | None = None,
+    histtype: str | None = None,
+    color: str | None = None,
+    alpha: float | None = None,
+    edgecolor: str | None = None,
+    facecolor: str | None = None,
+    linewidth: float | None = None,
+    orientation: str | None = None,
+    cumulative: bool | None = None,
+    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None,
+    **kwargs,
+):
+    """Create a HistogramConfig instance with the given parameters."""
+    return HistogramConfig(
+        bins=bins,
+        density=density,
+        histtype=histtype,
+        color=color,
+        alpha=alpha,
+        edgecolor=edgecolor,
+        facecolor=facecolor,
+        linewidth=linewidth,
+        orientation=orientation,
+        cumulative=cumulative,
+        hatch=hatch,
+        _extra=kwargs,
+    )
+
+
 lpc = line_plot_configuration
 epc = error_plot_configuration
 ebc = error_band_configuration
 spc = scatter_plot_configuration
+hgc = histogram_config

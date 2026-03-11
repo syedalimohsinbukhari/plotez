@@ -7,25 +7,31 @@ This module provides simplified plotting functions for common visualization task
 from __future__ import annotations
 
 __all__ = [
-    "plot_errorbar",
-    "plot_two_column_file",
-    "plot_with_dual_axes",
-    "plot_xy",
-    "plot_xyy",
-    "plot_xxy",
     "n_plotter",
     "plot_errorband",
+    "plot_errorbar",
+    "plot_hist",
+    "plot_two_column_file",
+    "plot_with_dual_axes",
+    "plot_xxy",
+    "plot_xy",
+    "plot_xyy",
     "two_subplots",
 ]
 
+from _warnings import warn
 from collections.abc import Sequence
+from typing import Sequence
 from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
+from numpy._typing import ArrayLike
 from numpy.typing import ArrayLike
 
+from . import HistogramConfig
 from .backend import (
     ErrorBandConfig,
     ErrorPlotConfig,
@@ -38,8 +44,8 @@ from .backend import (
 from .backend.error_handling import ColumnCountError, OrientationError, ShapeError
 
 # safeguard
-lPsP = LinePlotConfig | ScatterPlotConfig
-axis_return = tuple[Axes, Axes] | Axes
+axis_return = Axes | tuple[Axes, Axes]
+axis_fig_return = Axes | tuple[plt.Figure, Axes]
 
 
 # =============================================================================
@@ -62,7 +68,7 @@ def plot_errorband(
     line_config: LinePlotConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> Axes | tuple[plt.Figure, Axes]:
+) -> axis_fig_return:
     """
     Plot a line with an error band around it using the provided data and configurations.
 
@@ -139,7 +145,7 @@ def plot_errorband(
 
     plt.tight_layout()
 
-    return ax if axis else (f, ax)
+    return ax if axis is not None else (f, ax)
 
 
 def plot_errorbar(
@@ -155,7 +161,7 @@ def plot_errorbar(
     errorbar_config: ErrorPlotConfig | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> Axes | tuple[plt.Figure, Axes]:
+) -> axis_fig_return:
     """
     Plot an error bar graph with optional error ranges, labels, and configurations.
 
@@ -882,3 +888,76 @@ def n_plotter(
     fig.tight_layout()
 
     return fig, axs
+
+
+def plot_hist(
+    x_data: ArrayLike,
+    x_label: str | None = None,
+    y_label: str | None = None,
+    plot_title: str | None = None,
+    data_label: str | Sequence[str] | None = None,
+    auto_label: bool = False,
+    hist_config: HistogramConfig | dict | None = None,
+    axis: Axes | None = None,
+    figure_kwargs: dict | None = None) -> Axes | tuple[plt.Figure, Axes]:
+    """
+    Plot a histogram of the data.
+
+    Parameters
+    ----------
+    x_data :
+        Array or sequence of data points to be histogrammed.
+    x_label :
+        Label for the x-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+    y_label :
+        Label for the y-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+    plot_title :
+        Title for the plot. If `None`, no title will be displayed unless auto-labeling is enabled.
+    data_label :
+        Label(s) for the data series. This is used in plot's legend generation.
+    auto_label :
+        If set to `True`, default labels for axis and title are applied. Defaults to `False`.
+    hist_config :
+        Configuration object for histogram styling. If `None`, default configurations are used.
+    axis :
+        An existing matplotlib axis object on which to plot. If `None`, a new figure and axis are created.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+
+    Returns
+    -------
+    Axes | tuple[plt.Figure, Axes]
+        Either the axis object if `axis` was provided, or a tuple of (figure, axis) if a new figure was created.
+    """
+
+    x = np.asarray(x_data)
+    if isinstance(hist_config, dict):
+        hist_config = HistogramConfig.populate(hist_config).get_dict()
+    elif isinstance(hist_config, HistogramConfig):
+        hist_config = hist_config.get_dict()
+    else:
+        hist_config = HistogramConfig().get_dict()
+
+    # IDE complain hack
+    f, ax = None, None
+    if axis is not None:
+        ax = axis
+    else:
+        f, ax = plt.subplots(**(figure_kwargs or {}))
+
+    if data_label and "label" in hist_config:
+        warn("Both `data_label` and `hist_config['label']` are provided. Using `data_label`.")
+        hist_config.pop("label", None)
+    ax.hist(x, label=data_label, **hist_config)
+
+    ax.set_xlabel("X" if auto_label else x_label)
+    _y_label = "Density" if hist_config.get("density") else "Count"
+    ax.set_ylabel(_y_label if auto_label else y_label)
+    ax.set_title("Histogram" if auto_label else plot_title)
+
+    if data_label:
+        ax.legend()
+
+    plt.tight_layout()
+
+    return ax if axis is not None else (f, ax)
