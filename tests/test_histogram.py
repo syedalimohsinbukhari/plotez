@@ -6,7 +6,7 @@ import pytest
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from plotez import hgc, HistogramConfig
+from plotez import HistogramConfig, hgc
 from plotez.plotez import plot_hist
 
 
@@ -145,16 +145,16 @@ class TestPlotHistConfigInputs:
 
     def test_accepts_histogram_config_dataclass(self, histogram_data):
         """Test HistogramConfig dataclass is accepted."""
-        hc = HistogramConfig(bins=20, density=True, histtype="stepfilled",
-                             color="steelblue", alpha=0.6, edgecolor="k", linewidth=1.2)
+        hc = HistogramConfig(
+            bins=20, density=True, histtype="stepfilled", color="steelblue", alpha=0.6, edgecolor="k", linewidth=1.2
+        )
         fig, ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)
 
     def test_accepts_hgc_wrapper(self, histogram_data):
         """Test hgc convenience wrapper is accepted."""
-        hc = hgc(bins=20, density=True, histtype="stepfilled",
-                  color="steelblue", alpha=0.6, ec="k", lw=1.2)
+        hc = hgc(bins=20, density=True, histtype="stepfilled", color="steelblue", alpha=0.6, ec="k", lw=1.2)
         fig, ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)

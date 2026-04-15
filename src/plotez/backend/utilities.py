@@ -25,9 +25,9 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 from warnings import warn
 
+from ..typing import LABEL_MGMT, ArrayLike
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 from .error_handling import AxisLabelError, EmptyDataError, LabelConflictWarning, TwinXDataError, TwinYDataError
-from ..typing import ArrayLike, LABEL_MGMT
 
 if TYPE_CHECKING:
     from ..typing import LSE

@@ -24,7 +24,6 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 
 from . import HistogramConfig
@@ -39,7 +38,6 @@ from .backend import (
 )
 from .backend.error_handling import ColumnCountError, OrientationError, ShapeError
 from .typing import ArrayLike, AxesFigReturn, AxesReturn
-
 
 # =============================================================================
 # Error Visualization Functions
@@ -892,7 +890,8 @@ def plot_hist(
     auto_label: bool = False,
     hist_config: HistogramConfig | dict | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None) -> AxesFigReturn:
+    figure_kwargs: dict | None = None,
+) -> AxesFigReturn:
     """
     Plot a histogram of the data.
 
@@ -922,7 +921,6 @@ def plot_hist(
     Axes | tuple[plt.Figure, Axes]
         Either the axis object if `axis` was provided, or a tuple of (figure, axis) if a new figure was created.
     """
-
     x = np.asarray(x_data)
     if isinstance(hist_config, dict):
         hist_config = HistogramConfig.populate(hist_config).get_dict()

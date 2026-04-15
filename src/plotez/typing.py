@@ -34,6 +34,6 @@ AxesFigReturn = _Axes | tuple[_Figure, _Axes]
 LABEL_MGMT = tuple[str, str, str, str, list[str]]
 
 if TYPE_CHECKING:
-    from . import LinePlotConfig, ScatterPlotConfig, ErrorPlotConfig, ErrorBandConfig
+    from . import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 
     LSE = LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig | ErrorBandConfig
