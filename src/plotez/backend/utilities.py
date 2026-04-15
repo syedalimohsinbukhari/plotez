@@ -6,35 +6,31 @@ Utility classes and functions for plot parameter management and data validation.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 __all__ = [
     "dual_axes_data_validation",
     "dual_axes_label_management",
     "ErrorBandConfig",
     "ErrorPlotConfig",
     "HistogramConfig",
-    "label_management",
     "LinePlotConfig",
     "plot_or_scatter",
     "ScatterPlotConfig",
     "split_dictionary",
 ]
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
 from warnings import warn
 
-from numpy.typing import ArrayLike
+from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
+from .error_handling import AxisLabelError, EmptyDataError, LabelConflictWarning, TwinXDataError, TwinYDataError
+from ..typing import ArrayLike, LABEL_MGMT
 
-from plotez.backend.CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from plotez.backend.error_handling import (
-    AxisLabelError,
-    EmptyDataError,
-    LabelConflictWarning,
-    TwinXDataError,
-    TwinYDataError,
-)
-
-label_management = tuple[str, str, str, str, list[str]]
+if TYPE_CHECKING:
+    from ..typing import LSE
 
 
 def _populate(_class, dictionary: dict[str, Any], mapping):
@@ -248,9 +244,6 @@ class HistogramConfig:
         return f"{self.__class__.__name__}({param_str})"
 
 
-LSE = LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig | ErrorBandConfig
-
-
 def plot_or_scatter(axes, scatter: bool):
     """
     Return the plot or scatter method based on the specified plot type.
@@ -377,7 +370,7 @@ def dual_axes_label_management(
     axis_labels: Sequence[str] | None = None,
     plot_title: str | None = None,
     use_twin_x: bool = True,
-) -> label_management:
+) -> LABEL_MGMT:
     """
     Manage labels and titles for dual-axes plots.
 

@@ -60,9 +60,12 @@ napoleon_attr_annotations = True
 # Autodoc settings
 autodoc_default_options = {"members": True, "member-order": "groupwise", "undoc-members": True}
 autodoc_type_aliases = {
-    "ArrayLike": "~numpy.typing.ArrayLike",
     "Sequence": "~collections.abc.Sequence",
-    "LSE": "~plotez.backend.utilities.LSE",
+    "ArrayLike": "~plotez.typing.ArrayLike",
+    "AxesReturn": "~plotez.typing.AxesReturn",
+    "AxesFigReturn": "~plotez.typing.AxesFigReturn",
+    "LABEL_MGMT": "~plotez.typing.LABEL_MGMT",
+    "LSE": "~plotez.typing.utilities.LSE",
 }
 autodoc_typehints_format = "short"
 
@@ -76,5 +79,5 @@ intersphinx_mapping = {
 # Autosummary settings
 autosummary_generate = True
 autodoc_typehints = "description"
-add_module_names = False
-html_show_sourcelink = False
+add_module_names = True
+html_show_sourcelink = True

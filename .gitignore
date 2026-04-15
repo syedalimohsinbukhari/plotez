@@ -163,4 +163,3 @@ cython_debug/
 .idea/
 
 **/rough_**.py
-uv.lock

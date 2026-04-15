@@ -19,8 +19,6 @@ __all__ = [
     "two_subplots",
 ]
 
-from _warnings import warn
-from collections.abc import Sequence
 from typing import Sequence
 from warnings import warn
 
@@ -28,8 +26,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
-from numpy._typing import ArrayLike
-from numpy.typing import ArrayLike
 
 from . import HistogramConfig
 from .backend import (
@@ -42,10 +38,7 @@ from .backend import (
     plot_or_scatter,
 )
 from .backend.error_handling import ColumnCountError, OrientationError, ShapeError
-
-# safeguard
-axis_return = Axes | tuple[Axes, Axes]
-axis_fig_return = Axes | tuple[plt.Figure, Axes]
+from .typing import ArrayLike, AxesFigReturn, AxesReturn
 
 
 # =============================================================================
@@ -68,7 +61,7 @@ def plot_errorband(
     line_config: LinePlotConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> axis_fig_return:
+) -> AxesFigReturn:
     """
     Plot a line with an error band around it using the provided data and configurations.
 
@@ -161,7 +154,7 @@ def plot_errorbar(
     errorbar_config: ErrorPlotConfig | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> axis_fig_return:
+) -> AxesFigReturn:
     """
     Plot an error bar graph with optional error ranges, labels, and configurations.
 
@@ -260,7 +253,7 @@ def plot_two_column_file(
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
-) -> axis_return:
+) -> AxesReturn:
     """Read a two-column file (x, y) and plot the data.
 
     Parameters
@@ -339,7 +332,7 @@ def plot_xy(
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
-) -> axis_return:
+) -> AxesReturn:
     """Plot the x_data against y_data with customizable options.
 
     Parameters
@@ -412,7 +405,7 @@ def plot_xyy(
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
-) -> axis_return:
+) -> AxesReturn:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
 
     Parameters
@@ -486,7 +479,7 @@ def plot_xxy(
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
-) -> axis_return:
+) -> AxesReturn:
     """Plot two sets of x-data (`x1_data` and `x2_data`) against the same y-data (`y_data`) on the same plot.
 
     Parameters
@@ -556,7 +549,7 @@ def plot_with_dual_axes(
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
     axis: Axes | None = None,
-) -> axis_return:
+) -> AxesReturn:
     """Plot the data with options for dual axes (x or y) or single axis.
 
     Parameters
@@ -700,7 +693,7 @@ def two_subplots(
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
-) -> tuple[plt.Figure, Axes]:
+) -> AxesFigReturn:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
     Parameters
@@ -778,7 +771,7 @@ def n_plotter(
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
-) -> tuple[plt.Figure, Axes]:
+) -> AxesFigReturn:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
 
@@ -899,7 +892,7 @@ def plot_hist(
     auto_label: bool = False,
     hist_config: HistogramConfig | dict | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None) -> Axes | tuple[plt.Figure, Axes]:
+    figure_kwargs: dict | None = None) -> AxesFigReturn:
     """
     Plot a histogram of the data.
 

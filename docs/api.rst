@@ -145,3 +145,12 @@ Error Handling
    :members:
    :undoc-members:
    :show-inheritance:
+
+Type Aliases
+------------
+
+.. automodule:: plotez.typing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
