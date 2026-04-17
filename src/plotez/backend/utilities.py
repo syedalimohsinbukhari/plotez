@@ -405,8 +405,8 @@ def dual_axes_label_management(
     Notes
     -----
     When `auto_label=True`, all user-provided labels are **replaced** with:
-      - Dual Y-axis defaults: axis_labels=['X', 'Y₁', 'Y₂'], x1y1_label='X₁ vs. Y₁', x1y2_label='X₁ vs. Y₂'
-      - Dual X-axis defaults: axis_labels=['X₁', 'Y', 'X₂'], x1y1_label='Y vs. X₁', x2y1_label='Y vs. X₂'
+      - Dual Y-axis defaults: axis_labels=['X', 'Y₁', 'Y₂'], data labels set to empty
+      - Dual X-axis defaults: axis_labels=['X₁', 'Y', 'X₂'], data labels set to empty
       - plot_title='Plot'
 
     When `auto_label=False`, missing labels are replaced with empty strings.
@@ -420,14 +420,14 @@ def dual_axes_label_management(
         _auto_handler(axis_labels=axis_labels, x1y1_label=x1y1_label, x1y2_label=x1y2_label, x2y1_label=x2y1_label)
         if use_twin_x:
             axis_labels = ["X", r"$Y_1$", r"$Y_2$"]
-            x1y1_label = r"$X_1$ vs $Y_1$"
-            x1y2_label = r"$X_1$ vs $Y_2$"
+            x1y1_label = ""
+            x1y2_label = ""
             x2y1_label = ""
         else:
             axis_labels = [r"$X_1$", "Y", r"$X_2$"]
-            x1y1_label = r"Y vs $X_1$"
+            x1y1_label = ""
             x1y2_label = ""
-            x2y1_label = r"Y vs $X_2$"
+            x2y1_label = ""
         plot_title = "Plot"
     else:
         # Use provided values or empty strings

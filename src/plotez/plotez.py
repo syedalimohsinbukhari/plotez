@@ -356,9 +356,10 @@ def plot_xy(
     plot_title :
         The title for the plot.
     data_label :
-        Data label for the plot to put in the legend. Defaults to 'X vs Y'.
+        Data label for the plot to put in the legend.
     auto_label :
-        If True, automatically sets x and y-axis labels and the plot title. Default is False.
+        If True, automatically sets x and y-axis labels and the plot title. Does not affect data labels.
+        Default is False.
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
@@ -377,14 +378,13 @@ def plot_xy(
         x_label = "X"
         y_label = "Y"
         plot_title = "Plot"
-        data_label = "X vs Y"
 
     axis_labels = [x_label, y_label, ""]
     return plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y_data,
         x1y1_label=data_label,
-        auto_label=auto_label,
+        auto_label=False,  # Don't auto-label again, we've already set the labels
         axis_labels=axis_labels,
         plot_title=plot_title,
         is_scatter=is_scatter,
@@ -435,7 +435,7 @@ def plot_xyy(
     data_labels :
         The labels for the two datasets. Default is ``(None, None)``.
     auto_label :
-        Whether to automatically label the plot. Default is `False`.
+        Whether to automatically label the axes and plot title. Does not affect data labels. Default is `False`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
@@ -455,7 +455,6 @@ def plot_xyy(
         y1_label = r"Y$_1$"
         y2_label = r"Y$_2$"
         plot_title = "XYY plot"
-        data_labels = [r"X vs Y$_1$", r"X vs Y$_2$"]
 
     return plot_with_dual_axes(
         x1_data=x_data,
@@ -464,6 +463,7 @@ def plot_xyy(
         x1y1_label=data_labels[0],
         x1y2_label=data_labels[1],
         use_twin_x=True,
+        auto_label=False,  # Don't auto-label again, we've already set the labels
         axis_labels=[x_label, y1_label, y2_label],
         plot_title=plot_title,
         is_scatter=is_scatter,
@@ -509,7 +509,7 @@ def plot_xxy(
     data_labels :
         The labels for the two datasets. Default is ``(None, None)``.
     auto_label :
-        Whether to automatically label the plot. Default is `False`.
+        Whether to automatically label the axes and plot title. Does not affect data labels. Default is `False`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
@@ -551,7 +551,7 @@ def plot_with_dual_axes(
     x2y1_label: str = "",
     use_twin_x: bool = False,
     auto_label: bool = False,
-    axis_labels: list[str] = ["", ""],  # noqa
+    axis_labels: list[str] = ["", "", ""],  # noqa
     plot_title: str = "",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -727,7 +727,7 @@ def two_subplots(
     orientation :
         Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
     auto_label :
-        Automatically assigns labels to subplots if `True`.
+        Automatically assigns labels to axes, titles, and subplot titles if `True`. Does not affect data labels.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
@@ -808,7 +808,7 @@ def n_plotter(
     subplot_title :
         Titles for the subplots, if required.
     auto_label :
-        Automatically assigns labels to subplots if `True`.
+        Automatically assigns labels to axes, titles, and subplot titles if `True`. Does not affect data labels.
         If `True`, it overwrites user-provided labels. Defaults to False.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
@@ -839,12 +839,12 @@ def n_plotter(
     ]
 
     if auto_label:
-        if any((x_labels, y_labels, plot_title, subplot_title, data_labels)):
+        if any((x_labels, y_labels, plot_title, subplot_title)):
             warn("auto_label selected, it takes preference over user-provided labels.")
         x_labels = [rf"X$_{i + 1}$" for i in range(n_cols * n_rows)]
         y_labels = [rf"Y$_{i + 1}$" for i in range(n_cols * n_rows)]
 
-        data_labels = [f"{i} vs {j}" for i, j in zip(x_labels, y_labels)]
+        data_labels = ["" for _ in range(n_cols * n_rows)]
         subplot_title = [f"Subplot {i + 1}" for i in range(n_cols * n_rows)]
         plot_title = f"{n_cols * n_rows} Plotter"
     # safeguard from `None` iterations in case if no label is provided and auto_label is false

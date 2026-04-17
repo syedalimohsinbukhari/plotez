@@ -113,6 +113,24 @@ class TestPlotXY:
         result = plot_xy(sample_x_data, sample_y_data, axis=ax)
         assert result == ax
 
+    def test_plot_xy_auto_label_no_legend(self, sample_x_data, sample_y_data):
+        """Test that auto_label=True does not generate a legend."""
+        result = plot_xy(sample_x_data, sample_y_data, auto_label=True)
+        assert isinstance(result, Axes)
+        assert result.get_legend() is None
+
+    def test_plot_xy_auto_label_sets_axes_and_title(self, sample_x_data, sample_y_data):
+        """Test that auto_label=True sets axis labels and title."""
+        result = plot_xy(sample_x_data, sample_y_data, auto_label=True)
+        assert result.get_xlabel() == "X"
+        assert result.get_ylabel() == "Y"
+        assert result.get_title() == "Plot"
+
+    def test_plot_xy_data_label_creates_legend(self, sample_x_data, sample_y_data):
+        """Test that explicit data_label creates a legend."""
+        result = plot_xy(sample_x_data, sample_y_data, data_label="Test Data")
+        assert result.get_legend() is not None
+
 
 class TestPlotXYY:
     """Test plot_xyy function."""
@@ -146,6 +164,25 @@ class TestPlotXYY:
         """Test dual y-axis scatter plot."""
         result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, is_scatter=True)
         assert isinstance(result, tuple)
+
+    def test_plot_xyy_auto_label_no_legend(self, sample_x_data, sample_y_data, sample_y2_data):
+        """Test that auto_label=True does not generate legends in dual y-axis plots."""
+        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, auto_label=True)
+        assert isinstance(result, tuple)
+        ax1, ax2 = result
+        # Neither axis should have a legend when only auto_label is used
+        assert ax1.get_legend() is None
+        assert ax2.get_legend() is None
+
+    def test_plot_xyy_auto_label_sets_axes_and_title(self, sample_x_data, sample_y_data, sample_y2_data):
+        """Test that auto_label=True sets axis labels and title for dual y-axis plots."""
+        result = plot_xyy(sample_x_data, sample_y_data, sample_y2_data, auto_label=True)
+        assert isinstance(result, tuple)
+        ax1, ax2 = result
+        assert ax1.get_xlabel() == "X"
+        assert ax1.get_ylabel() == r"Y$_1$"
+        assert ax2.get_ylabel() == r"Y$_2$"
+        assert ax1.get_title() == "XYY plot"
 
 
 class TestPlotWithDualAxes:
@@ -327,6 +364,23 @@ class TestNPlotter:
             figure_kwargs={"sharex": True, "sharey": True, "figsize": (12, 8)},
         )
         assert isinstance(fig, plt.Figure)
+
+    def test_n_plotter_auto_label_no_legends(self, sample_x_data_list, sample_y_data_list):
+        """Test that auto_label=True does not generate legends in n_plotter."""
+        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, auto_label=True)
+        # None of the subplots should have legends
+        for ax in axs:
+            assert ax.get_legend() is None
+
+    def test_n_plotter_auto_label_sets_axes_and_titles(self, sample_x_data_list, sample_y_data_list):
+        """Test that auto_label=True sets axis labels and titles correctly."""
+        fig, axs = n_plotter(sample_x_data_list, sample_y_data_list, n_rows=2, n_cols=2, auto_label=True)
+        # Check that axes have labels
+        assert axs[0].get_xlabel() == r"X$_1$"
+        assert axs[0].get_ylabel() == r"Y$_1$"
+        assert axs[0].get_title() == "Subplot 1"
+        # Check the main plot title
+        assert fig._suptitle.get_text() == "4 Plotter"
 
 
 class TestPlotErrorbar:
