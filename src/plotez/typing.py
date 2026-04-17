@@ -6,8 +6,8 @@
 
    * - Name
      - Description
-   * - ``ArrayLike``
-     - Re-export of :class:`numpy.typing.ArrayLike` – any array-like input accepted by NumPy.
+   * - ``NDArray``
+     - Re-export of :class:`numpy.ndarray` but as a typehint – any array-like input accepted by NumPy.
    * - ``AxesReturn``
      - ``Axes | tuple[Axes, Axes]`` – return type for single- or dual-axis plot functions.
    * - ``AxesFigReturn``
@@ -22,16 +22,18 @@
 
 from typing import TYPE_CHECKING
 
+import numpy as np
 from matplotlib.axes import Axes as _Axes
 from matplotlib.figure import Figure as _Figure
-from numpy.typing import ArrayLike as _ArrayLike
 
-ArrayLike = _ArrayLike
+NDArray = np.ndarray
+Axes = _Axes
+Figure = _Figure
 
-AxesReturn = _Axes | tuple[_Axes, _Axes]
-AxesFigReturn = _Axes | tuple[_Figure, _Axes]
+AxesReturn = Axes | tuple[Axes, Axes]
+AxesFigReturn = Axes | tuple[Figure, Axes]
 
-LABEL_MGMT = tuple[str, str, str, str, list[str]]
+LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
 
 if TYPE_CHECKING:
     from . import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig

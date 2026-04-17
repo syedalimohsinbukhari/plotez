@@ -20,12 +20,11 @@ __all__ = [
     "split_dictionary",
 ]
 
-from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal
 from warnings import warn
 
-from ..typing import LABEL_MGMT, ArrayLike
+from ..typing import LABEL_MGMT, NDArray
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 from .error_handling import AxisLabelError, EmptyDataError, LabelConflictWarning, TwinXDataError, TwinYDataError
 
@@ -65,15 +64,15 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
 class LinePlotConfig:
     """Configuration class for line plots."""
 
-    color: str | Sequence[str] | None = None
-    linewidth: float | Sequence[float] | None = None
-    linestyle: str | Sequence[str] | None = None
-    alpha: float | Sequence[float] | None = None
-    marker: str | Sequence[str] | None = None
-    markersize: float | Sequence[float] | None = None
-    markerfacecolor: str | Sequence[str] | None = None
-    markeredgecolor: str | Sequence[str] | None = None
-    markeredgewidth: float | Sequence[float] | None = None
+    color: str | list[str] | None = None
+    linewidth: float | list[float] | None = None
+    linestyle: str | list[str] | None = None
+    alpha: float | list[float] | None = None
+    marker: str | list[str] | None = None
+    markersize: float | list[float] | None = None
+    markerfacecolor: str | list[str] | None = None
+    markeredgecolor: str | list[str] | None = None
+    markeredgewidth: float | list[float] | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -309,12 +308,12 @@ def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
 
 
 def dual_axes_data_validation(
-    x1_data: ArrayLike,
-    x2_data: ArrayLike,
-    y1_data: ArrayLike,
-    y2_data: ArrayLike,
+    x1_data: NDArray,
+    x2_data: NDArray | None,
+    y1_data: NDArray,
+    y2_data: NDArray | None,
     use_twin_x: bool,
-    axis_labels: Sequence[str] | None,
+    axis_labels: list[str | None],
 ) -> None:
     """
     Validate the data and parameters for dual-axes plotting.
@@ -352,7 +351,7 @@ def dual_axes_data_validation(
         raise AxisLabelError(
             f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
         )
-    if len(axis_labels) != 3:
+    if len(axis_labels) != 3:  # noqa
         raise AxisLabelError("The axis_labels should have a length of 3.")
     if len(x1_data) == 0 or len(y1_data) == 0:
         raise EmptyDataError("Primary x or y data is empty. Please provide valid data.")
@@ -363,12 +362,12 @@ def dual_axes_data_validation(
 
 
 def dual_axes_label_management(
-    x1y1_label: str | None = None,
-    x1y2_label: str | None = None,
-    x2y1_label: str | None = None,
+    x1y1_label: str = "",
+    x1y2_label: str = "",
+    x2y1_label: str = "",
+    plot_title: str = "",
+    axis_labels: list[str] = ["", "", ""],  # noqa
     auto_label: bool = False,
-    axis_labels: Sequence[str] | None = None,
-    plot_title: str | None = None,
     use_twin_x: bool = True,
 ) -> LABEL_MGMT:
     """
@@ -376,31 +375,31 @@ def dual_axes_label_management(
 
     Parameters
     ----------
-    x1y1_label : str, optional
+    x1y1_label :
         Label for the primary plot (X1 vs. Y1).
         Ignored if `auto_label=True`.
-    x1y2_label : str, optional
+    x1y2_label :
         Label for the secondary Y-axis plot (X1 vs. Y2), used if `use_twin_x` is True.
         Ignored if `auto_label=True`.
-    x2y1_label : str, optional
+    x2y1_label :
         Label for the secondary X-axis plot (X2 vs. Y1), used if `use_twin_x` is False.
         Ignored if `auto_label=True`.
-    auto_label : bool, default False
+    auto_label :
         If True, **overwrites all provided labels** with automatic defaults.
         When True, all label parameters are ignored.
-    axis_labels : Sequence[str], optional
+    axis_labels :
         Axis labels as [x_label, y1_label, y2_or_x2_label].
         Ignored if `auto_label=True`.
         - Dual Y-axis: [primary x, primary y, secondary y]
         - Dual X-axis: [primary x, primary y, secondary x]
-    plot_title : str, optional
+    plot_title :
         Plot title. Ignored if `auto_label=True`.
-    use_twin_x : bool, default True
+    use_twin_x :
         If True, dual Y-axis plot. If False, dual X-axis plot.
 
     Returns
     -------
-    tuple[str, str, str, str, list[str]]
+    tuple
         (x1y1_label, x1y2_label, x2y1_label, plot_title, axis_labels)
 
     Notes
@@ -432,7 +431,7 @@ def dual_axes_label_management(
         plot_title = "Plot"
     else:
         # Use provided values or empty strings
-        axis_labels = list(axis_labels) if axis_labels else ["", "", ""]
+        axis_labels: list[str] = list(axis_labels) if axis_labels else ["", "", ""]
         x1y1_label = x1y1_label or ""
         x1y2_label = x1y2_label or ""
         x2y1_label = x2y1_label or ""
@@ -442,7 +441,7 @@ def dual_axes_label_management(
 
 
 def _auto_handler(
-    axis_labels: Sequence[str] | None, x1y1_label: str | None, x1y2_label: str | None, x2y1_label: str | None
+    axis_labels: list[str] | None, x1y1_label: str | None, x1y2_label: str | None, x2y1_label: str | None
 ):
     provided_labels = []
     if x1y1_label is not None:

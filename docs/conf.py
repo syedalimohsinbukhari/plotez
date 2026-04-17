@@ -61,7 +61,7 @@ napoleon_attr_annotations = True
 autodoc_default_options = {"members": True, "member-order": "groupwise", "undoc-members": True}
 autodoc_type_aliases = {
     "Sequence": "~collections.abc.Sequence",
-    "ArrayLike": "~plotez.typing.ArrayLike",
+    "NDArray": "~plotez.typing.NDArray",
     "AxesReturn": "~plotez.typing.AxesReturn",
     "AxesFigReturn": "~plotez.typing.AxesFigReturn",
     "LABEL_MGMT": "~plotez.typing.LABEL_MGMT",
