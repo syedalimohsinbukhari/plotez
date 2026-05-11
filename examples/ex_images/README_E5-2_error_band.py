@@ -20,5 +20,5 @@ plot_config = lpc(c="gold", lw=2, ls="--", marker="o", ms=5, mec="k")
 plot_errorband(x, y, y_lower, y_upper, data_label="Measurement", band_config=band_config, line_config=plot_config)
 
 # plt.show()
-plt.savefig("./ex_images/README_E5-2_error_band.png", dpi=300)
+plt.savefig("README_E5-2_error_band.png", dpi=300)
 plt.close()

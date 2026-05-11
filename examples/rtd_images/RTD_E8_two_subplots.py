@@ -20,5 +20,5 @@ two_subplots(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E8_two_subplots.png", dpi=300)
+plt.savefig("RTD_E8_two_subplots.png", dpi=300)
 plt.close()

@@ -25,5 +25,5 @@ plot_errorband(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E7_errorbands.png", dpi=300)
+plt.savefig("RTD_E7_errorbands.png", dpi=300)
 plt.close()

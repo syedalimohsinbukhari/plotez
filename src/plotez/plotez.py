@@ -647,30 +647,21 @@ def plot_with_dual_axes(
     if plot_title:
         ax1.set_title(plot_title)
 
+    dict2 = {
+        key: (
+            value[1] if isinstance(value, list) and len(value) > 1 else (value[0] if isinstance(value, list) else value)
+        )
+        for key, value in plot_dict.items()
+    }
+
     if use_twin_x:
         ax2 = ax1.twinx()
         if y2_data is not None:
-            dict2 = {
-                key: (
-                    value[1]
-                    if isinstance(value, list) and len(value) > 1
-                    else (value[0] if isinstance(value, list) else value)
-                )
-                for key, value in plot_dict.items()
-            }
             plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
-        dict2 = {
-            key: (
-                value[1]
-                if isinstance(value, list) and len(value) > 1
-                else (value[0] if isinstance(value, list) else value)
-            )
-            for key, value in plot_dict.items()
-        }
         plot_or_scatter(axes=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
         ax2.set_xlabel(axis_labels[2])
 
@@ -769,15 +760,23 @@ def two_subplots(
     )
 
 
+def _has_content(value):
+    if isinstance(value, str):
+        return value != ""
+    if isinstance(value, (list, tuple)):
+        return any(v != "" for v in value)
+    return False
+
+
 def n_plotter(
-    x_data: NDArray,
-    y_data: NDArray,
+    x_data: NDArray | list[NDArray],
+    y_data: NDArray | list[NDArray],
     n_rows: int,
     n_cols: int,
     x_labels: list[str] = ["", ""],  # noqa
     y_labels: list[str] = ["", ""],  # noqa
     data_labels: list[str] = ["", ""],  # noqa
-    plot_title: str | None = None,
+    plot_title: str = "",
     subplot_title: list[str] = ["", ""],  # noqa
     auto_label: bool = False,
     is_scatter: bool = False,
@@ -838,8 +837,17 @@ def n_plotter(
         for c in range(n_cols * n_rows)
     ]
 
+    def _falsy_check(v):
+        return not any(v)
+
     if auto_label:
-        if any((x_labels, y_labels, plot_title, subplot_title)):
+        if (
+            _has_content(x_labels)
+            or _has_content(y_labels)
+            or _has_content(data_labels)
+            or _has_content(subplot_title)
+            or _has_content(plot_title)
+        ):
             warn("auto_label selected, it takes preference over user-provided labels.")
         x_labels = [rf"X$_{i + 1}$" for i in range(n_cols * n_rows)]
         y_labels = [rf"Y$_{i + 1}$" for i in range(n_cols * n_rows)]
@@ -847,15 +855,13 @@ def n_plotter(
         data_labels = ["" for _ in range(n_cols * n_rows)]
         subplot_title = [f"Subplot {i + 1}" for i in range(n_cols * n_rows)]
         plot_title = f"{n_cols * n_rows} Plotter"
-    # safeguard from `None` iterations in case if no label is provided and auto_label is false
     else:
         empty_ = ["" for _ in range(n_cols * n_rows)]
-        x_labels = x_labels if x_labels else empty_
-        y_labels = y_labels if y_labels else empty_
 
-        data_labels = data_labels if data_labels else empty_
-        subplot_title = subplot_title if subplot_title else empty_
-        plot_title = plot_title if plot_title else None
+        x_labels = empty_ if _falsy_check(x_labels) else x_labels
+        y_labels = empty_ if _falsy_check(y_labels) else y_labels
+        data_labels = empty_ if _falsy_check(data_labels) else data_labels
+        subplot_title = empty_ if _falsy_check(subplot_title) else subplot_title
 
     shared_y = sp_dict.get("sharey", False)
     shared_x1 = sp_dict.get("sharex", False)
@@ -873,6 +879,8 @@ def n_plotter(
             f"The number of labels provided {which_one}_labels ({sm}) is less than the number of data series ({lg}). "
             f"Using None as missing {which_one}_label for the remaining data series."
         )
+
+    print(f"{main_dict=}")
 
     for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), axs, x_labels, y_labels, subplot_title):
         label = f"{x_labels[index]} vs {y_labels[index]}" if data_labels is None else data_labels[index]

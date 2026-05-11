@@ -18,5 +18,5 @@ plot_xy(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E2_custom_labels.png", dpi=300)
+plt.savefig("RTD_E2_custom_labels.png", dpi=300)
 plt.close()

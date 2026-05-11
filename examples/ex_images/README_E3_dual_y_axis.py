@@ -14,5 +14,5 @@ plot_xyy(
 )
 
 # plt.show()
-plt.savefig("./ex_images/README_E3_dual_y_axis.png", dpi=300)
+plt.savefig("README_E3_dual_y_axis.png", dpi=300)
 plt.close()

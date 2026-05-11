@@ -32,5 +32,5 @@ plot_errorbar(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E5_errorbar_customized.png", dpi=300)
+plt.savefig("RTD_E5_errorbar_customized.png", dpi=300)
 plt.close()

@@ -19,5 +19,5 @@ y_err = 0.1
 plot_errorbar(x2, y2, y_err=y_err, axis=ax2, x_label="X", data_label="cos(x)")
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E12_matplotlib_integration.png", dpi=300)
+plt.savefig("RTD_E12_matplotlib_integration.png", dpi=300)
 plt.close()
