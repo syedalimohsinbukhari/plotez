@@ -35,17 +35,18 @@ dev = [
     "pytest-cov",
     "mypy",
     "sphinx",
-    "cloud-sptheme",
-    "black",
     "isort",
+    "black",
     "pydocstyle",
     "flake8",
+    "pylint",
     "pre-commit",
     "tomli",
     "build",
     "sphinx-copybutton",
     "sphinx-rtd-theme",
-    "myst-parser"
+    "myst-parser",
+    "pyqt6"
 ]
 
 [project.urls]

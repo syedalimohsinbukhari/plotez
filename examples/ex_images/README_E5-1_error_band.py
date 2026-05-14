@@ -20,5 +20,5 @@ plot_config = LinePlotConfig(color="gold", linewidth=2, linestyle="--", marker="
 plot_errorband(x, y, y_lower, y_upper, data_label="Measurement", band_config=band_config, line_config=plot_config)
 
 # plt.show()
-plt.savefig("./ex_images/README_E5-1_error_band.png", dpi=300)
+plt.savefig("README_E5-1_error_band.png", dpi=300)
 plt.close()

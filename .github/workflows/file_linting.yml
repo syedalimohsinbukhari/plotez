@@ -31,7 +31,8 @@ jobs:
 
       - name: Check code formatting with Black
         run: |
-          black --check --color --line-length 120 src/plotez/ tests/
+          VERSION=$(echo "${{ matrix.python-version }}" | tr -d '.')
+          black --check --color --line-length 120 src/plotez/ tests/ --target-version py${VERSION}
 
       - name: Check import sorting with isort
         run: |

@@ -1,5 +1,7 @@
 """Created on Feb 24 03:02:20 2026."""
 
+__all__ = ["ERROR_ATTRS", "ERROR_BAND_ATTRS", "HIST_ATTRS", "LINE_ATTRS", "SCATTER_ATTRS"]
+
 LINE_ATTRS = {
     "ls": "linestyle",
     "lw": "linewidth",
@@ -21,3 +23,5 @@ SCATTER_ATTRS = {"c": "color", "s": "s", "ec": "edgecolors", "fc": "facecolors"}
 
 
 ERROR_BAND_ATTRS = {"color": "color"}
+
+HIST_ATTRS = {"c": "color", "lw": "linewidth", "ec": "edgecolor"}

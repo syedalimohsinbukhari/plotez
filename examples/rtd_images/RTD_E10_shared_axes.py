@@ -25,9 +25,9 @@ n_plotter(
     n_cols=2,
     plot_config=line_plot_cfg,
     figure_kwargs=fig_kwargs,
-    auto_label=True,
+    data_labels=["X$_1$ vs Y$_1$", "X$_2$ vs Y$_2$", "X$_3$ vs Y$_3$", "X$_4$ vs Y$_4$"],
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E10_shared_axes.png", dpi=300)
+plt.savefig("RTD_E10_shared_axes.png", dpi=300)
 plt.close()
