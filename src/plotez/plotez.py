@@ -958,13 +958,13 @@ def plot_hist(
     else:
         f, ax = plt.subplots(**(figure_kwargs or {}))
 
-    if data_label and "label" in hist_config:
+    if data_label and "label" in h_config:
         warn("Both `data_label` and `hist_config['label']` are provided. Using `data_label`.")
         h_config.pop("label", None)
     ax.hist(x, label=data_label, **h_config)
 
     ax.set_xlabel("X" if auto_label else x_label)
-    _y_label = "Density" if hist_config.get("density") else "Count"
+    _y_label = "Density" if h_config.get("density") else "Count"
     ax.set_ylabel(_y_label if auto_label else y_label)
     ax.set_title("Histogram" if auto_label else plot_title)
 
