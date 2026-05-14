@@ -16,5 +16,5 @@ plot_two_column_file(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E11_from_files.png", dpi=300)
+plt.savefig("RTD_E11_from_files.png", dpi=300)
 plt.close()

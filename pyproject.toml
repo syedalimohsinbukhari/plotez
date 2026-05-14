@@ -45,7 +45,8 @@ dev = [
     "build",
     "sphinx-copybutton",
     "sphinx-rtd-theme",
-    "myst-parser"
+    "myst-parser",
+    "pyqt6"
 ]
 
 [project.urls]

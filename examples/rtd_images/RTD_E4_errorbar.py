@@ -14,5 +14,5 @@ y_err = 0.3 * rng.random(size=y.shape)
 plot_errorbar(x, y, y_err=y_err, auto_label=True)
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E4_errorbar.png", dpi=300)
+plt.savefig("RTD_E4_errorbar.png", dpi=300)
 plt.close()

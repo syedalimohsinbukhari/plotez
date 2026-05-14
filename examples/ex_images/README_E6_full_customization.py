@@ -22,5 +22,5 @@ config = LinePlotConfig(
 plot_xyy(x, y1, y2, plot_config=config, auto_label=True)
 
 # plt.show()
-plt.savefig("./ex_images/README_E6_full_customization.png", dpi=300)
+plt.savefig("README_E6_full_customization.png", dpi=300)
 plt.close()

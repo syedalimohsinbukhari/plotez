@@ -1,6 +1,5 @@
 """Created on Mar 07 20:32:48 2026."""
 
-from collections.abc import Sequence
 from typing import Literal
 
 from .utilities import ErrorBandConfig, ErrorPlotConfig, HistogramConfig, LinePlotConfig, ScatterPlotConfig
@@ -20,15 +19,15 @@ __all__ = [
 
 
 def line_plot_configuration(
-    c: str | Sequence[str] | None = None,
-    lw: float | Sequence[float] | None = None,
-    ls: str | Sequence[str] | None = None,
-    alpha: float | Sequence[float] | None = None,
-    marker: str | Sequence[str] | None = None,
-    ms: float | Sequence[float] | None = None,
-    mfc: str | Sequence[str] | None = None,
-    mec: str | Sequence[str] | None = None,
-    mew: float | Sequence[float] | None = None,
+    c: str | list[str] | None = None,
+    lw: float | list[float] | None = None,
+    ls: str | list[str] | None = None,
+    alpha: float | list[float] | None = None,
+    marker: str | list[str] | None = None,
+    ms: float | list[float] | None = None,
+    mfc: str | list[str] | None = None,
+    mec: str | list[str] | None = None,
+    mew: float | list[float] | None = None,
     **kwargs,
 ):
     """
@@ -51,9 +50,9 @@ def line_plot_configuration(
     mfc :
         Marker face color.
     mec :
-        Marker edge color.
+        Marker-edge color.
     mew :
-        Marker edge width.
+        Marker-edge width.
     **kwargs :
         Additional keyword arguments passed to the underlying plot function.
 
@@ -217,21 +216,21 @@ def scatter_plot_configuration(
 
     Parameters
     ----------
-    c : color or array-like, optional
+    c :
         Marker color(s).
-    s : float or array-like, optional
+    s :
         Marker size(s) in points squared.
-    alpha : float, optional
+    alpha :
         Transparency level (0.0 to 1.0).
-    marker : str, optional
+    marker :
         Marker style (e.g., 'o', 's', '^').
-    cmap : str or Colormap, optional
+    cmap :
         Colormap name or object.
-    ec : color or array-like, optional
+    ec :
         Edge color(s).
-    fc : color or array-like, optional
+    fc :
         Face color(s).
-    **kwargs : dict, optional
+    **kwargs :
         Additional keyword arguments passed to the underlying scatter function.
 
     Returns

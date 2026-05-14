@@ -21,5 +21,5 @@ n_plotter(
 )
 
 # plt.show()
-plt.savefig("./rtd_images/RTD_E9_grid_of_four.png", dpi=300)
+plt.savefig("RTD_E9_grid_of_four.png", dpi=300)
 plt.close()
