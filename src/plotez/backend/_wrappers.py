@@ -202,13 +202,13 @@ def error_plot_configuration(
 
 
 def scatter_plot_configuration(
-    c: str | None = None,
-    s: float | None = None,
-    alpha: float | None = None,
-    marker: str | None = None,
-    cmap: str | None = None,
-    ec: str | None = None,
-    fc: str | None = None,
+    c: str | list[str] | None = None,
+    s: float | list[float] | None = None,
+    alpha: float | list[float] | None = None,
+    marker: str | list[str] | None = None,
+    cmap: str | list[str] | None = None,
+    ec: str | list[str] | None = None,
+    fc: str | list[str] | None = None,
     **kwargs,
 ):
     """

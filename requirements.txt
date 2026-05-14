@@ -11,7 +11,7 @@ fonttools==4.62.1
     # via matplotlib
 kiwisolver==1.5.0
     # via matplotlib
-matplotlib==3.10.8
+matplotlib==3.10.9
     # via plotez
 numpy==2.2.6 ; python_full_version < '3.11'
     # via
@@ -23,7 +23,7 @@ numpy==2.4.4 ; python_full_version >= '3.11'
     #   contourpy
     #   matplotlib
     #   plotez
-packaging==26.1
+packaging==26.2
     # via matplotlib
 pillow==12.2.0
     # via matplotlib

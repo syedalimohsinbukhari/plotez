@@ -10,7 +10,7 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
 # Plotez on first subplot
 x = np.linspace(0, 10, 100)
 y1 = np.sin(x)
-plot_xy(x, y1, axis=ax1, x_label="X", y_label="Y", data_label="sin(x)")
+plot_xy(x, y1, x_label="X", y_label="Y", data_label="sin(x)", axis=ax1)
 
 # Plotez on second subplot
 x2 = np.linspace(0, 10, 20)

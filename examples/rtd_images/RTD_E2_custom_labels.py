@@ -13,8 +13,8 @@ plot_xy(
     y_data=y,
     x_label="Time (s)",
     y_label="Amplitude (V)",
-    plot_title="Sinusoidal Signal",
     data_label="Channel A",
+    plot_title="Sinusoidal Signal",
 )
 
 # plt.show()
