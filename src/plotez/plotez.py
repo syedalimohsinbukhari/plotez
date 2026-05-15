@@ -34,7 +34,7 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import ColumnCountError, OrientationError, ShapeError
+from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
 from .typing import Axes, AxesFigReturn, AxesReturn, NDArray
 
 # =============================================================================
@@ -458,10 +458,10 @@ def plot_xxy(
     x1_data: NDArray,
     x2_data: NDArray,
     y_data: NDArray,
-    y_label: str = "y_label",
-    x1_label: str = "x1_label",
-    x2_label: str = "x2_label",
-    data_labels: Iterable[str] = (r"Y vs. X$_1$", r"Y vs. X$_2$"),  # noqa
+    y_label: str = "Y",
+    x1_label: str = r"X$_1$",
+    x2_label: str = r"X$_2$",
+    data_labels: list[str] = [r"Y vs. X$_1$", r"Y vs. X$_2$"],  # noqa
     plot_title: str = "",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -509,8 +509,8 @@ def plot_xxy(
 
     _axis = plot_with_dual_axes(
         x1_data=x1_data,
-        x2_data=x2_data,
         y1_data=y_data,
+        x2_data=x2_data,
         x1y1_label=_data_labels[0],
         x2y1_label=_data_labels[1],
         use_twin_x=False,
@@ -531,12 +531,12 @@ def plot_with_dual_axes(
     y1_data: NDArray,
     x2_data: NDArray | None = None,
     y2_data: NDArray | None = None,
-    x1y1_label: str = "x1y1_label",
-    x1y2_label: str = "x1y2_label",
-    x2y1_label: str = "x2y1_label",
-    use_twin_x: bool = False,
-    axis_labels: Iterable[str] = ("X", "Y1", "Y2"),
-    plot_title: str = "plot_title",
+    x1y1_label: str = r"X$_1$ vs. Y$_1$",
+    x1y2_label: str = r"X$_1$ vs. Y$_2$",
+    x2y1_label: str = r"X$_2$ vs. Y$_1$",
+    use_twin_x: bool = True,
+    axis_labels: list[str] = ["X", r"Y$_1$", r"Y$_2$"],  # noqa
+    plot_title: str = "DualAxesPlot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -564,7 +564,7 @@ def plot_with_dual_axes(
         Label for the plot of X2 vs. Y1 (when using dual X-axes).
         If None, and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x :
-        If True, creates a dual y-axis plot. If False, creates a dual x-axis plot. Default is False.
+        If True, creates a dual y-axis plot. If False, creates a dual x-axis plot. Default is True.
     axis_labels :
         List of axis labels in the form [x_label, y_label1, y_label2].
         If None, and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
@@ -585,9 +585,6 @@ def plot_with_dual_axes(
     tuple[Axes, Axes] or Axes
         A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
     """
-    if isinstance(axis_labels, Iterable):
-        axis_labels: list[str,] = list(axis_labels)
-
     dual_axes_data_validation(
         x1_data=x1_data,
         x2_data=x2_data,
@@ -657,15 +654,14 @@ def plot_with_dual_axes(
 
 
 def two_subplots(
-    x_data: NDArray,
-    y_data: NDArray,
-    x_labels: list[str] = ["", ""],  # noqa
-    y_labels: list[str] = ["", ""],  # noqa
-    data_labels: list[str] = ["", ""],  # noqa
-    plot_title: str = "",
+    x_data: NDArray | list[NDArray],
+    y_data: NDArray | list[NDArray],
+    x_labels: list[str] = [r"X$_1$", r"X$_2$"],  # noqa
+    y_labels: list[str] = [r"Y$_1$", r"Y$_2$"],  # noqa
+    data_labels: list[str] = [r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"],  # noqa
+    plot_title: str = "TwoSubPlots",
     subplot_title: list[str] = ["", ""],  # noqa
     orientation: str = "h",
-    auto_label: bool = False,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -690,8 +686,6 @@ def two_subplots(
         Titles for the subplots, if required.
     orientation :
         Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
-    auto_label :
-        Automatically assigns labels to axes, titles, and subplot titles if `True`. Does not affect data labels.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
@@ -834,6 +828,12 @@ def n_plotter(
     sp_dict.pop("nrows", None)
     sp_dict.pop("ncols", None)
 
+    if isinstance(plot_config, ScatterPlotConfig) and not is_scatter:
+        raise ConfigurationError(
+            "`plot_config` is a `ScatterPlotConfig` but `is_scatter=False`. "
+            "Set `is_scatter=True` or pass a `LinePlotConfig` instead."
+        )
+
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
@@ -848,7 +848,13 @@ def n_plotter(
     ]
 
     _x_labels, _y_labels, _data_labels, _subplot_title, _plot_title = _label_sanitizer(
-        n_rows, n_cols, x_labels, y_labels, data_labels, subplot_title, plot_title
+        n_rows=n_rows,
+        n_cols=n_cols,
+        x_labels=x_labels,
+        y_labels=y_labels,
+        data_labels=data_labels,
+        subplot_titles=subplot_title,
+        plot_title=plot_title,
     )
 
     shared_y = sp_dict.get("sharey", False)
@@ -856,7 +862,7 @@ def n_plotter(
     shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
 
     for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), axs, _x_labels, _y_labels, _subplot_title):
-        label = f"{x_labels[index]} vs {y_labels[index]}" if data_labels is None else data_labels[index]
+        label = f"{_x_labels[index]} vs {_y_labels[index]}" if _data_labels is None else _data_labels[index]
         plot_or_scatter(axes=ax, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
         if shared_x1:
             if not index < shared_x2:
@@ -869,7 +875,7 @@ def n_plotter(
             ax.legend(loc="best")
 
         ax.set_title(sp_)
-        fig.suptitle(plot_title)
+        fig.suptitle(_plot_title)
 
     fig.tight_layout()
 

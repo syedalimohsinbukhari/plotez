@@ -71,7 +71,7 @@ class TestPlotXY:
     def test_plot_xy_basic(self, sample_x_data, sample_y_data):
         """Test basic x vs. y plotting."""
         result = plot_xy(sample_x_data, sample_y_data)
-        assert isinstance(result, Axes)
+        assert isinstance(result[0], Axes)
 
     def test_plot_xy_with_labels(self, sample_x_data, sample_y_data):
         """Test plotting with custom labels."""
@@ -275,7 +275,7 @@ class TestTwoSubplots:
         x_list = [sample_x_data, sample_x_data]
         y_list = [sample_y_data, sample_y_data * 2]
 
-        fig, axs = two_subplots(x_list, y_list, orientation="h", auto_label=True)
+        fig, axs = two_subplots(x_list, y_list, orientation="h")
         assert isinstance(fig, plt.Figure)
 
     def test_two_subplots_scatter(self, sample_x_data, sample_y_data):
