@@ -80,12 +80,7 @@ class TestPlotHistLabels:
 
     def test_manual_labels_are_respected(self, histogram_data):
         """Test that explicit label arguments are applied when auto_label is off."""
-        fig, ax = plot_hist(
-            histogram_data,
-            x_label="Value",
-            y_label="Count",
-            plot_title="My Distribution",
-        )
+        fig, ax = plot_hist(histogram_data, x_label="Value", y_label="Count", plot_title="My Distribution")
 
         assert ax.get_xlabel() == "Value"
         assert ax.get_ylabel() == "Count"
@@ -123,11 +118,7 @@ class TestPlotHistLegend:
     def test_multi_dataset_legend_has_correct_labels(self, multi_histogram_data):
         """Test that multi-series histograms produce the correct legend entries."""
         labels = ["Uniform", "Normal", "Exponential"]
-        fig, ax = plot_hist(
-            multi_histogram_data,
-            data_label=labels,
-            hist_config=hgc(bins=15, density=True, alpha=0.6),
-        )
+        fig, ax = plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
         legend = ax.get_legend()
 
         assert legend is not None

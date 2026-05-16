@@ -517,7 +517,7 @@ class TestPlotErrorband:
 
     def test_errorband_auto_label(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
         """Test the error band with auto labeling."""
-        result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper, auto_label=True)
+        result = plot_errorband(sample_x_data, sample_y_data, sample_y_lower, sample_y_upper)
         assert isinstance(result, tuple)
 
     def test_errorband_with_labels(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
@@ -573,11 +573,10 @@ class TestPlotErrorband:
             sample_y_data,
             sample_y_lower,
             sample_y_upper,
+            data_label="Test",
             band_config=bc,
             line_config=lc,
             figure_kwargs={"figsize": (12, 6)},
-            data_label="Test",
-            auto_label=True,
         )
         assert isinstance(result, tuple)
 

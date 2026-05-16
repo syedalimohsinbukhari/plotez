@@ -42,16 +42,15 @@ from .typing import Axes, AxesFigReturn, AxesReturn, NDArray
 # =============================================================================
 
 
-def plot_errorband(
+def plot_errorband_relative(
     x_data: NDArray,
     y_data: NDArray,
     y_lower: float | NDArray | None = None,
     y_upper: float | NDArray | None = None,
-    x_label: str = "",
-    y_label: str = "",
-    plot_title: str = "",
-    data_label: str = "",
-    auto_label: bool = False,
+    x_label: str = "X",
+    y_label: str = "Y",
+    plot_title: str = "XY ErrorBand",
+    data_label: str = "X vs. Y",
     line: bool = True,
     band_config: ErrorBandConfig | None = None,
     line_config: LinePlotConfig | dict | None = None,
@@ -59,56 +58,165 @@ def plot_errorband(
     figure_kwargs: dict | None = None,
 ) -> AxesFigReturn:
     """
-    Plot a line graph with an optional shaded error band representing uncertainty.
+    Plot a line graph with a shaded error band using relative (offset) errors.
+
+    A convenience wrapper around :func:`plot_errorband` where ``y_lower`` and ``y_upper`` are interpreted as offsets
+    from ``y_data`` rather than absolute bounds.
+    Internally, the absolute bounds are computed as ``y_data - y_lower`` and ``y_data + y_upper`` before passing
+    to :func:`plot_errorband`.
 
     Parameters
     ----------
     x_data :
         The independent variable values to plot.
     y_data :
-        The dependent variable values to plot.
+        The central values to plot.
     y_lower :
-        The lower bound of the error band. If None, no lower bound is drawn.
+        The downward offset from ``y_data`` defining the lower band edge.
+        If ``None``, it is inferred as equal to ``y_upper``, implying a symmetric band.
+        At least one of ``y_lower`` or ``y_upper`` must be provided.
     y_upper :
-        The upper bound of the error band. If None, no upper bound is drawn.
+        The upward offset from ``y_data`` defining the upper band edge.
+        If ``None``, it is inferred as equal to ``y_lower``, implying a symmetric band.
+        At least one of ``y_lower`` or ``y_upper`` must be provided.
     x_label :
-        The label for the x-axis. Ignored if `auto_label` is True.
+        The label for the x-axis.
     y_label :
-        The label for the y-axis. Ignored if `auto_label` is True.
+        The label for the y-axis.
     plot_title :
-        The title of the plot. Ignored if `auto_label` is True.
+        The title of the plot.
     data_label :
-        The label for the line plot. If provided, it overrides the label from `line_config`.
-    auto_label :
-        Whether to use automatic axis and title labels. If True, sets x-label, y-label, and title to "X", "Y", and
-        "ErrorBand Plot", respectively.
+        The label for the data series, used in the legend.
+        If ``line=True``, the label is attached to the line.
+        If ``line=False``, it is attached to the band.
     line :
-        Whether to draw a line plot over the error band.
+        Whether to draw a line through the central values over the error band.
     band_config :
-        Configuration for the error band, such as color and transparency.
-        If None, defaults to a predefined error band configuration.
+        Configuration for the error band styling.
+        If ``None``, defaults are used.
     line_config :
-        Configuration for the line plot, such as style, width, and markers.
-        If a dictionary is provided, it is converted to a `LinePlotConfig`.
-        If None, defaults to a predefined line plot configuration.
+        Configuration for the line styling.
+        If ``None``, defaults are used.
     axis :
-        Pre-existing Matplotlib axes to draw the plot on.
-        If provided, the function draws on it and ignores `figure_kwargs`.
+        Pre-existing Matplotlib axes to draw on.
+        If provided, ``figure_kwargs`` is ignored.
     figure_kwargs :
-        Additional keyword arguments to pass to `plt.subplots` when creating a new figure.
-        Ignored if `axis` is provided.
+        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
+        Ignored if ``axis`` is provided.
 
     Returns
     -------
     AxesFigReturn
-        If `axis` is provided, returns the Matplotlib Axes used for the plot.
-        Otherwise, returns a tuple containing the Matplotlib Figure and Axes created for the plot.
+        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
+
+    Raises
+    ------
+    ConfigurationError
+        If both ``y_lower`` and ``y_upper`` are ``None``.
+
+    See Also
+    --------
+    plot_errorband : The absolute-bounds version of this function.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+    return plot_errorband(
+        x_data=x,
+        y_data=y,
+        y_lower=(y - np.asarray(y_lower)) if y_lower is not None else None,
+        y_upper=(y + np.asarray(y_upper)) if y_upper is not None else None,
+        x_label=x_label,
+        y_label=y_label,
+        plot_title=plot_title,
+        data_label=data_label,
+        line=line,
+        band_config=band_config,
+        line_config=line_config,
+        axis=axis,
+        figure_kwargs=figure_kwargs,
+    )
+
+
+def plot_errorband(
+    x_data: NDArray,
+    y_data: NDArray,
+    y_lower: float | NDArray | None = None,
+    y_upper: float | NDArray | None = None,
+    x_label: str = "X",
+    y_label: str = "Y",
+    plot_title: str = "XY ErrorBand",
+    data_label: str = "X vs. Y",
+    line: bool = True,
+    band_config: ErrorBandConfig | None = None,
+    line_config: LinePlotConfig | dict | None = None,
+    axis: Axes | None = None,
+    figure_kwargs: dict | None = None,
+) -> AxesFigReturn:
+    """
+    Plot a line graph with a shaded error band representing uncertainty.
+
+    Parameters
+    ----------
+    x_data :
+        The independent variable values to plot.
+    y_data :
+        The central values to plot.
+    y_lower :
+        The lower bound of the error band.
+        If ``None``, it is inferred as a symmetric reflection of ``y_upper`` through ``y_data``.
+        At least one of ``y_lower`` or ``y_upper`` must be provided.
+    y_upper :
+        The upper bound of the error band.
+        If ``None``, it is inferred as a symmetric reflection of ``y_lower`` through ``y_data``.
+        At least one of ``y_lower`` or ``y_upper`` must be provided.
+    x_label :
+        The label for the x-axis.
+    y_label :
+        The label for the y-axis.
+    plot_title :
+        The title of the plot.
+    data_label :
+        The label for the data series, used in the legend.
+        If ``line=True``, the label is attached to the line.
+        If ``line=False``, it is attached to the band.
+    line :
+        Whether to draw a line through the central values over the error band.
+    band_config :
+        Configuration for the error band styling.
+        If ``None``, defaults are used.
+    line_config :
+        Configuration for the line styling.
+        If ``None``, defaults are used.
+    axis :
+        Pre-existing Matplotlib axes to draw on.
+        If provided, ``figure_kwargs`` is ignored.
+    figure_kwargs :
+        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
+        Ignored if ``axis`` is provided.
+
+    Returns
+    -------
+    AxesFigReturn
+        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
+
+    Raises
+    ------
+    ConfigurationError
+        If both ``y_lower`` and ``y_upper`` are ``None``.
+    """
+    x, y = np.asarray(x_data), np.asarray(y_data)
+
+    if y_lower is None and y_upper is None:
+        raise ConfigurationError("At least one of `y_lower` or `y_upper` must be provided for the error band.")
+
     if y_lower is not None:
         y_lower = np.asarray(y_lower)
     if y_upper is not None:
         y_upper = np.asarray(y_upper)
+
+    if y_lower is None:
+        y_lower = y - (y_upper - y)
+    elif y_upper is None:
+        y_upper = y + (y - y_lower)
 
     if axis is not None:
         ax = axis
@@ -122,24 +230,23 @@ def plot_errorband(
         line_config: LinePlotConfig = LinePlotConfig.populate(line_config)
     l_conf = line_config.get_dict() if line_config else LinePlotConfig().get_dict()
 
-    ax.fill_between(x, y_lower, y_upper, **error_band_config)
-
     if line:
-        label = data_label or l_conf.get("label") or None
+        _data_label = data_label or l_conf.get("label") or None
 
         if data_label and "label" in l_conf:
             warn("Both `data_label` and `line_config['label']` are provided. Using `data_label`.")
 
-        l_conf.pop("label", None)
-        ax.plot(x, y, label=label, **l_conf)
+            l_conf.pop("label", None)
 
-    ax.set_xlabel("X" if auto_label else x_label)
-    ax.set_ylabel("Y" if auto_label else y_label)
-    ax.set_title("ErrorBand Plot" if auto_label else plot_title)
-    if auto_label or (data_label and line):
-        ax.legend()
+        ax.fill_between(x, y_lower, y_upper, **error_band_config)
+        ax.plot(x, y, label=_data_label, **l_conf)
+    else:
+        ax.fill_between(x, y_lower, y_upper, label=data_label, **error_band_config)
 
-    plt.tight_layout()
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(plot_title)
+    ax.legend()
 
     if axis:
         return ax
