@@ -19,7 +19,7 @@ config = LinePlotConfig(
     _extra={"markevery": [5, 5]},
 )
 
-plot_xyy(x, y1, y2, plot_config=config, auto_label=True)
+plot_xyy(x, y1, y2, plot_config=config)
 
 # plt.show()
 plt.savefig("README_E6_full_customization.png", dpi=300)

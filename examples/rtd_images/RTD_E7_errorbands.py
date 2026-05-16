@@ -19,9 +19,9 @@ plot_errorband(
     y_data=y,
     y_lower=y_lower,
     y_upper=y_upper,
+    data_label=r"$\sin(x) \pm 0.15$",
     band_config=band_cfg,
     line_config=line_cfg,
-    data_label=r"$\sin(x) \pm 0.15$",
 )
 
 # plt.show()

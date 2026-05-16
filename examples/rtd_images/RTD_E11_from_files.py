@@ -10,8 +10,8 @@ plot_two_column_file(
     skip_header=True,
     x_label="Time (s)",
     y_label="Temperature (°C)",
-    plot_title="Sensor Readings",
     data_label="Thermocouple",
+    plot_title="Sensor Readings",
     is_scatter=True,
 )
 

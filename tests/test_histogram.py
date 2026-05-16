@@ -66,26 +66,21 @@ class TestPlotHistLabels:
 
     def test_auto_label_sets_default_axis_labels_and_title(self, histogram_data):
         """Test that auto_label=True sets X, Count, and Histogram as defaults."""
-        fig, ax = plot_hist(histogram_data, auto_label=True)
+        fig, ax = plot_hist(histogram_data)
 
         assert ax.get_xlabel() == "X"
-        assert ax.get_ylabel() == "Count"
+        assert ax.get_ylabel() == "Counts"
         assert ax.get_title() == "Histogram"
 
     def test_auto_label_with_density_sets_ylabel_to_density(self, histogram_data):
         """Test that auto_label=True sets y_label to Density when density=True."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(density=True), auto_label=True)
+        fig, ax = plot_hist(histogram_data, hist_config=hgc(density=True))
 
         assert ax.get_ylabel() == "Density"
 
     def test_manual_labels_are_respected(self, histogram_data):
         """Test that explicit label arguments are applied when auto_label is off."""
-        fig, ax = plot_hist(
-            histogram_data,
-            x_label="Value",
-            y_label="Count",
-            plot_title="My Distribution",
-        )
+        fig, ax = plot_hist(histogram_data, x_label="Value", y_label="Count", plot_title="My Distribution")
 
         assert ax.get_xlabel() == "Value"
         assert ax.get_ylabel() == "Count"
@@ -93,7 +88,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_does_not_set_data_label(self, histogram_data):
         """Test that auto_label=True does not generate a legend entry."""
-        fig, ax = plot_hist(histogram_data, auto_label=True)
+        fig, ax = plot_hist(histogram_data)
 
         assert ax.get_legend() is None
 
@@ -123,11 +118,7 @@ class TestPlotHistLegend:
     def test_multi_dataset_legend_has_correct_labels(self, multi_histogram_data):
         """Test that multi-series histograms produce the correct legend entries."""
         labels = ["Uniform", "Normal", "Exponential"]
-        fig, ax = plot_hist(
-            multi_histogram_data,
-            data_label=labels,
-            hist_config=hgc(bins=15, density=True, alpha=0.6),
-        )
+        fig, ax = plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
         legend = ax.get_legend()
 
         assert legend is not None

@@ -12,9 +12,6 @@
      - ``Axes | tuple[Axes, Axes]`` – return type for single- or dual-axis plot functions.
    * - ``AxesFigReturn``
      - ``Axes | tuple[Figure, Axes]`` – return type for functions that may create a new figure.
-   * - ``LABEL_MGMT``
-     - ``tuple[str, str, str, str, list[str]]`` – internal label bundle returned by
-       :func:`~plotez.backend.utilities.dual_axes_label_management`.
    * - ``LSE``
      - Union of all four config classes (type-checking only):
        ``LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig | ErrorBandConfig``.
@@ -33,7 +30,7 @@ Figure = _Figure
 AxesReturn = Axes | tuple[Axes, Axes]
 AxesFigReturn = Axes | tuple[Figure, Axes]
 
-LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
+# LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
 
 if TYPE_CHECKING:
     from . import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig

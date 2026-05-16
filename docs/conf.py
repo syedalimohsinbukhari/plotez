@@ -64,7 +64,7 @@ autodoc_type_aliases = {
     "NDArray": "~plotez.typing.NDArray",
     "AxesReturn": "~plotez.typing.AxesReturn",
     "AxesFigReturn": "~plotez.typing.AxesFigReturn",
-    "LABEL_MGMT": "~plotez.typing.LABEL_MGMT",
+    # "LABEL_MGMT": "~plotez.typing.LABEL_MGMT",
     "LSE": "~plotez.typing.utilities.LSE",
 }
 autodoc_typehints_format = "short"

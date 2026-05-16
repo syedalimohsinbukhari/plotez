@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 
 __all__ = [
     "dual_axes_data_validation",
-    "dual_axes_label_management",
     "ErrorBandConfig",
     "ErrorPlotConfig",
     "HistogramConfig",
@@ -24,7 +23,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 from warnings import warn
 
-from ..typing import LABEL_MGMT, NDArray
+from ..typing import NDArray
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 from .error_handling import AxisLabelError, EmptyDataError, LabelConflictWarning, TwinXDataError, TwinYDataError
 
@@ -359,85 +358,6 @@ def dual_axes_data_validation(
         raise TwinXDataError("Dual Y-axis plot requested but 'x2_data' given.")
     if not use_twin_x and y2_data is not None:
         raise TwinYDataError("Dual X-axis plot requested but 'y2_data' given.")
-
-
-def dual_axes_label_management(
-    x1y1_label: str = "",
-    x1y2_label: str = "",
-    x2y1_label: str = "",
-    plot_title: str = "",
-    axis_labels: list[str] = ["", "", ""],  # noqa
-    auto_label: bool = False,
-    use_twin_x: bool = True,
-) -> LABEL_MGMT:
-    """
-    Manage labels and titles for dual-axes plots.
-
-    Parameters
-    ----------
-    x1y1_label :
-        Label for the primary plot (X1 vs. Y1).
-        Ignored if `auto_label=True`.
-    x1y2_label :
-        Label for the secondary Y-axis plot (X1 vs. Y2), used if `use_twin_x` is True.
-        Ignored if `auto_label=True`.
-    x2y1_label :
-        Label for the secondary X-axis plot (X2 vs. Y1), used if `use_twin_x` is False.
-        Ignored if `auto_label=True`.
-    auto_label :
-        If True, **overwrites all provided labels** with automatic defaults.
-        When True, all label parameters are ignored.
-    axis_labels :
-        Axis labels as [x_label, y1_label, y2_or_x2_label].
-        Ignored if `auto_label=True`.
-        - Dual Y-axis: [primary x, primary y, secondary y]
-        - Dual X-axis: [primary x, primary y, secondary x]
-    plot_title :
-        Plot title. Ignored if `auto_label=True`.
-    use_twin_x :
-        If True, dual Y-axis plot. If False, dual X-axis plot.
-
-    Returns
-    -------
-    tuple
-        (x1y1_label, x1y2_label, x2y1_label, plot_title, axis_labels)
-
-    Notes
-    -----
-    When `auto_label=True`, all user-provided labels are **replaced** with:
-      - Dual Y-axis defaults: axis_labels=['X', 'Y₁', 'Y₂'], data labels set to empty
-      - Dual X-axis defaults: axis_labels=['X₁', 'Y', 'X₂'], data labels set to empty
-      - plot_title='Plot'
-
-    When `auto_label=False`, missing labels are replaced with empty strings.
-    """
-    # Warn if the user provided labels but `auto_label` is True
-    if isinstance(axis_labels, str):
-        raise AxisLabelError(
-            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
-        )
-    if auto_label:
-        _auto_handler(axis_labels=axis_labels, x1y1_label=x1y1_label, x1y2_label=x1y2_label, x2y1_label=x2y1_label)
-        if use_twin_x:
-            axis_labels = ["X", r"$Y_1$", r"$Y_2$"]
-            x1y1_label = ""
-            x1y2_label = ""
-            x2y1_label = ""
-        else:
-            axis_labels = [r"$X_1$", "Y", r"$X_2$"]
-            x1y1_label = ""
-            x1y2_label = ""
-            x2y1_label = ""
-        plot_title = "Plot"
-    else:
-        # Use provided values or empty strings
-        axis_labels: list[str] = list(axis_labels) if axis_labels else ["", "", ""]
-        x1y1_label = x1y1_label or ""
-        x1y2_label = x1y2_label or ""
-        x2y1_label = x2y1_label or ""
-        plot_title = plot_title or ""
-
-    return x1y1_label, x1y2_label, x2y1_label, plot_title, axis_labels
 
 
 def _auto_handler(
