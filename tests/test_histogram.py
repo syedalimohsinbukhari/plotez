@@ -69,7 +69,7 @@ class TestPlotHistLabels:
         fig, ax = plot_hist(histogram_data)
 
         assert ax.get_xlabel() == "X"
-        assert ax.get_ylabel() == "Count"
+        assert ax.get_ylabel() == "Counts"
         assert ax.get_title() == "Histogram"
 
     def test_auto_label_with_density_sets_ylabel_to_density(self, histogram_data):

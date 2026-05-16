@@ -471,6 +471,7 @@ def plot_xy(
         x1_data=x_data,
         y1_data=y_data,
         x1y1_label=data_label,
+        use_twin_x=False,
         axis_labels=[x_label, y_label, ""],
         plot_title=plot_title,
         is_scatter=is_scatter,
@@ -496,7 +497,7 @@ def plot_xyy(
     y1_label: str = r"Y$_1$",
     y2_label: str = r"Y$_2$",
     data_labels: list[str] = [r"X vs. Y$_1$", r"X vs. Y$_2$"],  # noqa
-    plot_title: str = "",
+    plot_title: str = "XYY Plot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -635,7 +636,7 @@ def plot_with_dual_axes(
     x1y1_label: str = r"X$_1$ vs. Y$_1$",
     x1y2_label: str = r"X$_1$ vs. Y$_2$",
     x2y1_label: str = r"X$_2$ vs. Y$_1$",
-    use_twin_x: bool = True,
+    use_twin_x: bool = False,
     axis_labels: list[str] = ["X", r"Y$_1$", r"Y$_2$"],  # noqa
     plot_title: str = "DualAxesPlot",
     is_scatter: bool = False,
@@ -665,7 +666,8 @@ def plot_with_dual_axes(
         Label for the plot of X2 vs. Y1 (when using dual X-axes).
         If None, and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x :
-        If True, creates a dual y-axis plot. If False, creates a dual x-axis plot. Default is True.
+        If True, creates a dual y-axis plot. If False, creates a dual x-axis plot.
+        Default is False.
     axis_labels :
         List of axis labels in the form [x_label, y_label1, y_label2].
         If None, and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
@@ -1109,7 +1111,7 @@ def plot_hist(
     ax.hist(x, label=data_label, **h_config)
 
     ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+    ax.set_ylabel("Density" if h_config.get("density") else y_label)
     ax.set_title(plot_title)
 
     if data_label:
