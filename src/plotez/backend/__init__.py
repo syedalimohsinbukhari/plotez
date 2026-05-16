@@ -33,7 +33,6 @@ from .utilities import (
     LinePlotConfig,
     ScatterPlotConfig,
     dual_axes_data_validation,
-    dual_axes_label_management,
     plot_or_scatter,
     split_dictionary,
 )
@@ -77,7 +76,6 @@ __all__ = [
     "HistogramConfig",
     # Utilities
     "dual_axes_data_validation",
-    "dual_axes_label_management",
     "plot_or_scatter",
     "split_dictionary",
 ]

@@ -47,8 +47,6 @@ Utility Functions
 
 .. autofunction:: plotez.backend.utilities.dual_axes_data_validation
 
-.. autofunction:: plotez.backend.utilities.dual_axes_label_management
-
 Convenience / Wrapper Functions
 --------------------------------
 

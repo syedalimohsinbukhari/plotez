@@ -7,16 +7,18 @@ This module provides simplified plotting functions for common visualization task
 from __future__ import annotations
 
 __all__ = [
-    "n_plotter",
     "plot_errorband",
+    "plot_errorband_relative",
     "plot_errorbar",
-    "plot_hist",
     "plot_two_column_file",
-    "plot_with_dual_axes",
-    "plot_xxy",
     "plot_xy",
     "plot_xyy",
+    "plot_xxy",
+    "plot_with_dual_axes",
     "two_subplots",
+    "n_plotter",
+    "plot_density",
+    "plot_hist",
 ]
 
 from typing import Iterable
