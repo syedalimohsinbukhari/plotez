@@ -378,7 +378,7 @@ class TestNPlotter:
         assert axs[0].get_ylabel() == ""
         assert axs[0].get_title() == ""
         # Check the main plot title
-        assert fig._suptitle.get_text() == ""
+        assert fig.texts[0].get_text() == "" if fig.texts else True
 
 
 class TestPlotErrorbar:

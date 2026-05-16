@@ -27,10 +27,10 @@ from warnings import warn
 import matplotlib.pyplot as plt
 import numpy as np
 
-from . import HistogramConfig
 from .backend import (
     ErrorBandConfig,
     ErrorPlotConfig,
+    HistogramConfig,
     LinePlotConfig,
     ScatterPlotConfig,
     dual_axes_data_validation,
@@ -310,8 +310,8 @@ def plot_errorbar(
 
     Returns
     -------
-    Axes
-        The Axes object containing the error bar plot.
+    AxesFigReturn
+        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
     if x_err is not None:
@@ -980,7 +980,8 @@ def n_plotter(
             ax.legend(loc="best")
 
         ax.set_title(sp_)
-        fig.suptitle(_plot_title)
+
+    fig.suptitle(_plot_title)
 
     fig.tight_layout()
 
@@ -1036,7 +1037,7 @@ def plot_density(
     if isinstance(hist_config, dict):
         if not hist_config.get("density"):
             warn("Setting `density=True` in `hist_config` for density plot.", UserWarning, stacklevel=2)
-        hist_config["density"] = {**hist_config, "density": True}
+        hist_config = {**hist_config, "density": True}
     elif isinstance(hist_config, HistogramConfig):
         hist_config.density = True
     else:

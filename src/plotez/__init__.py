@@ -23,8 +23,11 @@ from .backend import (
 )
 from .plotez import (
     n_plotter,
+    plot_density,
     plot_errorband,
+    plot_errorband_relative,
     plot_errorbar,
+    plot_hist,
     plot_two_column_file,
     plot_with_dual_axes,
     plot_xxy,
@@ -45,6 +48,9 @@ __all__ = [
     "n_plotter",
     "plot_errorbar",
     "plot_errorband",
+    "plot_errorband_relative",
+    "plot_hist",
+    "plot_density",
     # Config classes
     "ErrorBandConfig",
     "ErrorPlotConfig",
