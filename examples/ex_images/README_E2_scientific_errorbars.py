@@ -13,7 +13,7 @@ y = np.sin(x)
 y_err = 0.2 * rng.random(size=y.shape)
 
 ep = ErrorPlotConfig(color="darkblue", marker="o", capsize=5, ecolor="red", markerfacecolor="lime")
-plot_errorbar(x, y, data_label="X vs Y\n(with errors)", y_err=y_err, errorbar_config=ep, auto_label=True)
+plot_errorbar(x, y, y_err=y_err, data_label="X vs Y\n(with errors)", errorbar_config=ep)
 
 # plt.show()
 plt.savefig("README_E2_scientific_errorbars.png", dpi=300)

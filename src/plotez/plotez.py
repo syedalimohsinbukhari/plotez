@@ -259,11 +259,10 @@ def plot_errorbar(
     y_data: NDArray,
     x_err: float | NDArray | None = None,
     y_err: float | NDArray | None = None,
-    x_label: str = "",
-    y_label: str = "",
-    plot_title: str = "",
-    data_label: str = "",
-    auto_label: bool = False,
+    x_label: str = "X",
+    y_label: str = "Y",
+    plot_title: str = "XY ErrorBar",
+    data_label: str = "X vs. Y",
     errorbar_config: ErrorPlotConfig | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
@@ -299,8 +298,6 @@ def plot_errorbar(
     data_label :
         The label for the data points, which will appear in the plot legend.
         If `None`, the legend is not displayed.
-    auto_label :
-        If True, automatically assigns default labels for the axes and title if no labels or title are provided.
     errorbar_config :
         Custom configurations for the error bars. If `None`, default configurations are used.
     figure_kwargs :
@@ -336,13 +333,10 @@ def plot_errorbar(
     ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
     ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
-    ax.set_xlabel("X" if auto_label else x_label)
-    ax.set_ylabel("Y" if auto_label else y_label)
-    ax.set_title("Error Bar Plot" if auto_label else plot_title)
-    if data_label:
-        ax.legend()
-
-    plt.tight_layout()
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(plot_title)
+    ax.legend()
 
     if axis:
         return ax
@@ -361,8 +355,8 @@ def plot_two_column_file(
     skip_header: bool = False,
     x_label: str = "X",
     y_label: str = "Y",
-    data_label: str = "XY data",
-    plot_title: str = "XY plot",
+    data_label: str = "XY Data",
+    plot_title: str = "XY Plot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -436,8 +430,8 @@ def plot_xy(
     y_data: NDArray,
     x_label: str = "X",
     y_label: str = "Y",
-    data_label: str = "XY data",
-    plot_title: str = "XY plot",
+    data_label: str = "XY Data",
+    plot_title: str = "XY Plot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -498,9 +492,9 @@ def plot_xyy(
     x_data: NDArray,
     y1_data: NDArray,
     y2_data: NDArray,
-    x_label: str = "x_label",
-    y1_label: str = "y1_label",
-    y2_label: str = "y2_label",
+    x_label: str = "X",
+    y1_label: str = r"Y$_1$",
+    y2_label: str = r"Y$_2$",
     data_labels: list[str] = [r"X vs. Y$_1$", r"X vs. Y$_2$"],  # noqa
     plot_title: str = "",
     is_scatter: bool = False,
@@ -874,10 +868,10 @@ def _label_sanitizer(
         return labels
 
     return (
-        _pad(x_labels, "x_labels"),
-        _pad(y_labels, "y_labels"),
-        _pad(data_labels, "data_labels"),
-        _pad(subplot_titles, "subplot_titles"),
+        _pad(labels=x_labels, name="x_labels"),
+        _pad(labels=y_labels, name="y_labels"),
+        _pad(labels=data_labels, name="data_labels"),
+        _pad(labels=subplot_titles, name="subplot_titles"),
         plot_title or "",
     )
 
@@ -989,13 +983,79 @@ def n_plotter(
     return fig, axs
 
 
+def plot_density(
+    x_data: NDArray,
+    x_label: str = "X",
+    y_label: str = "Density",
+    plot_title: str = "Density Plot",
+    data_label: str | None = None,
+    hist_config: HistogramConfig | dict | None = None,
+    axis: Axes | None = None,
+    figure_kwargs: dict | None = None,
+) -> AxesFigReturn:
+    """
+    Plot a density histogram based on the given data and configuration.
+
+    Parameters
+    ----------
+    x_data :
+        The data array used for generating the density plot.
+    x_label :
+        The label for the x-axis.
+        Default is "X".
+    y_label :
+        The label for the y-axis.
+        Default is "Density".
+    plot_title :
+        The title of the density plot.
+        Default is "Density Plot".
+    data_label :
+        The optional label for the dataset being visualized.
+        Default is None.
+    hist_config :
+        The histogram configuration, either as an instance of `HistogramConfig`, a dictionary, or None.
+        If provided, it is used to configure the histogram and ensures that `density=True` is set.
+        Default is None.
+    axis :
+        The Matplotlib Axes object on which to draw the plot.
+        If None, a new set of axes is created. Default is None.
+    figure_kwargs :
+        Optional keyword arguments passed when creating a new Matplotlib figure.
+        These arguments are ignored if an existing axis is provided.
+        Default is None.
+
+    Returns
+    -------
+    AxesFigReturn
+        A tuple containing the Matplotlib Axes and Figure objects used to create the plot.
+    """
+    if isinstance(hist_config, dict):
+        if not hist_config.get("density"):
+            warn("Setting `density=True` in `hist_config` for density plot.", UserWarning, stacklevel=2)
+        hist_config["density"] = {**hist_config, "density": True}
+    elif isinstance(hist_config, HistogramConfig):
+        hist_config.density = True
+    else:
+        hist_config = HistogramConfig(density=True)
+
+    return plot_hist(
+        x_data=x_data,
+        x_label=x_label,
+        y_label=y_label,
+        plot_title=plot_title,
+        data_label=data_label,
+        hist_config=hist_config,
+        axis=axis,
+        figure_kwargs=figure_kwargs,
+    )
+
+
 def plot_hist(
     x_data: NDArray,
-    x_label: str = "",
-    y_label: str = "",
-    plot_title: str = "",
-    data_label: str = "",
-    auto_label: bool = False,
+    x_label: str = "X",
+    y_label: str = "Counts",
+    plot_title: str = "Histogram",
+    data_label: str | None = None,
     hist_config: HistogramConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
@@ -1015,8 +1075,6 @@ def plot_hist(
         Title for the plot. If `None`, no title will be displayed unless auto-labeling is enabled.
     data_label :
         Label(s) for the data series. This is used in plot's legend generation.
-    auto_label :
-        If set to `True`, default labels for axis and title are applied. Defaults to `False`.
     hist_config :
         Configuration object for histogram styling. If `None`, default configurations are used.
     axis :
@@ -1037,27 +1095,25 @@ def plot_hist(
     else:
         h_config = HistogramConfig().get_dict()
 
-    # IDE complain hack
-    f, ax = None, None
     if axis is not None:
         ax = axis
     else:
         f, ax = plt.subplots(**(figure_kwargs or {}))
 
     if data_label and "label" in h_config:
-        warn("Both `data_label` and `hist_config['label']` are provided. Using `data_label`.")
-        h_config.pop("label", None)
+        raise ConfigurationError("Both `data_label` and `hist_config['label']` cannot be provided.")
+
+    if not h_config.get("bins"):
+        h_config["bins"] = 32
+
     ax.hist(x, label=data_label, **h_config)
 
-    ax.set_xlabel("X" if auto_label else x_label)
-    _y_label = "Density" if h_config.get("density") else "Count"
-    ax.set_ylabel(_y_label if auto_label else y_label)
-    ax.set_title("Histogram" if auto_label else plot_title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(plot_title)
 
     if data_label:
         ax.legend()
-
-    plt.tight_layout()
 
     if axis:
         return ax

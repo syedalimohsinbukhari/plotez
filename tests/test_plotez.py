@@ -411,7 +411,7 @@ class TestPlotErrorbar:
 
     def test_errorbar_auto_label(self, sample_x_data, sample_y_data, sample_y_err):
         """Test error bar plotting with auto labeling."""
-        result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err, auto_label=True)
+        result = plot_errorbar(sample_x_data, sample_y_data, y_err=sample_y_err)
         assert isinstance(result, tuple)
 
     def test_errorbar_with_labels(self, sample_x_data, sample_y_data, sample_y_err):
@@ -448,7 +448,7 @@ class TestPlotErrorbar:
         """Test that passing both figure_kwargs and axis emits a warning."""
         fig, ax = plt.subplots()
         with pytest.warns(UserWarning):
-            result = plot_errorbar(sample_x_data, sample_y_data, figure_kwargs={"figsize": (10, 6)}, axis=ax)
+            result = plot_errorbar(sample_x_data, sample_y_data, axis=ax, figure_kwargs={"figsize": (10, 6)})
         assert result == ax
 
     def test_errorbar_logarithmic_axes(self):

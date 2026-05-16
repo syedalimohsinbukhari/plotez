@@ -66,7 +66,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_sets_default_axis_labels_and_title(self, histogram_data):
         """Test that auto_label=True sets X, Count, and Histogram as defaults."""
-        fig, ax = plot_hist(histogram_data, auto_label=True)
+        fig, ax = plot_hist(histogram_data)
 
         assert ax.get_xlabel() == "X"
         assert ax.get_ylabel() == "Count"
@@ -74,7 +74,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_with_density_sets_ylabel_to_density(self, histogram_data):
         """Test that auto_label=True sets y_label to Density when density=True."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(density=True), auto_label=True)
+        fig, ax = plot_hist(histogram_data, hist_config=hgc(density=True))
 
         assert ax.get_ylabel() == "Density"
 
@@ -88,7 +88,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_does_not_set_data_label(self, histogram_data):
         """Test that auto_label=True does not generate a legend entry."""
-        fig, ax = plot_hist(histogram_data, auto_label=True)
+        fig, ax = plot_hist(histogram_data)
 
         assert ax.get_legend() is None
 

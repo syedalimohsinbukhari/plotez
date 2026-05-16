@@ -81,7 +81,7 @@ y = np.sin(x)
 y_err = 0.2 * rng.random(size=y.shape)
 
 ep = ErrorPlotConfig(color="darkblue", marker="o", capsize=5, ecolor="red", markerfacecolor="lime")
-plot_errorbar(x, y, y_err=y_err, errorbar_config=ep, auto_label=True)
+plot_errorbar(x, y, y_err=y_err, errorbar_config=ep)
 ```
 
 ![README_E2_scientific_errorbars](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E2_scientific_errorbars.png)

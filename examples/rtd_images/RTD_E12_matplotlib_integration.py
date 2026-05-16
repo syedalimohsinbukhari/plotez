@@ -16,7 +16,7 @@ plot_xy(x, y1, x_label="X", y_label="Y", data_label="sin(x)", axis=ax1)
 x2 = np.linspace(0, 10, 20)
 y2 = np.cos(x2)
 y_err = 0.1
-plot_errorbar(x2, y2, y_err=y_err, axis=ax2, x_label="X", data_label="cos(x)")
+plot_errorbar(x2, y2, y_err=y_err, x_label="X", data_label="cos(x)", axis=ax2)
 
 # plt.show()
 plt.savefig("RTD_E12_matplotlib_integration.png", dpi=300)
