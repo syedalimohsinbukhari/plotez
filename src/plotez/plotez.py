@@ -393,12 +393,12 @@ def plot_two_column_file(
 
     Returns
     -------
-    tuple[Axes, Axes] or Axes
-        A tuple of ``(primary_axis, secondary_axis)`` if a dual-axis plot is created, otherwise a single ``Axes``.
+    Axes
+        The axes object of the plot.
 
     Raises
     ------
-    ValueError
+    ColumnCountError
         If the file does not contain exactly two columns.
     """
     data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)

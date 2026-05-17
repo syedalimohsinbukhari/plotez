@@ -21,15 +21,16 @@ Features
 
 * **Simple API**: Create complex plots with just a few lines of code
 * **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
-* **Error Band Plotting**: Shaded error band support via ``plot_errorband`` and ``ErrorBandConfig``
+* **Error Band Plotting**: Shaded error band support via ``plot_errorband``, ``plot_errorband_relative``, and ``ErrorBandConfig``
+* **Histogram & Density Plotting**: ``plot_hist`` and ``plot_density`` with ``HistogramConfig`` / ``hgc``
 * **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 * **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 * **File Integration**: Direct plotting from CSV files
 * **Extensive Customization**: Full control over plot appearance via independent config dataclasses
-* **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``) available at top level
+* **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``, ``hgc``) available at top level
 * **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 * **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
-* **Well Tested**: Comprehensive test suite with 85%+ coverage
+* **Well Tested**: Comprehensive test suite with 90%+ coverage
 
 Quick Example
 -------------
@@ -42,7 +43,7 @@ Quick Example
    # Basic line plot
    x = np.linspace(0, 10, 100)
    y = np.sin(x)
-   plot_xy(x, y, auto_label=True)
+   plot_xy(x, y, x_label="X", y_label="Y", data_label=r"$\sin(x)$")
 
    # Error bar plot with enhanced styling using the epc() convenience wrapper
    x_sparse = np.linspace(0, 10, 20)

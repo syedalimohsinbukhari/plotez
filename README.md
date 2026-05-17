@@ -19,14 +19,15 @@ with minimal boilerplate code.
 
 - **Simple API**: Create complex plots with just a few lines of code
 - **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
-- **Error Band Plotting**: Shaded error band support via `plot_errorband` and `ErrorBandConfig`
+- **Error Band Plotting**: Shaded error band support via `plot_errorband`, `plot_errorband_relative`, and `ErrorBandConfig`
+- **Histogram & Density Plotting**: `plot_hist` and `plot_density` with `HistogramConfig` / `hgc`
 - **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
 - **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
-- **Well Tested**: Comprehensive test suite with 80%+ coverage
+- **Well Tested**: Comprehensive test suite with 90%+ coverage
 
 ## Installation
 
@@ -201,6 +202,30 @@ plot_xyy(x, y1, y2, plot_config=config)
 
 Config classes for when defaults aren't enough. Use `_extra` to pass any matplotlib parameter not covered by the dataclass fields.
 
+---
+
+### Histogram / Density
+
+Use `plot_hist` with the `hgc` shorthand to configure and plot a histogram in one go.
+Switch to `plot_density` to get normalised probability density instead of raw counts — everything else stays the same.
+
+```python
+import numpy as np
+from plotez import hgc, plot_hist
+
+rng = np.random.default_rng(42)
+data = rng.normal(loc=0, scale=1, size=5000)
+
+h_cfg = hgc(bins=40, color="steelblue", ec="white", alpha=0.8)
+plot_hist(data, x_label="Value", y_label="Counts",
+          plot_title="Histogram of Normal Distribution",
+          data_label="Normal", hist_config=h_cfg)
+```
+
+![README_E7_histogram](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E7_histogram.png)
+
+Swap `plot_hist` for `plot_density` to get the probability density on the y-axis.
+
 ## Development
 
 ### Running Tests
@@ -232,9 +257,9 @@ make html
 
 | Item           | Status                                         |
 |----------------|------------------------------------------------|
-| Latest version | v0.2.1                                         |
+| Latest version | v0.3.0                                         |
 | Python support | 3.10 · 3.11 · 3.12                             |
-| Test coverage  | 80%+                                           |
+| Test coverage  | 90%+                                           |
 | Type hints     | PEP 561 compliant (`py.typed`)                 |
 | Documentation  | [Read the Docs](https://plotez.readthedocs.io) |
 | License        | MIT                                            |
