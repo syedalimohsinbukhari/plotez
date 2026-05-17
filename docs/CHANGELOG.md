@@ -5,6 +5,31 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 17-May-2026
+
+### Added
+
+- **Histogram Plotting**: `plot_hist` function for histogram visualisation with full `ax.hist` parameter coverage
+- **Density Plotting**: `plot_density` function — a thin wrapper around `plot_hist` that enforces `density=True` for probability-density histograms
+- **Relative Error Band**: `plot_errorband_relative` — a convenience wrapper around `plot_errorband` where `y_lower` / `y_upper` are relative offsets from `y_data` rather than absolute bounds
+- **`HistogramConfig`**: New dataclass for histogram styling (`bins`, `density`, `histtype`, `color`, `alpha`, `edgecolor`, `facecolor`, `linewidth`, `orientation`, `cumulative`, `hatch`); exported from the top-level `plotez` namespace
+- **`histogram_config` / `hgc`**: New convenience factory function (and its short alias) for building `HistogramConfig` objects; exported from the top-level `plotez` namespace
+- **New RTD examples**: `RTD_E13_histogram.py`, `RTD_E14_density.py`, `RTD_E15_errorband_relative.py` with corresponding PNG outputs in `examples/rtd_images/`
+- **New README example**: `README_E7_histogram.py` + `README_E7_histogram.png` in `examples/ex_images/`
+- **`docs/api.rst`**: Added `HistogramConfig` to "Parameter Classes"; added `histogram_config` to "Convenience / Wrapper Functions" with `hgc` row in alias table; added "Error band parameters" shorthand-key table (documents `ebc` aliases `c`, `ec`, `lw`, `ls`); added "Histogram parameters" shorthand-key table (documents `hgc` aliases `c`, `lw`, `ec`)
+- **`docs/quickstart.rst`**: Added "Relative Error Band" section (E15), "Histogram" section (E13), and "Density Plot" section (E14); added `hgc` to "Shorthand Helpers" section
+
+### Fixed
+
+- **`docs/quickstart.rst`**: All 13 `.. literalinclude::` directives referenced `../examples/RTD_E*.py` but the scripts live in `../examples/rtd_images/`; corrected every path to include the `rtd_images/` subdirectory (this was a Sphinx build-breaking bug)
+- **`docs/index.rst`**: Quick Example passed `auto_label=True` to `plot_xy`, which is not a parameter of that function; replaced with explicit `x_label=`, `y_label=`, and `data_label=` arguments
+- **`src/plotez/plotez.py`**: `plot_two_column_file` docstring `Returns` section incorrectly stated `tuple[Axes, Axes] or Axes` (copy-pasted from `plot_with_dual_axes`); corrected to `Axes`
+
+### Changed
+
+- **`docs/index.rst`**: Features list updated — added "Histogram & Density Plotting" bullet; updated convenience wrappers bullet to include `hgc`; bumped coverage claim to 90%+
+- **`README.md`**: Features list updated to match `index.rst`; added "### Histogram / Density" example section; bumped Project Status version to `v0.3.0` and coverage to `90%+`
+
 ## [0.2.1] - 09-Mar-2026
 
 ### Added

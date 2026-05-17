@@ -19,7 +19,7 @@ Minimal Example
 The absolute minimum code to produce a labeled plot. ``auto_label=True`` generates
 ``"X"``, ``"Y"``, and ``"Plot"`` as axis and title labels automatically.
 
-.. literalinclude:: ../examples/RTD_E1_simple.py
+.. literalinclude:: ../examples/rtd_images/RTD_E1_simple.py
    :language: python
    :lines: 3-11
 
@@ -33,7 +33,7 @@ Custom Labels
 Replace auto-generated labels with meaningful scientific ones. ``data_label`` appears
 in the legend; all label strings support LaTeX notation (e.g. ``r'$\sin(x)$'``).
 
-.. literalinclude:: ../examples/RTD_E2_custom_labels.py
+.. literalinclude:: ../examples/rtd_images/RTD_E2_custom_labels.py
    :language: python
    :lines: 3-18
 
@@ -47,7 +47,7 @@ Scatter Plot
 Pass ``is_scatter=True`` to switch from a line to a scatter plot — same function,
 same parameters, one flag.
 
-.. literalinclude:: ../examples/RTD_E3_scatter_plot.py
+.. literalinclude:: ../examples/rtd_images/RTD_E3_scatter_plot.py
    :language: python
    :lines: 3-13
 
@@ -64,7 +64,7 @@ Basic Error Bars
 ``y_err`` (and ``x_err``) can be a scalar (same error everywhere) or an array
 (per-point errors). Caps are shown by default and controlled via ``capsize``.
 
-.. literalinclude:: ../examples/RTD_E4_errorbar.py
+.. literalinclude:: ../examples/rtd_images/RTD_E4_errorbar.py
    :language: python
    :lines: 3-15
 
@@ -79,7 +79,7 @@ Styled Error Bars
 parameters. ``ecolor`` sets the error bar colour independently from the line colour;
 ``elinewidth`` sets the error bar line thickness.
 
-.. literalinclude:: ../examples/RTD_E5_errorbar_customized.py
+.. literalinclude:: ../examples/rtd_images/RTD_E5_errorbar_customized.py
    :language: python
    :lines: 3-32
 
@@ -93,7 +93,7 @@ Asymmetric Errors
 Pass a ``(2, N)`` array to ``y_err`` (or ``x_err``) for different lower and upper
 uncertainties — first row is lower errors, second row is upper errors.
 
-.. literalinclude:: ../examples/RTD_E6_asym_errors.py
+.. literalinclude:: ../examples/rtd_images/RTD_E6_asym_errors.py
    :language: python
    :lines: 3-14
 
@@ -108,11 +108,26 @@ For dense, continuous data shaded bands are cleaner than individual error bars.
 ``y_lower`` and ``y_upper`` are absolute values (not offsets); ``band_config``
 controls the fill and ``line_config`` controls the central line.
 
-.. literalinclude:: ../examples/RTD_E7_errorbands.py
+.. literalinclude:: ../examples/rtd_images/RTD_E7_errorbands.py
    :language: python
    :lines: 3-26
 
 .. image:: ../examples/rtd_images/RTD_E7_errorbands.png
+
+----
+
+Relative Error Band
+~~~~~~~~~~~~~~~~~~~
+
+``plot_errorband_relative`` is a convenience wrapper around ``plot_errorband`` where
+``y_lower`` and ``y_upper`` are offsets from ``y_data`` rather than absolute bounds —
+so you can pass a single uncertainty value and let plotEZ compute the band edges.
+
+.. literalinclude:: ../examples/rtd_images/RTD_E15_errorband_relative.py
+   :language: python
+   :lines: 3-25
+
+.. image:: ../examples/rtd_images/RTD_E15_errorband_relative.png
 
 ----
 
@@ -126,7 +141,7 @@ Two Subplots
 Use ``orientation='h'`` for side-by-side or ``'v'`` for stacked; ``subplot_title``
 labels each panel individually.
 
-.. literalinclude:: ../examples/RTD_E8_two_subplots.py
+.. literalinclude:: ../examples/rtd_images/RTD_E8_two_subplots.py
    :language: python
    :lines: 3-20
 
@@ -140,7 +155,7 @@ Grid of Four
 ``n_plotter`` handles arbitrary N×M grids. Config parameters passed as lists
 apply per-subplot, cycling if the list is shorter than the panel count.
 
-.. literalinclude:: ../examples/RTD_E9_grid_of_four.py
+.. literalinclude:: ../examples/rtd_images/RTD_E9_grid_of_four.py
    :language: python
    :lines: 3-22
 
@@ -154,7 +169,7 @@ Shared Axes
 Pass ``figure_kwargs={"sharex": True, "sharey": True}`` to lock axis
 ranges across all panels — redundant tick labels are hidden automatically.
 
-.. literalinclude:: ../examples/RTD_E10_shared_axes.py
+.. literalinclude:: ../examples/rtd_images/RTD_E10_shared_axes.py
    :language: python
    :lines: 3-29
 
@@ -173,7 +188,7 @@ Config Classes
 reusable across multiple plots. Any matplotlib parameter not covered by a
 named field can be forwarded via the ``_extra`` dict.
 
-.. literalinclude:: ../examples/RTD_E5-2_errorbar_customized.py
+.. literalinclude:: ../examples/rtd_images/RTD_E5-2_errorbar_customized.py
    :language: python
    :lines: 3-33
 
@@ -185,18 +200,19 @@ named field can be forwarded via the ``_extra`` dict.
 Shorthand Helpers
 -----------------
 
-``lpc``, ``epc``, ``ebc``, and ``spc`` are factory functions that accept
+``lpc``, ``epc``, ``ebc``, ``spc``, and ``hgc`` are factory functions that accept
 familiar matplotlib aliases (``c``, ``lw``, ``ls``, ``ms``, ``mec``, ``mfc``) and
 return the corresponding config object — no class import required.
 
 .. code-block:: python
 
-   from plotez import lpc, epc, ebc, spc
+   from plotez import lpc, epc, ebc, spc, hgc
 
    line = lpc(c='steelblue', lw=2, ls='--', marker='o', ms=4)
    ep = epc(c='darkblue', ls=':', lw=2, marker='d', ms=6, capsize=8, elinewidth=2, ecolor='red')
    band = ebc(c='cyan', alpha=0.3, ec='k', ls='--', hatch='/')
    dots = spc(c='orange', s=40, alpha=0.7, marker='^')
+   hist = hgc(bins=40, c='steelblue', ec='white', alpha=0.8)
 
 See the :doc:`api` page for the full shorthand key reference.
 
@@ -290,6 +306,41 @@ Use Python's ``warnings`` module to filter or escalate custom warnings:
 
 ----
 
+Histogram & Density
+-------------------
+
+Histogram
+~~~~~~~~~
+
+``plot_hist`` wraps ``ax.hist`` with the same consistent config-object pattern used
+throughout plotEZ. ``hgc`` (short for ``histogram_config``) is the companion factory
+function — pass familiar histogram parameters as keyword arguments and get a
+``HistogramConfig`` back.
+
+.. literalinclude:: ../examples/rtd_images/RTD_E13_histogram.py
+   :language: python
+   :lines: 3-21
+
+.. image:: ../examples/rtd_images/RTD_E13_histogram.png
+
+----
+
+Density Plot
+~~~~~~~~~~~~
+
+``plot_density`` is a thin wrapper around ``plot_hist`` that automatically sets
+``density=True`` — the y-axis shows probability density instead of raw counts.
+Pass a ``HistogramConfig`` (or ``hgc``) as usual; ``density`` will be enforced
+regardless of the config value.
+
+.. literalinclude:: ../examples/rtd_images/RTD_E14_density.py
+   :language: python
+   :lines: 3-21
+
+.. image:: ../examples/rtd_images/RTD_E14_density.png
+
+----
+
 Real-World Workflows
 --------------------
 
@@ -300,7 +351,7 @@ Plotting from CSV Files
 no pandas boilerplate. The file must have exactly two columns (x, y);
 use ``skip_header=True`` to ignore a header row.
 
-.. literalinclude:: ../examples/RTD_E11_from_files.py
+.. literalinclude:: ../examples/rtd_images/RTD_E11_from_files.py
    :language: python
    :lines: 3-17
 
@@ -315,7 +366,7 @@ All ``plotez`` functions accept an ``axis`` keyword so you can drop them
 into any existing matplotlib figure. They return the ``Axes`` object for
 further customisation.
 
-.. literalinclude:: ../examples/RTD_E12_matplotlib_integration.py
+.. literalinclude:: ../examples/rtd_images/RTD_E12_matplotlib_integration.py
    :language: python
    :lines: 3-20
 

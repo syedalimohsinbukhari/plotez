@@ -37,6 +37,11 @@ Parameter Classes
    :undoc-members:
    :show-inheritance:
 
+.. autoclass:: plotez.backend.utilities.HistogramConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Utility Functions
 ~~~~~~~~~~~~~~~~~
@@ -66,6 +71,8 @@ Each function also has a **short alias** that can be used interchangeably:
 +------------------------------+---------------+
 | ``scatter_plot_configuration``| ``spc``      |
 +------------------------------+---------------+
+| ``histogram_config``         | ``hgc``       |
++------------------------------+---------------+
 
 .. autofunction:: plotez.backend._wrappers.line_plot_configuration
 
@@ -74,6 +81,8 @@ Each function also has a **short alias** that can be used interchangeably:
 .. autofunction:: plotez.backend._wrappers.error_band_configuration
 
 .. autofunction:: plotez.backend._wrappers.scatter_plot_configuration
+
+.. autofunction:: plotez.backend._wrappers.histogram_config
 
 .. _shorthand-key-reference:
 
@@ -135,6 +144,44 @@ Scatter parameters
 +--------+---------------------+
 | ``fc`` | ``facecolors``      |
 +--------+---------------------+
+
+Error band parameters
+~~~~~~~~~~~~~~~~~~~~~
+
+The ``ErrorBandConfig`` / ``ebc`` wrapper accepts the following shorthand aliases:
+
++--------+---------------------+
+| Alias  | Full parameter name |
++========+=====================+
+| ``c``  | ``color``           |
++--------+---------------------+
+| ``ec`` | ``edgecolor``       |
++--------+---------------------+
+| ``lw`` | ``linewidth``       |
++--------+---------------------+
+| ``ls`` | ``linestyle``       |
++--------+---------------------+
+
+``hatch``, ``interpolate``, and ``step`` are passed through under their own names.
+
+Histogram parameters
+~~~~~~~~~~~~~~~~~~~~
+
+The ``HistogramConfig`` / ``hgc`` wrapper accepts the following shorthand aliases
+(via ``populate()`` and the ``hgc`` factory function):
+
++--------+---------------------+
+| Alias  | Full parameter name |
++========+=====================+
+| ``c``  | ``color``           |
++--------+---------------------+
+| ``lw`` | ``linewidth``       |
++--------+---------------------+
+| ``ec`` | ``edgecolor``       |
++--------+---------------------+
+
+``bins``, ``density``, ``histtype``, ``alpha``, ``facecolor``, ``orientation``,
+``cumulative``, and ``hatch`` are passed through under their own names.
 
 Error Handling
 --------------
