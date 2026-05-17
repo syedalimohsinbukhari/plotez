@@ -22,6 +22,6 @@ submodules:
 # Declare the Python requirements to build your documentation
 python:
   install:
-    - requirements: ./requirements-dev.txt
+    - requirements: ./requirements.txt
     - method: pip
       path: .
