@@ -27,8 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **`docs/index.rst`**: Features list updated — added "Histogram & Density Plotting" bullet; updated convenience wrappers bullet to include `hgc`; bumped coverage claim to 90%+
-- **`README.md`**: Features list updated to match `index.rst`; added "### Histogram / Density" example section; bumped Project Status version to `v0.3.0` and coverage to `90%+`
+- **`docs/index.rst`**: Features list updated — added "Histogram & Density Plotting" bullet; updated convenience wrappers bullet to include `hgc`; bumped coverage claim to 85%+
+- **`README.md`**: Features list updated to match `index.rst`; added "### Histogram / Density" example section; bumped Project Status version to `v0.3.0` and coverage to `85%+`
 
 ## [0.2.1] - 09-Mar-2026
 
