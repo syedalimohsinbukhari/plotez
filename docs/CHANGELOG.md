@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Internal list literals → tuples**: All internal calls that constructed `axis_labels=[...]` before passing to
   `plot_with_dual_axes` (in `plot_xy`, `plot_xyy`, `plot_xxy`) now use `tuple` literals, eliminating spurious
   `DeprecationWarning`s from within the library itself.
+- **Examples**: Updated all examples to use correct return types.
 
 ## [v0.3.1] - 17-May-2026
 

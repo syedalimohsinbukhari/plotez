@@ -10,7 +10,7 @@ normal_data = data[:, 1]  # second column is 'normal'
 
 h_cfg = hgc(bins=40, color="mediumpurple", ec="white", alpha=0.8)
 
-f, ax = plot_density(
+ax = plot_density(
     x_data=normal_data,
     x_label="Value",
     y_label="Density",
@@ -19,7 +19,7 @@ f, ax = plot_density(
     hist_config=h_cfg,
 )
 
-f.tight_layout()
+plt.tight_layout()
 
 # plt.show()
 plt.savefig("RTD_E14_density.png", dpi=300)

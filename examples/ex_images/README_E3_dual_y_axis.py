@@ -10,7 +10,7 @@ y1 = np.sin(x)
 y2 = np.exp(-x / 10)
 
 plot_xyy(
-    x, y1, y2, x_label="Time (s)", y1_label="Signal (V)", y2_label="Decay", data_labels=["Oscillation", "Envelope"]
+    x, y1, y2, x_label="Time (s)", y1_label="Signal (V)", y2_label="Decay", data_labels=("Oscillation", "Envelope")
 )
 
 # plt.show()

@@ -10,7 +10,7 @@ normal_data = data[:, 1]  # second column is 'normal'
 
 h_cfg = hgc(bins=40, color="steelblue", ec="white", alpha=0.8)
 
-f, ax = plot_hist(
+ax = plot_hist(
     x_data=normal_data,
     x_label="Value",
     y_label="Counts",
@@ -19,7 +19,7 @@ f, ax = plot_hist(
     hist_config=h_cfg,
 )
 
-f.tight_layout()
+plt.tight_layout()
 
 # plt.show()
 plt.savefig("RTD_E13_histogram.png", dpi=300)
