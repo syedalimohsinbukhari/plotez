@@ -21,7 +21,6 @@ __all__ = [
     "plot_hist",
 ]
 
-from typing import Iterable
 from warnings import warn
 
 import matplotlib.pyplot as plt
@@ -37,7 +36,7 @@ from .backend import (
     plot_or_scatter,
 )
 from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
-from .typing import Axes, AxesFigReturn, AxesReturn, NDArray
+from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
 # Error Visualization Functions
@@ -45,10 +44,10 @@ from .typing import Axes, AxesFigReturn, AxesReturn, NDArray
 
 
 def plot_errorband_relative(
-    x_data: NDArray,
-    y_data: NDArray,
-    y_lower: float | NDArray | None = None,
-    y_upper: float | NDArray | None = None,
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    y_lower: int | float | ArrayLike | None = None,
+    y_upper: int | float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -58,7 +57,7 @@ def plot_errorband_relative(
     line_config: LinePlotConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> Axes:
     """
     Plot a line graph with a shaded error band using relative (offset) errors.
 
@@ -108,8 +107,8 @@ def plot_errorband_relative(
 
     Returns
     -------
-    AxesFigReturn
-        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
+    Axes
+        The Matplotlib Axes on which the plot was drawn.
 
     Raises
     ------
@@ -139,10 +138,10 @@ def plot_errorband_relative(
 
 
 def plot_errorband(
-    x_data: NDArray,
-    y_data: NDArray,
-    y_lower: float | NDArray | None = None,
-    y_upper: float | NDArray | None = None,
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    y_lower: int | float | ArrayLike | None = None,
+    y_upper: int | float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -152,7 +151,7 @@ def plot_errorband(
     line_config: LinePlotConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> Axes:
     """
     Plot a line graph with a shaded error band representing uncertainty.
 
@@ -197,8 +196,8 @@ def plot_errorband(
 
     Returns
     -------
-    AxesFigReturn
-        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
+    Axes
+        The Matplotlib Axes on which the plot was drawn.
 
     Raises
     ------
@@ -225,7 +224,7 @@ def plot_errorband(
         if figure_kwargs:
             warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
     else:
-        f, ax = plt.subplots(**(figure_kwargs or {}))
+        _, ax = plt.subplots(**(figure_kwargs or {}))
 
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
     if isinstance(line_config, dict):
@@ -250,17 +249,14 @@ def plot_errorband(
     ax.set_title(plot_title)
     ax.legend()
 
-    if axis:
-        return ax
-    else:
-        return f, ax  # noqa
+    return ax
 
 
 def plot_errorbar(
-    x_data: NDArray,
-    y_data: NDArray,
-    x_err: float | NDArray | None = None,
-    y_err: float | NDArray | None = None,
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    x_err: int | float | ArrayLike | None = None,
+    y_err: int | float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBar",
@@ -268,7 +264,7 @@ def plot_errorbar(
     errorbar_config: ErrorPlotConfig | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> Axes:
     """
     Plot an error bar graph with optional error ranges, labels, and configurations.
 
@@ -290,13 +286,10 @@ def plot_errorbar(
         - 2D array (2, N): asymmetric [lower_errors, upper_errors]
     x_label :
         The label for the x-axis.
-        If `None` and `auto_label` argument is set to True, a default label "X" is used.
     y_label :
         The label for the y-axis.
-        If `None` and `auto_label` argument is set to True, a default label "Y" is used.
     plot_title :
         The title of the plot.
-        If `None` and `auto_label` argument is set to True, the default title "Error Bar Plot" is used.
     data_label :
         The label for the data points, which will appear in the plot legend.
         If `None`, the legend is not displayed.
@@ -310,8 +303,8 @@ def plot_errorbar(
 
     Returns
     -------
-    AxesFigReturn
-        The Matplotlib Axes if ``axis`` was provided, otherwise a ``(Figure, Axes)`` tuple.
+    Axes
+        The Matplotlib Axes on which the plot was drawn.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
     if x_err is not None:
@@ -324,13 +317,12 @@ def plot_errorbar(
         if y_err.ndim == 2 and y_err.shape[0] != 2:
             raise ShapeError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
 
-    # IDE complain hack
     if axis is not None:
         if figure_kwargs:
             warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
         ax = axis
     else:
-        f, ax = plt.subplots(**(figure_kwargs or {}))
+        _, ax = plt.subplots(**(figure_kwargs or {}))
 
     ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
     ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
@@ -340,10 +332,7 @@ def plot_errorbar(
     ax.set_title(plot_title)
     ax.legend()
 
-    if axis:
-        return ax
-    else:
-        return f, ax  # noqa
+    return ax
 
 
 # =============================================================================
@@ -428,8 +417,8 @@ def plot_two_column_file(
 
 
 def plot_xy(
-    x_data: NDArray,
-    y_data: NDArray,
+    x_data: ArrayLike,
+    y_data: ArrayLike,
     x_label: str = "X",
     y_label: str = "Y",
     data_label: str = "XY Data",
@@ -474,7 +463,7 @@ def plot_xy(
         y1_data=y_data,
         x1y1_label=data_label,
         use_twin_x=False,
-        axis_labels=[x_label, y_label, ""],
+        axis_labels=(x_label, y_label, ""),
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
@@ -492,13 +481,13 @@ def plot_xy(
 
 
 def plot_xyy(
-    x_data: NDArray,
-    y1_data: NDArray,
-    y2_data: NDArray,
+    x_data: ArrayLike,
+    y1_data: ArrayLike,
+    y2_data: ArrayLike,
     x_label: str = "X",
     y1_label: str = r"Y$_1$",
     y2_label: str = r"Y$_2$",
-    data_labels: list[str] = [r"X vs. Y$_1$", r"X vs. Y$_2$"],  # noqa
+    data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
     plot_title: str = "XYY Plot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -524,7 +513,8 @@ def plot_xyy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(None, None)``.
+        The labels for the two datasets. Default is ``(r"X vs. Y$_1$", r"X vs. Y$_2$")``.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
@@ -539,14 +529,22 @@ def plot_xyy(
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot.
     """
+    if isinstance(data_labels, list):
+        warn(
+            "Passing a mutable `list` for `data_labels` is deprecated. Use a `tuple` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
+
     _axis = plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y1_data,
         y2_data=y2_data,
-        x1y1_label=data_labels[0],
-        x1y2_label=data_labels[1],
+        x1y1_label=_data_labels[0],
+        x1y2_label=_data_labels[1],
         use_twin_x=True,
-        axis_labels=[x_label, y1_label, y2_label],
+        axis_labels=(x_label, y1_label, y2_label),
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
@@ -559,13 +557,13 @@ def plot_xyy(
 
 
 def plot_xxy(
-    x1_data: NDArray,
-    x2_data: NDArray,
-    y_data: NDArray,
+    x1_data: ArrayLike,
+    x2_data: ArrayLike,
+    y_data: ArrayLike,
     y_label: str = "Y",
     x1_label: str = r"X$_1$",
     x2_label: str = r"X$_2$",
-    data_labels: list[str] = [r"Y vs. X$_1$", r"Y vs. X$_2$"],  # noqa
+    data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
     plot_title: str = "",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -591,7 +589,8 @@ def plot_xxy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(None, None)``.
+        The labels for the two datasets. Default is ``(r"Y vs. X$_1$", r"Y vs. X$_2$")``.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
@@ -606,10 +605,13 @@ def plot_xxy(
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual x-axis plot.
     """
-    _data_labels = []
-
-    if isinstance(data_labels, Iterable):
-        _data_labels = list(data_labels)
+    if isinstance(data_labels, list):
+        warn(
+            "Passing a mutable `list` for `data_labels` is deprecated. Use a `tuple` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 
     _axis = plot_with_dual_axes(
         x1_data=x1_data,
@@ -618,7 +620,7 @@ def plot_xxy(
         x1y1_label=_data_labels[0],
         x2y1_label=_data_labels[1],
         use_twin_x=False,
-        axis_labels=[x1_label, y_label, x2_label],
+        axis_labels=(x1_label, y_label, x2_label),
         plot_title=plot_title,
         is_scatter=is_scatter,
         plot_config=plot_config,
@@ -631,15 +633,15 @@ def plot_xxy(
 
 
 def plot_with_dual_axes(
-    x1_data: NDArray,
-    y1_data: NDArray,
-    x2_data: NDArray | None = None,
-    y2_data: NDArray | None = None,
+    x1_data: ArrayLike,
+    y1_data: ArrayLike,
+    x2_data: ArrayLike | None = None,
+    y2_data: ArrayLike | None = None,
     x1y1_label: str = r"X$_1$ vs. Y$_1$",
     x1y2_label: str = r"X$_1$ vs. Y$_2$",
     x2y1_label: str = r"X$_2$ vs. Y$_1$",
     use_twin_x: bool = False,
-    axis_labels: list[str] = ["X", r"Y$_1$", r"Y$_2$"],  # noqa
+    axis_labels: list[str] | tuple[str, ...] | None = None,  # noqa
     plot_title: str = "DualAxesPlot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -660,22 +662,19 @@ def plot_with_dual_axes(
         Data for the secondary y-axis (used for dual y-axis plots).
     x1y1_label :
         Label for the plot of X1 vs. Y1.
-        If None, and `auto_label` is True, defaults to 'X1 vs Y1'.
     x1y2_label :
         Label for the plot of X1 vs. Y2 (when using dual Y-axes).
-        If None, and `auto_label` is True, defaults to 'X1 vs Y2'.
     x2y1_label :
         Label for the plot of X2 vs. Y1 (when using dual X-axes).
-        If None, and `auto_label` is True, defaults to 'X2 vs Y1'.
     use_twin_x :
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot.
         Default is False.
     axis_labels :
-        List of axis labels in the form [x_label, y_label1, y_label2].
-        If None, and `auto_label` is True, defaults to ['X', 'Y1', 'Y2'] or ['X1', 'Y', 'X2'].
+        List of axis labels in the form ``[x_label, y_label1, y_label2]``.
+        Defaults to ``["X", r"Y$_1$", r"Y$_2$"]`` when not provided.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     plot_title :
         Title of the plot.
-        If None, and `auto_label` is True, defaults to 'Plot'.
     is_scatter :
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
@@ -690,13 +689,21 @@ def plot_with_dual_axes(
     tuple[Axes, Axes] or Axes
         A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
     """
-    dual_axes_data_validation(
+    if isinstance(axis_labels, list):
+        warn(
+            "Passing a mutable `list` for `axis_labels` is deprecated. Use a `tuple` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+    _axis_labels: list[str] = list(axis_labels) if axis_labels is not None else ["X", r"Y$_1$", r"Y$_2$"]
+
+    x1_data, y1_data, x2_data, y2_data = dual_axes_data_validation(
         x1_data=x1_data,
         x2_data=x2_data,
         y1_data=y1_data,
         y2_data=y2_data,
         use_twin_x=use_twin_x,
-        axis_labels=axis_labels,
+        axis_labels=_axis_labels,
     )
 
     if axis is not None:
@@ -714,11 +721,8 @@ def plot_with_dual_axes(
 
     ax2 = None
 
-    # IDE typechecking hack because we know here that axis_labels has to be
-    axis_labels: list[str]
-
-    ax1.set_xlabel(axis_labels[0])
-    ax1.set_ylabel(axis_labels[1])
+    ax1.set_xlabel(_axis_labels[0])
+    ax1.set_ylabel(_axis_labels[1])
     if plot_title:
         ax1.set_title(plot_title)
 
@@ -733,12 +737,12 @@ def plot_with_dual_axes(
         ax2 = ax1.twinx()
         if y2_data is not None:
             plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
-            ax2.set_ylabel(axis_labels[2])
+            ax2.set_ylabel(_axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
         plot_or_scatter(axes=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
-        ax2.set_xlabel(axis_labels[2])
+        ax2.set_xlabel(_axis_labels[2])
 
     if x1y1_label or x1y2_label or x2y1_label:
         handles, labels = ax1.get_legend_handles_labels()
@@ -747,8 +751,6 @@ def plot_with_dual_axes(
             handles += handles2
             labels += labels2
         ax1.legend(handles, labels, loc="best")
-
-    plt.tight_layout()
 
     return (ax1, ax2) if ax2 else ax1
 
@@ -759,18 +761,18 @@ def plot_with_dual_axes(
 
 
 def two_subplots(
-    x_data: NDArray | list[NDArray],
-    y_data: NDArray | list[NDArray],
-    x_labels: list[str] = [r"X$_1$", r"X$_2$"],  # noqa
-    y_labels: list[str] = [r"Y$_1$", r"Y$_2$"],  # noqa
-    data_labels: list[str] = [r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"],  # noqa
+    x_data: ArrayLike | list[ArrayLike],
+    y_data: ArrayLike | list[ArrayLike],
+    x_labels: list[str] | tuple[str, ...] | None = None,  # noqa
+    y_labels: list[str] | tuple[str, ...] | None = None,  # noqa
+    data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
     plot_title: str = "TwoSubPlots",
-    subplot_title: list[str] = ["", ""],  # noqa
+    subplot_titles: list[str] | tuple[str, ...] | None = None,  # noqa
     orientation: str = "h",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> NDArray:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
     Parameters
@@ -781,14 +783,21 @@ def two_subplots(
         List containing y-axis data arrays for each subplot.
     x_labels :
         List of labels for the x-axes in each subplot.
+        Defaults to ``[r"X$_1$", r"X$_2$"]``.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     y_labels :
         List of labels for the y-axes in each subplot.
+        Defaults to ``[r"Y$_1$", r"Y$_2$"]``.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     data_labels :
         List of labels for the data series in each subplot.
+        Defaults to ``[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]``.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     plot_title :
         Title of the plot.
-    subplot_title :
-        Titles for the subplots, if required.
+    subplot_titles :
+        Titles for the individual subplots, if required.
+        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
     orientation :
         Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
     is_scatter :
@@ -800,14 +809,32 @@ def two_subplots(
 
     Returns
     -------
-    tuple[Figure, Axes]
-        A tuple of ``(figure, axes_array)`` containing the matplotlib Figure and flattened array of Axes.
+    NDArray
+        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
 
     Raises
     ------
     OrientationError
         If ``orientation`` is not ``'h'`` or ``'v'``.
     """
+    for param, name in [
+        (x_labels, "x_labels"),
+        (y_labels, "y_labels"),
+        (data_labels, "data_labels"),
+        (subplot_titles, "subplot_titles"),
+    ]:
+        if isinstance(param, list):
+            warn(
+                f"Passing a mutable `list` for `{name}` is deprecated. Use a `tuple` instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+    _x_labels: list[str] = list(x_labels) if x_labels is not None else [r"X$_1$", r"X$_2$"]
+    _y_labels: list[str] = list(y_labels) if y_labels is not None else [r"Y$_1$", r"Y$_2$"]
+    _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]
+    _subplot_titles: list[str] = list(subplot_titles) if subplot_titles is not None else ["", ""]
+
     if orientation in ["h", "horizontal"]:
         n_rows, n_cols = 1, 2
     elif orientation in ["v", "vertical"]:
@@ -820,11 +847,11 @@ def two_subplots(
         y_data=y_data,
         n_rows=n_rows,
         n_cols=n_cols,
-        x_labels=x_labels,
-        y_labels=y_labels,
-        data_labels=data_labels,
+        x_labels=_x_labels,
+        y_labels=_y_labels,
+        data_labels=_data_labels,
         plot_title=plot_title,
-        subplot_title=subplot_title,
+        subplot_titles=_subplot_titles,
         is_scatter=is_scatter,
         plot_config=plot_config,
         figure_kwargs=figure_kwargs,
@@ -881,19 +908,19 @@ def _label_sanitizer(
 
 
 def n_plotter(
-    x_data: NDArray | list[NDArray],
-    y_data: NDArray | list[NDArray],
+    x_data: ArrayLike | list[ArrayLike],
+    y_data: ArrayLike | list[ArrayLike],
     n_rows: int,
     n_cols: int,
     x_labels: list[str] | None = None,
     y_labels: list[str] | None = None,
     data_labels: list[str] | None = None,
     plot_title: str | None = None,
-    subplot_title: list[str] | None = None,
+    subplot_titles: list[str] | None = None,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> NDArray:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
 
@@ -915,8 +942,8 @@ def n_plotter(
         List of labels for the data series in each subplot.
     plot_title :
         Title of the plot.
-    subplot_title :
-        Titles for the subplots, if required.
+    subplot_titles :
+        Titles for the individual subplots, if required.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
@@ -926,8 +953,8 @@ def n_plotter(
 
     Returns
     -------
-    tuple[Figure, Axes]
-        A tuple of ``(figure, axes_array)`` containing the matplotlib Figure and flattened array of Axes.
+    NDArray
+        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
     """
     sp_dict = dict(figure_kwargs) if figure_kwargs else {}
     sp_dict.pop("nrows", None)
@@ -942,7 +969,7 @@ def n_plotter(
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
     fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
-    axs = axs.flatten()
+    flat_axs = axs.flatten()
 
     main_dict = [
         {
@@ -952,21 +979,21 @@ def n_plotter(
         for c in range(n_cols * n_rows)
     ]
 
-    _x_labels, _y_labels, _data_labels, _subplot_title, _plot_title = _label_sanitizer(
+    _x_labels, _y_labels, _data_labels, _subplot_titles, _plot_title = _label_sanitizer(
         n_rows=n_rows,
         n_cols=n_cols,
         x_labels=x_labels,
         y_labels=y_labels,
         data_labels=data_labels,
-        subplot_titles=subplot_title,
+        subplot_titles=subplot_titles,
         plot_title=plot_title,
     )
 
     shared_y = sp_dict.get("sharey", False)
     shared_x1 = sp_dict.get("sharex", False)
-    shared_x2 = len(axs) - int(len(axs) / n_rows if n_rows > n_cols else n_cols)
+    shared_x2 = len(flat_axs) - int(len(flat_axs) / n_rows if n_rows > n_cols else n_cols)
 
-    for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), axs, _x_labels, _y_labels, _subplot_title):
+    for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), flat_axs, _x_labels, _y_labels, _subplot_titles):
         label = f"{_x_labels[index]} vs {_y_labels[index]}" if _data_labels is None else _data_labels[index]
         plot_or_scatter(axes=ax, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
         if shared_x1:
@@ -983,13 +1010,11 @@ def n_plotter(
 
     fig.suptitle(_plot_title)
 
-    fig.tight_layout()
-
-    return fig, axs
+    return axs
 
 
 def plot_density(
-    x_data: NDArray,
+    x_data: ArrayLike,
     x_label: str = "X",
     y_label: str = "Density",
     plot_title: str = "Density Plot",
@@ -997,7 +1022,7 @@ def plot_density(
     hist_config: HistogramConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> Axes:
     """
     Plot a density histogram based on the given data and configuration.
 
@@ -1031,8 +1056,8 @@ def plot_density(
 
     Returns
     -------
-    AxesFigReturn
-        A tuple containing the Matplotlib Axes and Figure objects used to create the plot.
+    Axes
+        The Matplotlib Axes on which the density plot was drawn.
     """
     if isinstance(hist_config, dict):
         if not hist_config.get("density"):
@@ -1056,7 +1081,7 @@ def plot_density(
 
 
 def plot_hist(
-    x_data: NDArray,
+    x_data: ArrayLike,
     x_label: str = "X",
     y_label: str = "Counts",
     plot_title: str = "Histogram",
@@ -1064,7 +1089,7 @@ def plot_hist(
     hist_config: HistogramConfig | dict | None = None,
     axis: Axes | None = None,
     figure_kwargs: dict | None = None,
-) -> AxesFigReturn:
+) -> Axes:
     """
     Plot a histogram of the data.
 
@@ -1073,11 +1098,11 @@ def plot_hist(
     x_data :
         Array or sequence of data points to be histogrammed.
     x_label :
-        Label for the x-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+        Label for the x-axis.
     y_label :
-        Label for the y-axis. If `None`, no label will be displayed unless auto-labeling is enabled.
+        Label for the y-axis.
     plot_title :
-        Title for the plot. If `None`, no title will be displayed unless auto-labeling is enabled.
+        Title for the plot.
     data_label :
         Label(s) for the data series. This is used in plot's legend generation.
     hist_config :
@@ -1089,8 +1114,8 @@ def plot_hist(
 
     Returns
     -------
-    Axes | tuple[plt.Figure, Axes]
-        Either the axis object if `axis` was provided, or a tuple of (figure, axis) if a new figure was created.
+    Axes
+        The Matplotlib Axes on which the histogram was drawn.
     """
     x = np.asarray(x_data)
     if isinstance(hist_config, dict):
@@ -1103,7 +1128,7 @@ def plot_hist(
     if axis is not None:
         ax = axis
     else:
-        f, ax = plt.subplots(**(figure_kwargs or {}))
+        _, ax = plt.subplots(**(figure_kwargs or {}))
 
     if data_label and "label" in h_config:
         raise ConfigurationError("Both `data_label` and `hist_config['label']` cannot be provided.")
@@ -1120,7 +1145,4 @@ def plot_hist(
     if data_label:
         ax.legend()
 
-    if axis:
-        return ax
-    else:
-        return f, ax  # noqa
+    return ax

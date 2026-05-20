@@ -5,13 +5,45 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.1] - 17-May-2026
+## [v0.3.2] - 20-May-2026
+
+### Fixed
+
+- **Mutable default arguments**: `data_labels`, `x_labels`, `y_labels`, `subplot_titles`, and `axis_labels`
+  parameters in `plot_xyy`, `plot_xxy`, `two_subplots`, and `plot_with_dual_axes` used bare `list` literals as
+  defaults — the classic Python mutable-default bug. All replaced with `None`; intended defaults are assigned inside
+  the function body, narrowing the type to `list[str]` immediately so downstream code has no `| None` complaints.
+  A `DeprecationWarning` is now emitted when a caller explicitly passes a mutable `list`; use a `tuple` instead.
+- **Ghost `auto_label` docstring content**: Removed all references to the non-existent `auto_label` parameter from
+  the docstrings of `plot_errorbar`, `plot_with_dual_axes`, and `plot_hist`.
+- **Dead `_auto_handler` function**: Removed from `src/plotez/backend/utilities.py`; it was defined but never called
+  anywhere in the codebase. Its sole dependency `LabelConflictWarning` import was also cleaned up from that module.
+- **Internal `tight_layout` calls**: Removed `plt.tight_layout()` from `plot_with_dual_axes` and
+  `fig.tight_layout()` from `n_plotter`. Layout management is now fully at the caller's discretion.
+
+### Changed
+
+- **Axes-only returns** (**Breaking**): All plot functions now return `Axes` (single-axis) or `tuple[Axes, Axes]`
+  (dual-axis) — never `(Figure, Axes)`. Figures are always accessible via `ax.get_figure()`.
+  `n_plotter` and `two_subplots` return a shaped `(n_rows, n_cols)` `ndarray` of `Axes` instead of
+  `(Figure, flat_ndarray)`.
+- **`subplot_title` → `subplot_titles`** (**Breaking**): The parameter in `n_plotter` and `two_subplots` has been
+  renamed from `subplot_title` (singular) to `subplot_titles` (plural) to match the `_label_sanitizer` internal
+  keyword and improve consistency.
+- **`AxesFigReturn` type alias retired**: `AxesFigReturn` in `src/plotez/typing.py` is now a deprecated alias for
+  `AxesReturn` and will be removed in a future release. `AxesReturn` is extended to
+  `Axes | tuple[Axes, Axes] | NDArray` to cover all return shapes uniformly.
+- **Internal list literals → tuples**: All internal calls that constructed `axis_labels=[...]` before passing to
+  `plot_with_dual_axes` (in `plot_xy`, `plot_xyy`, `plot_xxy`) now use `tuple` literals, eliminating spurious
+  `DeprecationWarning`s from within the library itself.
+
+## [v0.3.1] - 17-May-2026
 
 ### Fixed
 
 - **RTD build**: Updated `requirements.txt` (pinned Sphinx, `myst-parser`, and related dependencies) to resolve a ReadTheDocs build failure introduced after the `0.3.0` release
 
-## [0.3.0] - 17-May-2026
+## [v0.3.0] - 17-May-2026
 
 ### Added
 
@@ -36,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`docs/index.rst`**: Features list updated — added "Histogram & Density Plotting" bullet; updated convenience wrappers bullet to include `hgc`; bumped coverage claim to 85%+
 - **`README.md`**: Features list updated to match `index.rst`; added "### Histogram / Density" example section; bumped Project Status version to `v0.3.0` and coverage to `85%+`
 
-## [0.2.1] - 09-Mar-2026
+## [v0.2.1] - 09-Mar-2026
 
 ### Added
 
@@ -115,7 +147,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `README.md` referencing old `LinePlot`, `line_style`, `marker_size`, `mark_every`
 - `api.rst` stale note about ErrorPlotConfig inheriting from LinePlotConfig
 
-## [v0.1.1] 16-Feb-2026
+## [v0.1.1] - 16-Feb-2026
 
 ### Changed
 

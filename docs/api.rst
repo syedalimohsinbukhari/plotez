@@ -194,6 +194,12 @@ Error Handling
 Type Aliases
 ------------
 
+.. note::
+
+   ``AxesFigReturn`` is deprecated as of v0.3.2 and kept only as a backward-compatible alias
+   for ``AxesReturn``. It will be removed in a future release. Use ``AxesReturn``
+   (``Axes | tuple[Axes, Axes] | NDArray``) for all new code.
+
 .. automodule:: plotez.typing
    :members:
    :undoc-members:
