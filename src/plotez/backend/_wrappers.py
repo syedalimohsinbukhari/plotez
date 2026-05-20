@@ -79,8 +79,8 @@ def line_plot_configuration(
 
 def error_band_configuration(
     c: str | None = None,
-    alpha: float = 0.25,
-    lw: float | None = None,
+    alpha: int | float = 0.25,
+    lw: int | float | None = None,
     ec: str | None = None,
     ls: str | None = None,
     hatch: HatchStyle | list[HatchStyle] | None = None,
@@ -132,17 +132,17 @@ def error_band_configuration(
 
 def error_plot_configuration(
     c: str | None = None,
-    lw: float | None = None,
+    lw: int | float | None = None,
     ls: str | None = None,
-    alpha: float | None = None,
+    alpha: int | float | None = None,
     ecolor: str | None = None,
-    elinewidth: float | None = None,
+    elinewidth: int | float | None = None,
     marker: str | None = None,
-    ms: float | None = None,
+    ms: int | float | None = None,
     mfc: str | None = None,
     mec: str | None = None,
-    capsize: float | None = None,
-    capthick: float | None = None,
+    capsize: int | float | None = None,
+    capthick: int | float | None = None,
     errorevery: int | tuple | None = None,
     **kwargs,
 ):
@@ -250,13 +250,13 @@ def histogram_config(
     density: bool | None = None,
     histtype: str | None = None,
     color: str | None = None,
-    alpha: float | None = None,
+    alpha: int | float | None = None,
     edgecolor: str | None = None,
     facecolor: str | None = None,
-    linewidth: float | None = None,
+    linewidth: int | float | None = None,
     orientation: str | None = None,
     cumulative: bool | None = None,
-    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None,
+    hatch: HatchStyle | None = None,
     **kwargs,
 ):
     """Create a HistogramConfig instance with the given parameters."""

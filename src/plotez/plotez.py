@@ -529,12 +529,6 @@ def plot_xyy(
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot.
     """
-    if isinstance(data_labels, list):
-        warn(
-            "Passing a mutable `list` for `data_labels` is deprecated. Use a `tuple` instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -605,12 +599,6 @@ def plot_xxy(
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual x-axis plot.
     """
-    if isinstance(data_labels, list):
-        warn(
-            "Passing a mutable `list` for `data_labels` is deprecated. Use a `tuple` instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -689,12 +677,6 @@ def plot_with_dual_axes(
     tuple[Axes, Axes] or Axes
         A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
     """
-    if isinstance(axis_labels, list):
-        warn(
-            "Passing a mutable `list` for `axis_labels` is deprecated. Use a `tuple` instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
     _axis_labels: list[str] = list(axis_labels) if axis_labels is not None else ["X", r"Y$_1$", r"Y$_2$"]
 
     x1_data, y1_data, x2_data, y2_data = dual_axes_data_validation(
@@ -817,19 +799,6 @@ def two_subplots(
     OrientationError
         If ``orientation`` is not ``'h'`` or ``'v'``.
     """
-    for param, name in [
-        (x_labels, "x_labels"),
-        (y_labels, "y_labels"),
-        (data_labels, "data_labels"),
-        (subplot_titles, "subplot_titles"),
-    ]:
-        if isinstance(param, list):
-            warn(
-                f"Passing a mutable `list` for `{name}` is deprecated. Use a `tuple` instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
     _x_labels: list[str] = list(x_labels) if x_labels is not None else [r"X$_1$", r"X$_2$"]
     _y_labels: list[str] = list(y_labels) if y_labels is not None else [r"Y$_1$", r"Y$_2$"]
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]
@@ -856,14 +825,6 @@ def two_subplots(
         plot_config=plot_config,
         figure_kwargs=figure_kwargs,
     )
-
-
-def _has_content(value):
-    if isinstance(value, str):
-        return value != ""
-    if isinstance(value, (list, tuple)):
-        return any(v != "" for v in value)
-    return False
 
 
 def _label_sanitizer(

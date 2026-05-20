@@ -19,7 +19,6 @@ from .error_handling import (
     ConfigurationError,
     DataError,
     EmptyDataError,
-    LabelConflictWarning,
     OrientationError,
     PlotError,
     ShapeError,
@@ -66,8 +65,6 @@ __all__ = [
     "AxisLabelError",
     "TwinXDataError",
     "TwinYDataError",
-    # Warnings
-    "LabelConflictWarning",
     # Config classes
     "ErrorPlotConfig",
     "ErrorBandConfig",

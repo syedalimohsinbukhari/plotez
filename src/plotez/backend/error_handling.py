@@ -141,23 +141,3 @@ class TwinYDataError(ConfigurationError):
     """
 
     pass
-
-
-# ---------------------------------------------------------------------------
-# Warnings
-# ---------------------------------------------------------------------------
-
-
-class LabelConflictWarning(UserWarning):
-    """
-    Issued when ``auto_label=True`` overrides user-provided labels.
-
-    Notes
-    -----
-    When ``auto_label`` is enabled, it silently replaces any explicitly supplied axis labels, data labels,
-    or plot titles with auto-generated defaults.
-    This warning is raised to make that substitution visible to the caller.
-    Use ``warnings.filterwarnings`` to suppress or escalate it as needed.
-    """
-
-    pass

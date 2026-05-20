@@ -52,6 +52,7 @@ dev = [
 [project.urls]
 Issues = "https://github.com/syedalimohsinbukhari/plotez/issues"
 Repository = "https://github.com/syedalimohsinbukhari/plotez/"
+Changelog = "https://github.com/syedalimohsinbukhari/plotez/blob/main/docs/CHANGELOG.md"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

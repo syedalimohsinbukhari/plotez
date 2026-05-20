@@ -221,7 +221,7 @@ class HistogramConfig:
     linewidth: int | float | None = None
     orientation: str | None = None
     cumulative: bool | None = None
-    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
+    hatch: HatchStyle | None = None
 
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
 

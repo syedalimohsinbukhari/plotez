@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parameters in `plot_xyy`, `plot_xxy`, `two_subplots`, and `plot_with_dual_axes` used bare `list` literals as
   defaults — the classic Python mutable-default bug. All replaced with `None`; intended defaults are assigned inside
   the function body, narrowing the type to `list[str]` immediately so downstream code has no `| None` complaints.
-  A `DeprecationWarning` is now emitted when a caller explicitly passes a mutable `list`; use a `tuple` instead.
 - **Ghost `auto_label` docstring content**: Removed all references to the non-existent `auto_label` parameter from
   the docstrings of `plot_errorbar`, `plot_with_dual_axes`, and `plot_hist`.
 - **Dead `_auto_handler` function**: Removed from `src/plotez/backend/utilities.py`; it was defined but never called

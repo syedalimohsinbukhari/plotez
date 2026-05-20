@@ -12,14 +12,16 @@
 ![GitHub OPEN PRs](https://img.shields.io/github/issues-pr/syedalimohsinbukhari/plotez?color=darkred)
 ![GitHub CLOSED PRs](https://img.shields.io/github/issues-pr-closed/syedalimohsinbukhari/plotez?color=darkgreen)
 
-`plotez` is a Python library that simplifies common matplotlib plotting tasks with an intuitive API. Create complex plots
+`plotez` is a Python library that simplifies common matplotlib plotting tasks with an intuitive API. Create complex
+plots
 with minimal boilerplate code.
 
 ## Features
 
 - **Simple API**: Create complex plots with just a few lines of code
 - **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
-- **Error Band Plotting**: Shaded error band support via `plot_errorband`, `plot_errorband_relative`, and `ErrorBandConfig`
+- **Error Band Plotting**: Shaded error band support via `plot_errorband`, `plot_errorband_relative`, and
+  `ErrorBandConfig`
 - **Histogram & Density Plotting**: `plot_hist` and `plot_density` with `HistogramConfig` / `hgc`
 - **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
@@ -154,7 +156,8 @@ plot_errorband(x, y, y_lower, y_upper,
 
 ![README_E5-1_error_band](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E5-1_error_band.png)
 
-The same result using the `ebc` / `lpc` shorthand aliases — familiar matplotlib parameter names, no class imports needed:
+The same result using the `ebc` / `lpc` shorthand aliases — familiar matplotlib parameter names, no class imports
+needed:
 
 ```python
 import numpy as np
@@ -200,7 +203,8 @@ plot_xyy(x, y1, y2, plot_config=config)
 
 ![README_E6_full_customization](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E6_full_customization.png)
 
-Config classes for when defaults aren't enough. Use `_extra` to pass any matplotlib parameter not covered by the dataclass fields.
+Config classes for when defaults aren't enough. Use `_extra` to pass any matplotlib parameter not covered by the
+dataclass fields.
 
 ---
 
@@ -255,14 +259,15 @@ make html
 
 ## Project Status
 
-| Item           | Status                                         |
-|----------------|------------------------------------------------|
-| Latest version | v0.3.2                                         |
-| Python support | 3.10 · 3.11 · 3.12                             |
-| Test coverage  | 85%+                                           |
-| Type hints     | PEP 561 compliant (`py.typed`)                 |
-| Documentation  | [Read the Docs](https://plotez.readthedocs.io) |
-| License        | MIT                                            |
+| Item           | Status                                                                                  |
+|----------------|-----------------------------------------------------------------------------------------|
+| Latest version | v0.3.2                                                                                  |
+| Python support | 3.10 · 3.11 · 3.12                                                                      |
+| Test coverage  | 85%+                                                                                    |
+| Type hints     | PEP 561 compliant (`py.typed`)                                                          |
+| Documentation  | [Read the Docs](https://plotez.readthedocs.io)                                          |
+| Changelog      | [CHANGELOG](https://github.com/syedalimohsinbukhari/plotez/blob/main/docs/CHANGELOG.md) |
+| License        | MIT                                                                                     |
 
 ## Contributing
 
