@@ -24,8 +24,9 @@ Features
 * **Error Band Plotting**: Shaded error band support via ``plot_errorband``, ``plot_errorband_relative``, and ``ErrorBandConfig``
 * **Histogram & Density Plotting**: ``plot_hist`` and ``plot_density`` with ``HistogramConfig`` / ``hgc``
 * **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
-* **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
+* **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling; layout (``tight_layout``) is fully user-controlled
 * **File Integration**: Direct plotting from CSV files
+* **Axes-Only Returns**: All functions return ``Axes`` (or shaped ``ndarray`` of ``Axes`` for grid functions); the parent ``Figure`` is always accessible via ``ax.get_figure()``
 * **Extensive Customization**: Full control over plot appearance via independent config dataclasses
 * **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``, ``hgc``) available at top level
 * **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
@@ -58,4 +59,4 @@ Quick Example
        ecolor='red',   # different colour for error bars
        elinewidth=1.5,
    )
-   plot_errorbar(x_sparse, y_sparse, y_err=y_err, errorbar_config=ep, auto_label=True)
+   plot_errorbar(x_sparse, y_sparse, y_err=y_err, errorbar_config=ep)

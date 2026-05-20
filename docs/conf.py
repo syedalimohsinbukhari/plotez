@@ -62,9 +62,8 @@ autodoc_default_options = {"members": True, "member-order": "groupwise", "undoc-
 autodoc_type_aliases = {
     "Sequence": "~collections.abc.Sequence",
     "NDArray": "~plotez.typing.NDArray",
+    "ArrayLike": "~plotez.typing.ArrayLike",
     "AxesReturn": "~plotez.typing.AxesReturn",
-    "AxesFigReturn": "~plotez.typing.AxesFigReturn",
-    # "LABEL_MGMT": "~plotez.typing.LABEL_MGMT",
     "LSE": "~plotez.typing.utilities.LSE",
 }
 autodoc_typehints_format = "short"

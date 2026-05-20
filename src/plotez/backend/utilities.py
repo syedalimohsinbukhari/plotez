@@ -21,11 +21,12 @@ __all__ = [
 
 from dataclasses import dataclass, field
 from typing import Any, Literal
-from warnings import warn
 
-from ..typing import NDArray
+import numpy as np
+
+from ..typing import ArrayLike, HatchStyle, NDArray
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from .error_handling import AxisLabelError, EmptyDataError, LabelConflictWarning, TwinXDataError, TwinYDataError
+from .error_handling import AxisLabelError, EmptyDataError, TwinXDataError, TwinYDataError
 
 if TYPE_CHECKING:
     from ..typing import LSE
@@ -64,14 +65,14 @@ class LinePlotConfig:
     """Configuration class for line plots."""
 
     color: str | list[str] | None = None
-    linewidth: float | list[float] | None = None
+    linewidth: int | float | list[int | float] | None = None
     linestyle: str | list[str] | None = None
-    alpha: float | list[float] | None = None
+    alpha: int | float | list[int | float] | None = None
     marker: str | list[str] | None = None
-    markersize: float | list[float] | None = None
+    markersize: int | float | list[int | float] | None = None
     markerfacecolor: str | list[str] | None = None
     markeredgecolor: str | list[str] | None = None
-    markeredgewidth: float | list[float] | None = None
+    markeredgewidth: int | float | list[int | float] | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -98,12 +99,12 @@ class LinePlotConfig:
 class ErrorBandConfig:
     """Configuration class for error bands (shaded fill regions)."""
 
-    color: str | None = None
-    alpha: float = 0.25
-    linewidth: float | None = None
-    edgecolor: str | None = None
-    linestyle: str | None = None
-    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
+    color: str | list[str] | None = None
+    alpha: int | float | list[int | float] = 0.25
+    linewidth: int | float | list[int | float] | None = None
+    edgecolor: str | list[str] | None = None
+    linestyle: str | list[str] | None = None
+    hatch: HatchStyle | list[HatchStyle] | None = None
     interpolate: bool | None = None
     step: str | Literal["pre", "post", "mid"] | None = None
 
@@ -133,23 +134,23 @@ class ErrorPlotConfig:
 
     # Core signal identity
     color: str | None = None
-    linewidth: float | None = None
+    linewidth: int | float | None = None
     linestyle: str | None = None
-    alpha: float | None = None
+    alpha: int | float | None = None
 
     # Error structure (second layer of perception)
     ecolor: str | None = None
-    elinewidth: float | None = None
+    elinewidth: int | float | None = None
 
     # Markers (data discreteness)
     marker: str | None = None
-    markersize: float | None = None
+    markersize: int | float | None = None
     markerfacecolor: str | None = None
     markeredgecolor: str | None = None
 
     # Visual refinement
-    capsize: float | None = None
-    capthick: float | None = None
+    capsize: int | float | None = None
+    capthick: int | float | None = None
     errorevery: int | tuple | None = None
 
     # For extra params - pass as dict to this field directly
@@ -177,13 +178,13 @@ class ErrorPlotConfig:
 class ScatterPlotConfig:
     """Configuration class for scatter plots."""
 
-    color: str | None = None
-    s: float | None = None
-    alpha: float | None = None
-    marker: str | None = None
-    cmap: str | None = None
-    edgecolors: str | None = None
-    facecolors: str | None = None
+    color: str | list[str] | None = None
+    s: int | float | list[int | float] | None = None
+    alpha: int | float | list[int | float] | None = None
+    marker: str | list[str] | None = None
+    cmap: str | list[str] | None = None
+    edgecolors: str | list[str] | None = None
+    facecolors: str | list[str] | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -214,10 +215,10 @@ class HistogramConfig:
     density: bool | None = None
     histtype: str | None = None
     color: str | None = None
-    alpha: float | None = None
+    alpha: int | float | None = None
     edgecolor: str | None = None
     facecolor: str | None = None
-    linewidth: float | None = None
+    linewidth: int | float | None = None
     orientation: str | None = None
     cumulative: bool | None = None
     hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None
@@ -307,13 +308,13 @@ def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
 
 
 def dual_axes_data_validation(
-    x1_data: NDArray,
-    x2_data: NDArray | None,
-    y1_data: NDArray,
-    y2_data: NDArray | None,
+    x1_data: ArrayLike,
+    x2_data: ArrayLike | None,
+    y1_data: ArrayLike,
+    y2_data: ArrayLike | None,
     use_twin_x: bool,
     axis_labels: list[str | None],
-) -> None:
+) -> tuple[NDArray, NDArray, NDArray | None, NDArray | None]:
     """
     Validate the data and parameters for dual-axes plotting.
 
@@ -350,6 +351,13 @@ def dual_axes_data_validation(
         raise AxisLabelError(
             f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
         )
+
+    x1_data, y1_data = np.asarray(x1_data), np.asarray(y1_data)
+    if x2_data is not None:
+        x2_data = np.asarray(x2_data)
+    if y2_data is not None:
+        y2_data = np.asarray(y2_data)
+
     if len(axis_labels) != 3:  # noqa
         raise AxisLabelError("The axis_labels should have a length of 3.")
     if len(x1_data) == 0 or len(y1_data) == 0:
@@ -359,23 +367,4 @@ def dual_axes_data_validation(
     if not use_twin_x and y2_data is not None:
         raise TwinYDataError("Dual X-axis plot requested but 'y2_data' given.")
 
-
-def _auto_handler(
-    axis_labels: list[str] | None, x1y1_label: str | None, x1y2_label: str | None, x2y1_label: str | None
-):
-    provided_labels = []
-    if x1y1_label is not None:
-        provided_labels.append("x1y1_label")
-    if x1y2_label is not None:
-        provided_labels.append("x1y2_label")
-    if x2y1_label is not None:
-        provided_labels.append("x2y1_label")
-    if axis_labels is not None and not all(x is None for x in axis_labels):
-        provided_labels.append("axis_labels")
-
-    if provided_labels:
-        warn(
-            message=f"`auto_label=True` will override provided labels: {', '.join(provided_labels)}",
-            category=LabelConflictWarning,
-            stacklevel=2,
-        )
+    return x1_data, y1_data, x2_data, y2_data

@@ -13,7 +13,7 @@ y_err_upper = 0.25
 band_cfg = ebc(c="lightcoral", alpha=0.35)
 line_cfg = lpc(c="darkred", lw=2, markevery=10, marker="o")
 
-f, ax = plot_errorband_relative(
+ax = plot_errorband_relative(
     x_data=x,
     y_data=y,
     y_lower=y_err_lower,
@@ -26,7 +26,7 @@ f, ax = plot_errorband_relative(
     line_config=line_cfg,
 )
 
-f.tight_layout()
+plt.tight_layout()
 
 # plt.show()
 plt.savefig("RTD_E15_errorband_relative.png", dpi=300)

@@ -9,26 +9,29 @@
    * - ``NDArray``
      - Re-export of :class:`numpy.ndarray` but as a typehint – any array-like input accepted by NumPy.
    * - ``AxesReturn``
-     - ``Axes | tuple[Axes, Axes]`` – return type for single- or dual-axis plot functions.
-   * - ``AxesFigReturn``
-     - ``Axes | tuple[Figure, Axes]`` – return type for functions that may create a new figure.
-   * - ``LSE``
-     - Union of all four config classes (type-checking only):
-       ``LinePlotConfig | ScatterPlotConfig | ErrorPlotConfig | ErrorBandConfig``.
+     - ``Axes | tuple[Axes, Axes] | NDArray`` – unified return type for all plot functions.
+       Single-axis functions return ``Axes``; dual-axis functions return ``tuple[Axes, Axes]``;
+       grid functions (``n_plotter``, ``two_subplots``) return a shaped ``NDArray`` of ``Axes``.
 """
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from matplotlib.axes import Axes as _Axes
 from matplotlib.figure import Figure as _Figure
+from numpy.typing import ArrayLike as _ArrayLike
 
 NDArray = np.ndarray
+ArrayLike = _ArrayLike
 Axes = _Axes
 Figure = _Figure
 
-AxesReturn = Axes | tuple[Axes, Axes]
-AxesFigReturn = Axes | tuple[Figure, Axes]
+HatchStyle = Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
+
+AxesReturn = Axes | tuple[Axes, Axes] | NDArray
+
+# Deprecated – kept as a backward-compatible alias; will be removed in a future release.
+AxesFigReturn = AxesReturn
 
 # LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
 

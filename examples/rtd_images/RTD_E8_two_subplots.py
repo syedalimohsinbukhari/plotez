@@ -13,9 +13,9 @@ two_subplots(
     x_data=[x, x],
     y_data=[y1, y2],
     orientation="v",  # works with both 'v' and 'vertical'
-    x_labels=["Time (s)", "Time (s)"],
-    y_labels=["Amplitude", "Amplitude"],
-    data_labels=["Sine", "Cosine"],
+    x_labels=("Time (s)", "Time (s)"),
+    y_labels=("Amplitude", "Amplitude"),
+    data_labels=("Sine", "Cosine"),
     figure_kwargs={"figsize": (6, 8)},
 )
 

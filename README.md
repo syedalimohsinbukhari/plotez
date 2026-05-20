@@ -257,7 +257,7 @@ make html
 
 | Item           | Status                                         |
 |----------------|------------------------------------------------|
-| Latest version | v0.3.0                                         |
+| Latest version | v0.3.2                                         |
 | Python support | 3.10 · 3.11 · 3.12                             |
 | Test coverage  | 85%+                                           |
 | Type hints     | PEP 561 compliant (`py.typed`)                 |

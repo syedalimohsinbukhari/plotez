@@ -2,6 +2,8 @@
 
 from typing import Literal
 
+from plotez.typing import HatchStyle
+
 from .utilities import ErrorBandConfig, ErrorPlotConfig, HistogramConfig, LinePlotConfig, ScatterPlotConfig
 
 __all__ = [
@@ -20,14 +22,14 @@ __all__ = [
 
 def line_plot_configuration(
     c: str | list[str] | None = None,
-    lw: float | list[float] | None = None,
+    lw: int | float | list[int | float] | None = None,
     ls: str | list[str] | None = None,
-    alpha: float | list[float] | None = None,
+    alpha: int | float | list[int | float] | None = None,
     marker: str | list[str] | None = None,
-    ms: float | list[float] | None = None,
+    ms: int | float | list[int | float] | None = None,
     mfc: str | list[str] | None = None,
     mec: str | list[str] | None = None,
-    mew: float | list[float] | None = None,
+    mew: int | float | list[int | float] | None = None,
     **kwargs,
 ):
     """
@@ -81,7 +83,7 @@ def error_band_configuration(
     lw: float | None = None,
     ec: str | None = None,
     ls: str | None = None,
-    hatch: str | Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"] | None = None,
+    hatch: HatchStyle | list[HatchStyle] | None = None,
     interpolate: bool | None = None,
     step: str | Literal["pre", "post", "mid"] | None = None,
     **kwargs,
@@ -203,8 +205,8 @@ def error_plot_configuration(
 
 def scatter_plot_configuration(
     c: str | list[str] | None = None,
-    s: float | list[float] | None = None,
-    alpha: float | list[float] | None = None,
+    s: int | float | list[int | float] | None = None,
+    alpha: int | float | list[int | float] | None = None,
     marker: str | list[str] | None = None,
     cmap: str | list[str] | None = None,
     ec: str | list[str] | None = None,

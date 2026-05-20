@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 
 from plotez import HistogramConfig, hgc
 from plotez.plotez import plot_hist
@@ -37,15 +36,11 @@ def cleanup_plots():
 class TestPlotHistReturnTypes:
     """Test return type behavior of plot_hist."""
 
-    def test_returns_figure_and_axis_by_default(self, histogram_data):
-        """Test that plot_hist returns (fig, ax) when no axis is provided."""
+    def test_returns_axes_by_default(self, histogram_data):
+        """Test that plot_hist returns an Axes when no axis is provided."""
         result = plot_hist(histogram_data)
 
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        fig, ax = result
-        assert isinstance(fig, Figure)
-        assert isinstance(ax, Axes)
+        assert isinstance(result, Axes)
 
     def test_returns_existing_axis_when_provided(self, histogram_data):
         """Test that plot_hist returns the passed axis object directly."""
@@ -56,9 +51,9 @@ class TestPlotHistReturnTypes:
 
     def test_figure_kwargs_applied_to_new_figure(self, histogram_data):
         """Test that figure_kwargs are passed through when creating a new figure."""
-        fig, ax = plot_hist(histogram_data, figure_kwargs={"figsize": (10, 4)})
+        ax = plot_hist(histogram_data, figure_kwargs={"figsize": (10, 4)})
 
-        assert fig.get_size_inches().tolist() == pytest.approx([10.0, 4.0])
+        assert ax.get_figure().get_size_inches().tolist() == pytest.approx([10.0, 4.0])
 
 
 class TestPlotHistLabels:
@@ -66,7 +61,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_sets_default_axis_labels_and_title(self, histogram_data):
         """Test that auto_label=True sets X, Count, and Histogram as defaults."""
-        fig, ax = plot_hist(histogram_data)
+        ax = plot_hist(histogram_data)
 
         assert ax.get_xlabel() == "X"
         assert ax.get_ylabel() == "Counts"
@@ -74,13 +69,13 @@ class TestPlotHistLabels:
 
     def test_auto_label_with_density_sets_ylabel_to_density(self, histogram_data):
         """Test that auto_label=True sets y_label to Density when density=True."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(density=True))
+        ax = plot_hist(histogram_data, hist_config=hgc(density=True))
 
         assert ax.get_ylabel() == "Density"
 
     def test_manual_labels_are_respected(self, histogram_data):
         """Test that explicit label arguments are applied when auto_label is off."""
-        fig, ax = plot_hist(histogram_data, x_label="Value", y_label="Count", plot_title="My Distribution")
+        ax = plot_hist(histogram_data, x_label="Value", y_label="Count", plot_title="My Distribution")
 
         assert ax.get_xlabel() == "Value"
         assert ax.get_ylabel() == "Count"
@@ -88,7 +83,7 @@ class TestPlotHistLabels:
 
     def test_auto_label_does_not_set_data_label(self, histogram_data):
         """Test that auto_label=True does not generate a legend entry."""
-        fig, ax = plot_hist(histogram_data)
+        ax = plot_hist(histogram_data)
 
         assert ax.get_legend() is None
 
@@ -98,19 +93,19 @@ class TestPlotHistLegend:
 
     def test_legend_appears_when_data_label_provided(self, histogram_data):
         """Test that a legend is created when data_label is set."""
-        fig, ax = plot_hist(histogram_data, data_label="Normal")
+        ax = plot_hist(histogram_data, data_label="Normal")
 
         assert ax.get_legend() is not None
 
     def test_legend_absent_when_data_label_is_none(self, histogram_data):
         """Test that no legend is created when data_label is None."""
-        fig, ax = plot_hist(histogram_data)
+        ax = plot_hist(histogram_data)
 
         assert ax.get_legend() is None
 
     def test_legend_label_text_matches_data_label(self, histogram_data):
         """Test that the legend entry text matches the provided data_label."""
-        fig, ax = plot_hist(histogram_data, data_label="Normal")
+        ax = plot_hist(histogram_data, data_label="Normal")
         legend = ax.get_legend()
 
         assert [t.get_text() for t in legend.get_texts()] == ["Normal"]
@@ -118,7 +113,7 @@ class TestPlotHistLegend:
     def test_multi_dataset_legend_has_correct_labels(self, multi_histogram_data):
         """Test that multi-series histograms produce the correct legend entries."""
         labels = ["Uniform", "Normal", "Exponential"]
-        fig, ax = plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
+        ax = plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
         legend = ax.get_legend()
 
         assert legend is not None
@@ -130,7 +125,7 @@ class TestPlotHistConfigInputs:
 
     def test_no_config_uses_defaults(self, histogram_data):
         """Test that omitting hist_config does not raise."""
-        fig, ax = plot_hist(histogram_data)
+        ax = plot_hist(histogram_data)
 
         assert isinstance(ax, Axes)
 
@@ -139,33 +134,33 @@ class TestPlotHistConfigInputs:
         hc = HistogramConfig(
             bins=20, density=True, histtype="stepfilled", color="steelblue", alpha=0.6, edgecolor="k", linewidth=1.2
         )
-        fig, ax = plot_hist(histogram_data, hist_config=hc)
+        ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)
 
     def test_accepts_hgc_wrapper(self, histogram_data):
         """Test hgc convenience wrapper is accepted."""
         hc = hgc(bins=20, density=True, histtype="stepfilled", color="steelblue", alpha=0.6, ec="k", lw=1.2)
-        fig, ax = plot_hist(histogram_data, hist_config=hc)
+        ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)
 
     def test_accepts_dict_with_full_keys(self, histogram_data):
         """Test plain dict with full parameter names is accepted."""
-        fig, ax = plot_hist(histogram_data, hist_config={"bins": 15, "color": "crimson"})
+        ax = plot_hist(histogram_data, hist_config={"bins": 15, "color": "crimson"})
 
         assert isinstance(ax, Axes)
 
     def test_accepts_dict_with_alias_keys(self, histogram_data):
         """Test plain dict with shorthand alias keys (c, ec, lw) is accepted."""
-        fig, ax = plot_hist(histogram_data, hist_config={"bins": 15, "c": "crimson", "ec": "black", "lw": 1.5})
+        ax = plot_hist(histogram_data, hist_config={"bins": 15, "c": "crimson", "ec": "black", "lw": 1.5})
 
         assert isinstance(ax, Axes)
 
     def test_extra_kwargs_forwarded_without_error(self, histogram_data):
         """Test that unrecognised kwargs in _extra are forwarded to matplotlib."""
         hc = hgc(bins=15, rwidth=0.8, color="salmon")
-        fig, ax = plot_hist(histogram_data, hist_config=hc)
+        ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)
 
@@ -177,7 +172,7 @@ class TestPlotHistHisttypes:
     def test_histtype_renders_without_error(self, histogram_data, histtype):
         """Test each histtype renders cleanly."""
         hc = hgc(bins=15, histtype=histtype, color="teal", alpha=0.7)
-        fig, ax = plot_hist(histogram_data, hist_config=hc)
+        ax = plot_hist(histogram_data, hist_config=hc)
 
         assert isinstance(ax, Axes)
 
@@ -187,19 +182,19 @@ class TestPlotHistSpecialParams:
 
     def test_log_scale_sets_y_axis_to_log(self, histogram_data):
         """Test that log=True switches the y-axis to `log` scale."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(bins=20, log=True))
+        ax = plot_hist(histogram_data, hist_config=hgc(bins=20, log=True))
 
         assert ax.get_yscale() == "log"
 
     def test_cumulative_renders_without_error(self, histogram_data):
         """Test that cumulative=True does not raise."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(bins=20, cumulative=True, density=True))
+        ax = plot_hist(histogram_data, hist_config=hgc(bins=20, cumulative=True, density=True))
 
         assert isinstance(ax, Axes)
 
     def test_horizontal_orientation_renders_without_error(self, histogram_data):
         """Test that orientation='horizontal' does not raise."""
-        fig, ax = plot_hist(histogram_data, hist_config=hgc(bins=15, orientation="horizontal"))
+        ax = plot_hist(histogram_data, hist_config=hgc(bins=15, orientation="horizontal"))
 
         assert isinstance(ax, Axes)
 
@@ -207,5 +202,5 @@ class TestPlotHistSpecialParams:
         """Test that the hatch parameter is not raised for supported hist types."""
         for histtype, hatch in [("bar", "//"), ("stepfilled", "xx")]:
             hc = hgc(bins=15, histtype=histtype, hatch=hatch, color="gold", edgecolor="k")
-            fig, ax = plot_hist(histogram_data, hist_config=hc)
+            ax = plot_hist(histogram_data, hist_config=hc)
             assert isinstance(ax, Axes)

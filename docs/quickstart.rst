@@ -16,8 +16,8 @@ Basic Plotting
 Minimal Example
 ~~~~~~~~~~~~~~~
 
-The absolute minimum code to produce a labeled plot. ``auto_label=True`` generates
-``"X"``, ``"Y"``, and ``"Plot"`` as axis and title labels automatically.
+The absolute minimum code to produce a labeled plot. Pass ``x_label``, ``y_label``,
+and ``plot_title`` for axis and title labels.
 
 .. literalinclude:: ../examples/rtd_images/RTD_E1_simple.py
    :language: python
@@ -134,12 +134,20 @@ so you can pass a single uncertainty value and let plotEZ compute the band edges
 Multi-Panel Layouts
 -------------------
 
+.. note::
+
+   Neither ``two_subplots`` nor ``n_plotter`` calls ``tight_layout`` internally.
+   Call ``axs.flat[0].get_figure().tight_layout()`` (or ``plt.tight_layout()``)
+   yourself after plotting if you want tighter spacing.
+
 Two Subplots
 ~~~~~~~~~~~~
 
 ``two_subplots`` wraps ``n_plotter`` for the common two-panel case.
-Use ``orientation='h'`` for side-by-side or ``'v'`` for stacked; ``subplot_title``
+Use ``orientation='h'`` for side-by-side or ``'v'`` for stacked; ``subplot_titles``
 labels each panel individually.
+Returns a shaped ``(1, 2)`` (horizontal) or ``(2, 1)`` (vertical) ``ndarray`` of
+``Axes``; access panels as ``axs[0, 0]`` / ``axs[0, 1]`` or use ``axs.flat[i]``.
 
 .. literalinclude:: ../examples/rtd_images/RTD_E8_two_subplots.py
    :language: python
@@ -154,6 +162,9 @@ Grid of Four
 
 ``n_plotter`` handles arbitrary N×M grids. Config parameters passed as lists
 apply per-subplot, cycling if the list is shorter than the panel count.
+The function returns a shaped ``(n_rows, n_cols)`` ``ndarray`` of ``Axes``; use
+``axs.flat[i]`` for linear indexing or ``axs[row, col]`` for 2-D access.
+The parent figure is available via ``axs.flat[0].get_figure()``.
 
 .. literalinclude:: ../examples/rtd_images/RTD_E9_grid_of_four.py
    :language: python
@@ -244,9 +255,6 @@ Exception Hierarchy
        AxisLabelError,      # axis_labels has wrong length
        TwinXDataError,      # x2_data given with use_twin_x=True
        TwinYDataError,      # y2_data given with use_twin_x=False
-
-       # Warnings
-       LabelConflictWarning # auto_label overriding user labels
    )
 
 Catching Specific Exceptions
@@ -281,28 +289,27 @@ Use base classes to catch multiple related errors:
 
    try:
        # Your plotting code here
-       plot_with_dual_axes([], [1, 2, 3], auto_label=False,
-                          axis_labels=['X', 'Y'])
+       plot_with_dual_axes([], [1, 2, 3],
+                          axis_labels=("X", "Y", ""))
    except DataError:
        print("Data-related error occurred")
    except ConfigurationError:
        print("Configuration error occurred")
 
-Filtering Warnings
-~~~~~~~~~~~~~~~~~~
+Mutable-Argument Deprecation Warning
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use Python's ``warnings`` module to filter or escalate custom warnings:
+Several label parameters (``data_labels``, ``x_labels``, ``y_labels``, ``subplot_titles``,
+``axis_labels``) previously accepted mutable ``list`` defaults. Passing a plain ``list``
+for these arguments now emits a ``DeprecationWarning``; prefer an immutable ``tuple``:
 
 .. code-block:: python
 
-   import warnings
-   from plotez.backend.error_handling import LabelConflictWarning
+   from plotez import two_subplots
 
-   # Suppress label conflict warnings
-   warnings.filterwarnings('ignore', category=LabelConflictWarning)
-
-   # Or escalate them to errors
-   warnings.filterwarnings('error', category=LabelConflictWarning)
+   axs = two_subplots(x_list, y_list,
+                      x_labels=("Time (s)", "Time (s)"),   # tuple — no warning
+                      y_labels=("Amplitude", "Phase"))
 
 ----
 
@@ -363,8 +370,13 @@ Mixing with Matplotlib
 ~~~~~~~~~~~~~~~~~~~~~~
 
 All ``plotez`` functions accept an ``axis`` keyword so you can drop them
-into any existing matplotlib figure. They return the ``Axes`` object for
-further customisation.
+into any existing matplotlib figure. Return types are axes-only:
+
+* Single-axis functions → ``Axes``
+* Dual-axis functions (``plot_with_dual_axes``, ``plot_xyy``, ``plot_xxy``) → ``tuple[Axes, Axes]``
+* Grid functions (``n_plotter``, ``two_subplots``) → shaped ``(n_rows, n_cols)`` ``ndarray`` of ``Axes``
+
+The parent ``Figure`` is always accessible via ``ax.get_figure()``.
 
 .. literalinclude:: ../examples/rtd_images/RTD_E12_matplotlib_integration.py
    :language: python
