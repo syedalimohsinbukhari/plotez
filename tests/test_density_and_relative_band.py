@@ -102,13 +102,7 @@ class TestPlotErrorbandRelative:
         """Axis labels and title are applied to the returned axes."""
         x, y = xy
         ax = plot_errorband_relative(
-            x,
-            y,
-            y_upper=0.2,
-            x_label="Time",
-            y_label="Amplitude",
-            plot_title="Relative Band",
-            data_label="signal",
+            x, y, y_upper=0.2, x_label="Time", y_label="Amplitude", plot_title="Relative Band", data_label="signal"
         )
         assert ax.get_xlabel() == "Time"
         assert ax.get_ylabel() == "Amplitude"

@@ -222,7 +222,7 @@ def plot_errorband(
     if axis is not None:
         ax = axis
         if figure_kwargs:
-            warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
+            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
     else:
         _, ax = plt.subplots(**(figure_kwargs or {}))
 
@@ -239,10 +239,10 @@ def plot_errorband(
 
             l_conf.pop("label", None)
 
-        ax.fill_between(x, y_lower, y_upper, **error_band_config)
+        ax.fill_between(x=x, y1=y_lower, y2=y_upper, **error_band_config)
         ax.plot(x, y, label=_data_label, **l_conf)
     else:
-        ax.fill_between(x, y_lower, y_upper, label=data_label, **error_band_config)
+        ax.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **error_band_config)
 
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
@@ -319,13 +319,13 @@ def plot_errorbar(
 
     if axis is not None:
         if figure_kwargs:
-            warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
+            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
         ax = axis
     else:
         _, ax = plt.subplots(**(figure_kwargs or {}))
 
     ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
-    ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
+    ax.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
@@ -390,7 +390,7 @@ def plot_two_column_file(
     ColumnCountError
         If the file does not contain exactly two columns.
     """
-    data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)
+    data = np.genfromtxt(fname=file_name, delimiter=delimiter, skip_header=skip_header)
 
     if data.shape[1] != 2:
         raise ColumnCountError("The file must contain exactly two columns of data.")
@@ -843,17 +843,17 @@ def _label_sanitizer(
             return [""] * n
         if len(labels) < n:
             warn(
-                f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
-                f"({n} subplots) was requested. Padding with empty strings for the remaining {n - len(labels)}.",
-                UserWarning,
+                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
+                f"requested. Padding with empty strings for the remaining {n - len(labels)}.",
+                category=UserWarning,
                 stacklevel=3,
             )
             return labels + [""] * (n - len(labels))
         if len(labels) > n:
             warn(
-                f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
+                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
                 f"({n} subplots) was requested. Trimming the last {len(labels) - n} element(s).",
-                UserWarning,
+                category=UserWarning,
                 stacklevel=3,
             )
             return labels[:n]
@@ -929,7 +929,7 @@ def n_plotter(
 
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
-    fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
+    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
     flat_axs = axs.flatten()
 
     main_dict = [
@@ -1022,7 +1022,9 @@ def plot_density(
     """
     if isinstance(hist_config, dict):
         if not hist_config.get("density"):
-            warn("Setting `density=True` in `hist_config` for density plot.", UserWarning, stacklevel=2)
+            warn(
+                message="Setting `density=True` in `hist_config` for density plot.", category=UserWarning, stacklevel=2
+            )
         hist_config = {**hist_config, "density": True}
     elif isinstance(hist_config, HistogramConfig):
         hist_config.density = True
@@ -1097,7 +1099,7 @@ def plot_hist(
     if not h_config.get("bins"):
         h_config["bins"] = 32
 
-    ax.hist(x, label=data_label, **h_config)
+    ax.hist(x=x, label=data_label, **h_config)
 
     ax.set_xlabel(x_label)
     ax.set_ylabel("Density" if h_config.get("density") else y_label)
