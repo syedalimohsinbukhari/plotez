@@ -68,9 +68,9 @@ def plot_errorband_relative(
     """
     Plot a line graph with a shaded error band using relative (offset) errors.
 
-    A convenience wrapper around :func:`plot_errorband` where ``y_lower`` and ``y_upper`` are interpreted as offsets
-    from ``y_data`` rather than absolute bounds.
-    Internally, the absolute bounds are computed as ``y_data - y_lower`` and ``y_data + y_upper`` before passing
+    A convenience wrapper around :func:`plot_errorband` where `y_lower` and `y_upper` are interpreted as offsets
+    from `y_data` rather than absolute bounds.
+    Internally, the absolute bounds are computed as `y_data - y_lower` and `y_data + y_upper` before passing
     to :func:`plot_errorband`.
 
     Parameters
@@ -80,13 +80,13 @@ def plot_errorband_relative(
     y_data :
         The central values to plot.
     y_lower :
-        The downward offset from ``y_data`` defining the lower band edge.
-        If ``None``, it is inferred as equal to ``y_upper``, implying a symmetric band.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        The downward offset from `y_data` defining the lower band edge.
+        If `None`, it is inferred as equal to `y_upper`, implying a symmetric band.
+        At least one of `y_lower` or `y_upper` must be provided.
     y_upper :
-        The upward offset from ``y_data`` defining the upper band edge.
-        If ``None``, it is inferred as equal to ``y_lower``, implying a symmetric band.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        The upward offset from `y_data` defining the upper band edge.
+        If `None`, it is inferred as equal to `y_lower`, implying a symmetric band.
+        At least one of `y_lower` or `y_upper` must be provided.
     x_label :
         The label for the x-axis.
     y_label :
@@ -95,22 +95,22 @@ def plot_errorband_relative(
         The title of the plot.
     data_label :
         The label for the data series, used in the legend.
-        If ``line=True``, the label is attached to the line.
-        If ``line=False``, it is attached to the band.
+        If `line=True`, the label is attached to the line.
+        If `line=False`, it is attached to the band.
     line :
         Whether to draw a line through the central values over the error band.
     band_config :
         Configuration for the error band styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     line_config :
         Configuration for the line styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     axis :
         Pre-existing Matplotlib axes to draw on.
-        If provided, ``figure_kwargs`` is ignored.
+        If provided, `figure_kwargs` is ignored.
     figure_kwargs :
-        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
-        Ignored if ``axis`` is provided.
+        Keyword arguments passed to `plt.subplots` when creating a new figure.
+        Ignored if `axis` is provided.
 
     Returns
     -------
@@ -120,7 +120,7 @@ def plot_errorband_relative(
     Raises
     ------
     ConfigurationError
-        If both ``y_lower`` and ``y_upper`` are ``None``.
+        If both `y_lower` and `y_upper` are `None`.
 
     See Also
     --------
@@ -170,12 +170,12 @@ def plot_errorband(
         The central values to plot.
     y_lower :
         The lower bound of the error band.
-        If ``None``, it is inferred as a symmetric reflection of ``y_upper`` through ``y_data``.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        If `None`, it is inferred as a symmetric reflection of `y_upper` through `y_data`.
+        At least one of `y_lower` or `y_upper` must be provided.
     y_upper :
         The upper bound of the error band.
-        If ``None``, it is inferred as a symmetric reflection of ``y_lower`` through ``y_data``.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        If `None`, it is inferred as a symmetric reflection of `y_lower` through `y_data`.
+        At least one of `y_lower` or `y_upper` must be provided.
     x_label :
         The label for the x-axis.
     y_label :
@@ -184,22 +184,22 @@ def plot_errorband(
         The title of the plot.
     data_label :
         The label for the data series, used in the legend.
-        If ``line=True``, the label is attached to the line.
-        If ``line=False``, it is attached to the band.
+        If `line=True`, the label is attached to the line.
+        If `line=False`, it is attached to the band.
     line :
         Whether to draw a line through the central values over the error band.
     band_config :
         Configuration for the error band styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     line_config :
         Configuration for the line styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     axis :
         Pre-existing Matplotlib axes to draw on.
-        If provided, ``figure_kwargs`` is ignored.
+        If provided, `figure_kwargs` is ignored.
     figure_kwargs :
-        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
-        Ignored if ``axis`` is provided.
+        Keyword arguments passed to `plt.subplots` when creating a new figure.
+        Ignored if `axis` is provided.
 
     Returns
     -------
@@ -209,7 +209,7 @@ def plot_errorband(
     Raises
     ------
     ConfigurationError
-        If both ``y_lower`` and ``y_upper`` are ``None``.
+        If both `y_lower` and `y_upper` are `None`.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
 
@@ -306,7 +306,7 @@ def plot_errorbar(
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A matplotlib Axes object on which the plot will be rendered.
-        If `None`, a new subplot is created using ``figure_kwargs``.
+        If `None`, a new subplot is created using `figure_kwargs`.
 
     Returns
     -------
@@ -381,7 +381,7 @@ def plot_two_column_file(
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
@@ -554,7 +554,7 @@ def plot_xyy(
     Returns
     -------
     tuple[Axes, Axes]
-        A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot.
+        A tuple of `(primary_axis, secondary_axis)` for the dual y-axis plot.
 
     Raises
     ------
@@ -645,7 +645,7 @@ def plot_xxy(
     Returns
     -------
     tuple[Axes, Axes]
-        A tuple of ``(primary_axis, secondary_axis)`` for the dual x-axis plot.
+        A tuple of `(primary_axis, secondary_axis)` for the dual x-axis plot.
 
     Raises
     ------
@@ -723,15 +723,15 @@ def plot_with_dual_axes(
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot.
         Default is False.
     axis_labels :
-        List of axis labels in the form ``[x_label, y_label1, y_label2]``.
-        Defaults to ``["X", r"Y$_1$", r"Y$_2$"]`` when not provided.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        List of axis labels in the form `[x_label, y_label1, y_label2]`.
+        Defaults to `["X", r"Y$_1$", r"Y$_2$"]` when not provided.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     is_scatter :
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
@@ -740,7 +740,7 @@ def plot_with_dual_axes(
     Returns
     -------
     tuple[Axes, Axes] or Axes
-        A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
+        A tuple of `(primary_axis, secondary_axis)` when dual axes are used, otherwise a single `Axes`.
     """
     _axis_labels: list[str] = list(axis_labels) if axis_labels is not None else ["X", r"Y$_1$", r"Y$_2$"]
 
@@ -830,39 +830,39 @@ def two_subplots(
         List containing y-axis data arrays for each subplot.
     x_labels :
         List of labels for the x-axes in each subplot.
-        Defaults to ``[r"X$_1$", r"X$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"X$_1$", r"X$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     y_labels :
         List of labels for the y-axes in each subplot.
-        Defaults to ``[r"Y$_1$", r"Y$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"Y$_1$", r"Y$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     data_labels :
         List of labels for the data series in each subplot.
-        Defaults to ``[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     subplot_titles :
         Titles for the individual subplots, if required.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     orientation :
-        Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
+        Orientation of the subplots, either `'h'` for horizontal or `'v'` for vertical.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
+        Keyword arguments for creating the figure and axes. Passed directly to `plt.subplots`.
 
     Returns
     -------
     NDArray
-        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
+        A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
 
     Raises
     ------
     OrientationError
-        If ``orientation`` is not ``'h'`` or ``'v'``.
+        If `orientation` is not `'h'` or `'v'`.
     """
     _x_labels: list[str] = list(x_labels) if x_labels is not None else [r"X$_1$", r"X$_2$"]
     _y_labels: list[str] = list(y_labels) if y_labels is not None else [r"Y$_1$", r"Y$_2$"]
@@ -973,14 +973,14 @@ def n_plotter(
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
+        Keyword arguments for creating the figure and axes. Passed directly to `plt.subplots`.
 
     Returns
     -------
     NDArray
-        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
+        A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
     """
     sp_dict = dict(figure_kwargs) if figure_kwargs else {}
     sp_dict.pop("nrows", None)

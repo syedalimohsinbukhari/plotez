@@ -5,7 +5,40 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.3.2] - 20-May-2026
+## [v0.3.3] - 07-Jun-2026
+
+### Added
+
+- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Two new `ConfigurationError` subclasses raised when a data array
+  passed to `plot_xy`, `plot_xyy`, or `plot_xxy` has more than one dimension. Each message includes a hint to use
+  `n_plotter` for multi-array scenarios.
+- **Input dimensionality guards**: `plot_xy`, `plot_xyy`, and `plot_xxy` now call `np.asarray()` on their data
+  arguments and immediately raise `XArrayNot1D` / `YArrayNot1D` if `ndim > 1`, failing fast before any matplotlib
+  state is touched.
+- **`__module__ = "plotez"`**: Set on every exception class so tracebacks report `plotez.XArrayNot1D` instead of the
+  internal `plotez.backend.error_handling` path.
+
+### Changed
+
+- **`PlotError` → `PlotEZError`** (**Breaking**): The base exception class has been renamed to avoid shadowing the
+  common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.)
+  now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
+- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now
+  correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
+- **`AxesReturn` type alias simplified**: `NDArray` removed from the union; the alias is now
+  `Axes | tuple[Axes, Axes]` only, matching the actual return types of all public functions.
+
+### Infrastructure
+
+- **`requirements.txt` split**: `requirements.txt` now contains base runtime dependencies only
+  (`uv export --no-group dev`); a new `requirements[dev].txt` holds the full pinned dev environment
+  (`uv export`), matching how `pip install -e ".[dev]"` consumers vs. CI consumers use the files.
+- **Pre-commit hooks added**: `.pre-commit-config.yaml` gains two new local hooks —
+  `check-version-sync` (runs `scripts/check_version_sync.py` to assert `README.md` matches `version.py`) and
+  `uv-export` (runs `uv lock --upgrade && uv sync` then regenerates both requirements files on every commit).
+  The duplicate `pytest` hook entry was also removed.
+
+## [v0.3.2/0.3.2.post1] - 20-May-2026
 
 ### Fixed
 
