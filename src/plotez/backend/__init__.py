@@ -20,7 +20,7 @@ from .error_handling import (
     DataError,
     EmptyDataError,
     OrientationError,
-    PlotError,
+    PlotEZError,
     ShapeError,
     TwinXDataError,
     TwinYDataError,
@@ -53,7 +53,7 @@ __all__ = [
     "ERROR_BAND_ATTRS",
     "HIST_ATTRS",
     # Base errors
-    "PlotError",
+    "PlotEZError",
     "DataError",
     "ConfigurationError",
     # Data errors

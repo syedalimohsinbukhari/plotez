@@ -35,7 +35,14 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
+from .backend.error_handling import (
+    ColumnCountError,
+    ConfigurationError,
+    OrientationError,
+    ShapeError,
+    XArrayNot1D,
+    YArrayNot1D,
+)
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
@@ -310,12 +317,12 @@ def plot_errorbar(
     if x_err is not None:
         x_err: NDArray = np.asarray(x_err)
         if x_err.ndim == 2 and x_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric x_err must have shape (2, N), got {x_err.shape}")
+            raise ShapeError(f"Asymmetric `x_err` must have shape (2, N), got {x_err.shape}")
 
     if y_err is not None:
         y_err: NDArray = np.asarray(y_err)
         if y_err.ndim == 2 and y_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
+            raise ShapeError(f"Asymmetric `y_err` must have shape (2, N), got {y_err.shape}")
 
     if axis is not None:
         if figure_kwargs:
@@ -445,19 +452,37 @@ def plot_xy(
     data_label :
         Data label for the plot to put in the legend.
     is_scatter :
-        If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
+        If True, creates a scatter plot. Otherwise, creates a line plot.
+        Defaults is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+        The axis object to draw the plots on.
+        If not passed, a new axis object will be created internally.
 
     Returns
     -------
-    Axes
-        The axes object of the plot.
+    Axes :
+        The axis object of the plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x_data` is not a 1D array.
+    YArrayNot1D:
+        If `y_data` is not a 1D array.
     """
+    x_data, y_data = np.asarray(x_data), np.asarray(y_data)
+    # the x_data and y_data must not be 2D or higher arrays
+    if x_data.ndim > 1:
+        raise XArrayNot1D("`x_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
+    if y_data.ndim > 1:
+        raise YArrayNot1D("`y_data` must be a 1D array. For multiple `y_data`, use:func:`~plotez.n_plotter`.")
+
     _axis = plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y_data,
@@ -471,7 +496,7 @@ def plot_xy(
         axis=axis,
     )
 
-    _axis: Axes
+    assert isinstance(_axis, Axes), f"Expected `Axes` object, got `{type(_axis)}`"
     return _axis
 
 
@@ -513,22 +538,41 @@ def plot_xyy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(r"X vs. Y$_1$", r"X vs. Y$_2$")``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        The labels for the two datasets. Default is `(r"X vs. Y$_1$", r"X vs. Y$_2$")`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
+        A Matplotlib axis to plot on.
+        If `None`, a new axis is created. Default is `None`.
 
     Returns
     -------
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x_data` is not a 1D array.
+    YArrayNot1D:
+        If `y1_data` or `y2_data` is not a 1D array.
     """
+    x_data, y1_data, y2_data = np.asarray(x_data), np.asarray(y1_data), np.asarray(y2_data)
+
+    # both x_data, y1_data, and y2_data must be 1D arrays
+    if x_data.ndim > 1:
+        raise XArrayNot1D("`x_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
+    if y1_data.ndim > 1:
+        raise YArrayNot1D("`y1_data` must be a 1D array. For multiple `y1_data`, use :func:`~plotez.n_plotter`.")
+    elif y2_data.ndim > 1:
+        raise YArrayNot1D("`y2_data` must be a 1D array. For multiple `y2_data`, use :func:`~plotez.n_plotter`.")
+
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -546,7 +590,7 @@ def plot_xyy(
         axis=axis,
     )
 
-    _axis: tuple[Axes, Axes]
+    _axis: tuple[Axes, Axes]  # since `use_twin_x = True` there has to be a tuple Axes return
     return _axis
 
 
@@ -583,22 +627,43 @@ def plot_xxy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(r"Y vs. X$_1$", r"Y vs. X$_2$")``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        The labels for the two datasets.
+        Default is `(r"Y vs. X$_1$", r"Y vs. X$_2$")`.
     is_scatter :
-        Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
+        Whether to create a scatter plot (`True`) or a line plot (`False`).
+        Defaults is `False`.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
+        A Matplotlib axis to plot on.
+        If `None`, a new axis is created. Default is `None`.
 
     Returns
     -------
     tuple[Axes, Axes]
         A tuple of ``(primary_axis, secondary_axis)`` for the dual x-axis plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x1_data` or `x2_data` is not a 1D array.
+    YArrayNot1D:
+        If `y_data` is not a 1D array.
     """
+    x1_data, x2_data, y_data = np.asarray(x1_data), np.asarray(x2_data), np.asarray(y_data)
+
+    # both x_data, y1_data, and y2_data must be 1D arrays
+    if x1_data.ndim > 1:
+        raise XArrayNot1D("`x1_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
+    if x2_data.ndim > 1:
+        raise XArrayNot1D("`x2_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
+    elif y_data.ndim > 1:
+        raise YArrayNot1D("`y_data` must be a 1D array. For multiple `y_data`, use :func:`~plotez.n_plotter`.")
+
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -696,7 +761,7 @@ def plot_with_dual_axes(
     if plot_config is not None:
         plot_dict = plot_config.get_dict()
     else:
-        plot_dict = LinePlotConfig().get_dict()
+        plot_dict = ScatterPlotConfig().get_dict() if is_scatter else LinePlotConfig().get_dict()
 
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_dict.items()}
     plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
@@ -734,7 +799,7 @@ def plot_with_dual_axes(
             labels += labels2
         ax1.legend(handles, labels, loc="best")
 
-    return (ax1, ax2) if ax2 else ax1
+    return ax1 if ax2 is None else (ax1, ax2)
 
 
 # =============================================================================

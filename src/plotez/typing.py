@@ -28,7 +28,7 @@ Figure = _Figure
 
 HatchStyle = Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
 
-AxesReturn = Axes | tuple[Axes, Axes] | NDArray
+AxesReturn = Axes | tuple[Axes, Axes]
 
 # Deprecated – kept as a backward-compatible alias; will be removed in a future release.
 AxesFigReturn = AxesReturn
