@@ -67,12 +67,12 @@ repos:
         pass_filenames: false
         always_run: true
 
-  # uv – upgrade lock file, sync env, and re-export requirements.txt
+  # uv – upgrade lock file, sync env, and re-export both requirement files
   - repo: local
     hooks:
       - id: uv-export
-        name: uv lock --upgrade && uv sync && uv export > requirements.txt
-        entry: bash -c 'uv lock --upgrade && uv sync && uv export --no-hashes --format requirements-txt > requirements.txt'
+        name: uv lock --upgrade && uv sync && uv export > requirements[dev].txt && uv export --no-group dev > requirements.txt
+        entry: bash -c 'uv lock --upgrade && uv sync && uv export --no-hashes --format requirements-txt > "requirements[dev].txt" && uv export --no-hashes --format requirements-txt --no-group dev > requirements.txt'
         language: system
         pass_filenames: false
         always_run: true
