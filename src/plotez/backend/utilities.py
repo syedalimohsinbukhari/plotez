@@ -17,6 +17,8 @@ __all__ = [
     "plot_or_scatter",
     "ScatterPlotConfig",
     "split_dictionary",
+    "validate_1d",
+    "validate_equal_length",
 ]
 
 from dataclasses import dataclass, field
@@ -26,7 +28,7 @@ import numpy as np
 
 from ..typing import ArrayLike, HatchStyle, NDArray
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from .error_handling import AxisLabelError, EmptyDataError, TwinXDataError, TwinYDataError
+from .error_handling import AxisLabelError, DataLengthError, EmptyDataError, ShapeError, TwinXDataError, TwinYDataError
 
 if TYPE_CHECKING:
     from ..typing import LSE
@@ -60,39 +62,74 @@ def _populate(_class, dictionary: dict[str, Any], mapping):
     return _class(**known, _extra=extra)
 
 
-@dataclass
-class LinePlotConfig:
-    """Configuration class for line plots."""
+def dual_axes_data_validation(
+    x1_data: ArrayLike,
+    x2_data: ArrayLike | None,
+    y1_data: ArrayLike,
+    y2_data: ArrayLike | None,
+    use_twin_x: bool,
+    axis_labels: list[str | None],
+) -> tuple[NDArray, NDArray, NDArray | None, NDArray | None]:
+    """
+    Validate the data and parameters for dual-axes plotting.
 
-    color: str | list[str] | None = None
-    linewidth: int | float | list[int | float] | None = None
-    linestyle: str | list[str] | None = None
-    alpha: int | float | list[int | float] | None = None
-    marker: str | list[str] | None = None
-    markersize: int | float | list[int | float] | None = None
-    markerfacecolor: str | list[str] | None = None
-    markeredgecolor: str | list[str] | None = None
-    markeredgewidth: int | float | list[int | float] | None = None
+    Parameters
+    ----------
+    x1_data :
+        Data for the primary x-axis.
+    x2_data :
+        Data for the secondary x-axis (used in dual x-axis plots). Should be `None` if `use_twin_x` is True.
+    y1_data :
+        Data for the primary y-axis.
+    y2_data :
+        Data for the secondary y-axis (used in dual y-axis plots). Should be `None` if `use_twin_x` is False.
+    use_twin_x :
+        If True, a dual y-axis plot is expected; otherwise, a dual x-axis plot is expected.
+    axis_labels :
+        List of axis labels. Must have exactly three elements:
+        - Label for the x-axis of the primary plot.
+        - Label for the y-axis of the primary plot.
+        - Label for the secondary axis (x or y).
 
-    # For extra params - pass as dict to this field directly
-    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
+    Raises
+    ------
+    AxisLabelError
+        If ``axis_labels`` does not have exactly three elements.
+    EmptyDataError
+        If ``x1_data`` or ``y1_data`` is empty.
+    TwinXDataError
+        If ``x2_data`` is provided when ``use_twin_x`` is ``True``.
+    TwinYDataError
+        If ``y2_data`` is provided when ``use_twin_x`` is ``False``.
+    """
+    if isinstance(axis_labels, str):
+        raise AxisLabelError(
+            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
+        )
 
-    @classmethod
-    def populate(cls, dictionary: dict[str, Any]) -> "LinePlotConfig":
-        """Create a LinePlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(_class=cls, dictionary=dictionary, mapping=LINE_ATTRS)
+    x1_data, y1_data = np.asarray(x1_data), np.asarray(y1_data)
+    validate_1d(x1_data, y1_data, names=["x1_data", "y1_data"])
 
-    def get_dict(self) -> dict[str, Any]:
-        """Get all parameters as dict for matplotlib."""
-        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
-        result.update(self._extra)
-        return result
+    if x2_data is not None:
+        x2_data = np.asarray(x2_data)
+        validate_1d(x2_data, names=["x2_data"])
+        validate_equal_length(x1_data, x2_data, y1_data, names=["x1_data", "x2_data", "y1_data"])
 
-    def __repr__(self):
-        """Pretty repr showing both explicit and extra params."""
-        all_params = self.get_dict()
-        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
-        return f"{self.__class__.__name__}({param_str})"
+    if y2_data is not None:
+        y2_data = np.asarray(y2_data)
+        validate_1d(y2_data, names=["x2_data"])
+        validate_equal_length(x1_data, y1_data, y2_data, names=["x1_data", "y1_data", "y2_data"])
+
+    if len(axis_labels) != 3:  # noqa
+        raise AxisLabelError("The axis_labels should have a length of 3.")
+    if len(x1_data) == 0 or len(y1_data) == 0:
+        raise EmptyDataError("Primary x or y data is empty. Please provide valid data.")
+    if use_twin_x and x2_data is not None:
+        raise TwinXDataError("Dual Y-axis plot requested but 'x2_data' given.")
+    if not use_twin_x and y2_data is not None:
+        raise TwinYDataError("Dual X-axis plot requested but 'y2_data' given.")
+
+    return x1_data, y1_data, x2_data, y2_data
 
 
 @dataclass
@@ -175,39 +212,6 @@ class ErrorPlotConfig:
 
 
 @dataclass
-class ScatterPlotConfig:
-    """Configuration class for scatter plots."""
-
-    color: str | list[str] | None = None
-    s: int | float | list[int | float] | None = None
-    alpha: int | float | list[int | float] | None = None
-    marker: str | list[str] | None = None
-    cmap: str | list[str] | None = None
-    edgecolors: str | list[str] | None = None
-    facecolors: str | list[str] | None = None
-
-    # For extra params - pass as dict to this field directly
-    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
-
-    @classmethod
-    def populate(cls, dictionary: dict[str, Any]) -> "ScatterPlotConfig":
-        """Create a ScatterPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
-        return _populate(_class=cls, dictionary=dictionary, mapping=SCATTER_ATTRS)
-
-    def get_dict(self) -> dict[str, Any]:
-        """Get all parameters as dict for matplotlib."""
-        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
-        result.update(self._extra)
-        return result
-
-    def __repr__(self):
-        """Pretty repr showing both explicit and extra params."""
-        all_params = self.get_dict()
-        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
-        return f"{self.__class__.__name__}({param_str})"
-
-
-@dataclass
 class HistogramConfig:
     """Configuration class for histogram plots."""
 
@@ -243,6 +247,41 @@ class HistogramConfig:
         return f"{self.__class__.__name__}({param_str})"
 
 
+@dataclass
+class LinePlotConfig:
+    """Configuration class for line plots."""
+
+    color: str | list[str] | None = None
+    linewidth: int | float | list[int | float] | None = None
+    linestyle: str | list[str] | None = None
+    alpha: int | float | list[int | float] | None = None
+    marker: str | list[str] | None = None
+    markersize: int | float | list[int | float] | None = None
+    markerfacecolor: str | list[str] | None = None
+    markeredgecolor: str | list[str] | None = None
+    markeredgewidth: int | float | list[int | float] | None = None
+
+    # For extra params - pass as dict to this field directly
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    @classmethod
+    def populate(cls, dictionary: dict[str, Any]) -> "LinePlotConfig":
+        """Create a LinePlotConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=LINE_ATTRS)
+
+    def get_dict(self) -> dict[str, Any]:
+        """Get all parameters as dict for matplotlib."""
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
+        result.update(self._extra)
+        return result
+
+    def __repr__(self):
+        """Pretty repr showing both explicit and extra params."""
+        all_params = self.get_dict()
+        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
+        return f"{self.__class__.__name__}({param_str})"
+
+
 def plot_or_scatter(axes, scatter: bool):
     """
     Return the plot or scatter method based on the specified plot type.
@@ -260,6 +299,39 @@ def plot_or_scatter(axes, scatter: bool):
         The matplotlib plotting method (`axes.scatter` if scatter is True, otherwise `axes.plot`).
     """
     return axes.scatter if scatter else axes.plot
+
+
+@dataclass
+class ScatterPlotConfig:
+    """Configuration class for scatter plots."""
+
+    color: str | list[str] | None = None
+    s: int | float | list[int | float] | None = None
+    alpha: int | float | list[int | float] | None = None
+    marker: str | list[str] | None = None
+    cmap: str | list[str] | None = None
+    edgecolors: str | list[str] | None = None
+    facecolors: str | list[str] | None = None
+
+    # For extra params - pass as dict to this field directly
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    @classmethod
+    def populate(cls, dictionary: dict[str, Any]) -> "ScatterPlotConfig":
+        """Create a ScatterPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=SCATTER_ATTRS)
+
+    def get_dict(self) -> dict[str, Any]:
+        """Get all parameters as dict for matplotlib."""
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
+        result.update(self._extra)
+        return result
+
+    def __repr__(self):
+        """Pretty repr showing both explicit and extra params."""
+        all_params = self.get_dict()
+        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
+        return f"{self.__class__.__name__}({param_str})"
 
 
 def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
@@ -307,64 +379,47 @@ def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
     return instance1, instance2
 
 
-def dual_axes_data_validation(
-    x1_data: ArrayLike,
-    x2_data: ArrayLike | None,
-    y1_data: ArrayLike,
-    y2_data: ArrayLike | None,
-    use_twin_x: bool,
-    axis_labels: list[str | None],
-) -> tuple[NDArray, NDArray, NDArray | None, NDArray | None]:
-    """
-    Validate the data and parameters for dual-axes plotting.
+def validate_1d(*arrays: NDArray, names: list[str]) -> None:
+    """Verify that every supplied array is exactly 1-D.
 
     Parameters
     ----------
-    x1_data :
-        Data for the primary x-axis.
-    x2_data :
-        Data for the secondary x-axis (used in dual x-axis plots). Should be `None` if `use_twin_x` is True.
-    y1_data :
-        Data for the primary y-axis.
-    y2_data :
-        Data for the secondary y-axis (used in dual y-axis plots). Should be `None` if `use_twin_x` is False.
-    use_twin_x :
-        If True, a dual y-axis plot is expected; otherwise, a dual x-axis plot is expected.
-    axis_labels :
-        List of axis labels. Must have exactly three elements:
-        - Label for the x-axis of the primary plot.
-        - Label for the y-axis of the primary plot.
-        - Label for the secondary axis (x or y).
+    *arrays :
+        Arrays to check (already converted with ``np.asarray``).
+    names :
+        Human-readable name for each array, used in the error message.
 
     Raises
     ------
-    AxisLabelError
-        If ``axis_labels`` does not have exactly three elements.
-    EmptyDataError
-        If ``x1_data`` or ``y1_data`` is empty.
-    TwinXDataError
-        If ``x2_data`` is provided when ``use_twin_x`` is ``True``.
-    TwinYDataError
-        If ``y2_data`` is provided when ``use_twin_x`` is ``False``.
+    ShapeError
+        If any array has `ndim != 1`.
     """
-    if isinstance(axis_labels, str):
-        raise AxisLabelError(
-            f"axis_labels must be a list of 3 strings, not a plain string. Did you mean ['{axis_labels}']?"
-        )
+    for arr, name in zip(arrays, names):
+        if arr.ndim != 1:
+            raise ShapeError(f"'{name}' must be 1D, got shape {arr.shape}")
 
-    x1_data, y1_data = np.asarray(x1_data), np.asarray(y1_data)
-    if x2_data is not None:
-        x2_data = np.asarray(x2_data)
-    if y2_data is not None:
-        y2_data = np.asarray(y2_data)
 
-    if len(axis_labels) != 3:  # noqa
-        raise AxisLabelError("The axis_labels should have a length of 3.")
-    if len(x1_data) == 0 or len(y1_data) == 0:
-        raise EmptyDataError("Primary x or y data is empty. Please provide valid data.")
-    if use_twin_x and x2_data is not None:
-        raise TwinXDataError("Dual Y-axis plot requested but 'x2_data' given.")
-    if not use_twin_x and y2_data is not None:
-        raise TwinYDataError("Dual X-axis plot requested but 'y2_data' given.")
+def validate_equal_length(*arrays: NDArray, names: list[str]) -> None:
+    """Verify that all supplied arrays share the same length.
 
-    return x1_data, y1_data, x2_data, y2_data
+    Scalar (0-d) arrays are skipped — they broadcast freely and do not need a length check.
+
+    Parameters
+    ----------
+    *arrays :
+        Arrays to check (already converted with `np.asarray`).
+    names :
+        Human-readable name for each array, used in the error message.
+
+    Raises
+    ------
+    DataLengthError
+        If the arrays do not all have the same length.
+    """
+    checkable = [(arr, name) for arr, name in zip(arrays, names) if arr.ndim >= 1]
+    if not checkable:
+        return
+    lengths = [len(arr) for arr, _ in checkable]
+    if len(set(lengths)) > 1:
+        parts = ", ".join(f"'{n}'={length}" for (_, n), length in zip(checkable, lengths))
+        raise DataLengthError(f"Arrays must have equal length, got: {parts}")

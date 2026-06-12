@@ -35,14 +35,8 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import (
-    ColumnCountError,
-    ConfigurationError,
-    OrientationError,
-    ShapeError,
-    XArrayNot1D,
-    YArrayNot1D,
-)
+from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
+from .backend.utilities import validate_1d, validate_equal_length
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
@@ -53,8 +47,8 @@ from .typing import ArrayLike, Axes, AxesReturn, NDArray
 def plot_errorband_relative(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    y_lower: int | float | ArrayLike | None = None,
-    y_upper: int | float | ArrayLike | None = None,
+    y_lower: float | ArrayLike | None = None,
+    y_upper: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -147,8 +141,8 @@ def plot_errorband_relative(
 def plot_errorband(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    y_lower: int | float | ArrayLike | None = None,
-    y_upper: int | float | ArrayLike | None = None,
+    y_lower: float | ArrayLike | None = None,
+    y_upper: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -227,11 +221,11 @@ def plot_errorband(
         y_upper = y + (y - y_lower)
 
     if axis is not None:
-        ax = axis
+        axis = axis
         if figure_kwargs:
             warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
     else:
-        _, ax = plt.subplots(**(figure_kwargs or {}))
+        _, axis = plt.subplots(**(figure_kwargs or {}))
 
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
     if isinstance(line_config, dict):
@@ -246,24 +240,24 @@ def plot_errorband(
 
             l_conf.pop("label", None)
 
-        ax.fill_between(x=x, y1=y_lower, y2=y_upper, **error_band_config)
-        ax.plot(x, y, label=_data_label, **l_conf)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, **error_band_config)
+        axis.plot(x, y, label=_data_label, **l_conf)
     else:
-        ax.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **error_band_config)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **error_band_config)
 
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    ax.set_title(plot_title)
-    ax.legend()
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(plot_title)
+    axis.legend()
 
-    return ax
+    return axis
 
 
 def plot_errorbar(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    x_err: int | float | ArrayLike | None = None,
-    y_err: int | float | ArrayLike | None = None,
+    x_err: float | ArrayLike | None = None,
+    y_err: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBar",
@@ -327,19 +321,19 @@ def plot_errorbar(
     if axis is not None:
         if figure_kwargs:
             warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
-        ax = axis
+        axis = axis
     else:
-        _, ax = plt.subplots(**(figure_kwargs or {}))
+        _, axis = plt.subplots(**(figure_kwargs or {}))
 
     ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
-    ax.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
+    axis.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    ax.set_title(plot_title)
-    ax.legend()
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(plot_title)
+    axis.legend()
 
-    return ax
+    return axis
 
 
 # =============================================================================
@@ -477,13 +471,11 @@ def plot_xy(
         If `y_data` is not a 1D array.
     """
     x_data, y_data = np.asarray(x_data), np.asarray(y_data)
-    # the x_data and y_data must not be 2D or higher arrays
-    if x_data.ndim > 1:
-        raise XArrayNot1D("`x_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
-    if y_data.ndim > 1:
-        raise YArrayNot1D("`y_data` must be a 1D array. For multiple `y_data`, use:func:`~plotez.n_plotter`.")
 
-    _axis = plot_with_dual_axes(
+    validate_1d(x_data, y_data, names=["x_data", "y_data"])
+    validate_equal_length(x_data, y_data, names=["x_data", "y_data"])
+
+    axis = plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y_data,
         x1y1_label=data_label,
@@ -496,8 +488,8 @@ def plot_xy(
         axis=axis,
     )
 
-    assert isinstance(_axis, Axes), f"Expected `Axes` object, got `{type(_axis)}`"
-    return _axis
+    assert isinstance(axis, Axes), f"Expected `Axes` object, got `{type(axis)}`"
+    return axis
 
 
 # =============================================================================
@@ -566,12 +558,8 @@ def plot_xyy(
     x_data, y1_data, y2_data = np.asarray(x_data), np.asarray(y1_data), np.asarray(y2_data)
 
     # both x_data, y1_data, and y2_data must be 1D arrays
-    if x_data.ndim > 1:
-        raise XArrayNot1D("`x_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
-    if y1_data.ndim > 1:
-        raise YArrayNot1D("`y1_data` must be a 1D array. For multiple `y1_data`, use :func:`~plotez.n_plotter`.")
-    elif y2_data.ndim > 1:
-        raise YArrayNot1D("`y2_data` must be a 1D array. For multiple `y2_data`, use :func:`~plotez.n_plotter`.")
+    validate_1d(x_data, y1_data, y2_data, names=["x_data", "y1_data", "y2_data"])
+    validate_equal_length(x_data, y1_data, y2_data, names=["x_data", "y1_data", "y2_data"])
 
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
 
@@ -656,13 +644,8 @@ def plot_xxy(
     """
     x1_data, x2_data, y_data = np.asarray(x1_data), np.asarray(x2_data), np.asarray(y_data)
 
-    # both x_data, y1_data, and y2_data must be 1D arrays
-    if x1_data.ndim > 1:
-        raise XArrayNot1D("`x1_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
-    if x2_data.ndim > 1:
-        raise XArrayNot1D("`x2_data` must be a 1D array. For multiple `x_data`, use :func:`~plotez.n_plotter`.")
-    elif y_data.ndim > 1:
-        raise YArrayNot1D("`y_data` must be a 1D array. For multiple `y_data`, use :func:`~plotez.n_plotter`.")
+    validate_1d(x1_data, x2_data, y_data, names=["x1_data", "x2_data", "y_data"])
+    validate_equal_length(x1_data, x2_data, y_data, names=["x1_data", "x2_data", "y_data"])
 
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 

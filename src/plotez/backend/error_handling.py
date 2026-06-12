@@ -42,6 +42,14 @@ class ShapeError(DataError):
     pass
 
 
+class DataLengthError(DataError):
+    """Is raised when an array has an unexpected or incompatible shape."""
+
+    __module__ = "plotez"
+
+    pass
+
+
 class EmptyDataError(DataError):
     """Is raised when required primary x or y data is empty."""
 

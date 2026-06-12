@@ -30,11 +30,6 @@ HatchStyle = Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
 
 AxesReturn = Axes | tuple[Axes, Axes]
 
-# Deprecated – kept as a backward-compatible alias; will be removed in a future release.
-AxesFigReturn = AxesReturn
-
-# LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
-
 if TYPE_CHECKING:
     from . import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 
