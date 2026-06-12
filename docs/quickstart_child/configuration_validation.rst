@@ -114,12 +114,12 @@ counts before plotting.
 
 ----
 
-Mutable-Argument Deprecation
-----------------------------
+Label Collections
+-----------------
 
-Several label parameters (``data_labels``, ``x_labels``, ``y_labels``, ``subplot_titles``, and ``axis_labels``) previously
-accepted mutable ``list`` defaults.
-Passing a plain ``list`` for these arguments now emits a ``DeprecationWarning``; prefer an immutable ``tuple``:
+Label parameters such as ``data_labels``, ``x_labels``, ``y_labels``, ``subplot_titles``, and ``axis_labels`` accept
+either a ``list[str]`` or ``tuple[str, ...]``. Both forms behave the same, and PlotEZ copies the provided collection
+before any internal normalization. Defaults remain ``None`` to avoid mutable default arguments.
 
 .. code-block:: python
 
@@ -128,6 +128,6 @@ Passing a plain ``list`` for these arguments now emits a ``DeprecationWarning``;
    axs = two_subplots(
        x_list,
        y_list,
-       x_labels=("Time (s)", "Time (s)"),
+       x_labels=["Time (s)", "Time (s)"],
        y_labels=("Amplitude", "Phase"),
    )

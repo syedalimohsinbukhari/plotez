@@ -4,8 +4,8 @@ PlotEZ Documentation
 **PlotEZ** - Mundane plotting made easy.
 
 PlotEZ is a Python library that simplifies common matplotlib plotting tasks with an intuitive API.
-It provides convenient functions for creating single plots, dual-axis plots, and multi-panel figures
-with minimal boilerplate code.
+It provides convenient functions for creating single plots, dual-axis plots, and multi-panel figures with minimal
+boilerplate code.
 
 .. toctree::
    :maxdepth: 2

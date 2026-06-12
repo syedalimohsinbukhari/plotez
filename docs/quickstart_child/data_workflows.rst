@@ -13,11 +13,10 @@ Complete signatures and parameter details are available in :doc:`../api`.
 Histograms
 ----------
 
-``plot_hist`` wraps ``ax.hist`` with the same config-object pattern used throughout
-plotEZ. ``hgc`` (short for ``histogram_config``) is the companion factory function:
-pass familiar histogram parameters as keyword arguments and get a
-``HistogramConfig`` back. ``x_data`` must be one-dimensional; call ``plot_hist``
-once per dataset when plotting multiple distributions.
+``plot_hist`` wraps ``ax.hist`` with the same config-object pattern used throughout plotEZ. ``hgc``
+(short for ``histogram_config``) is the companion factory function: pass familiar histogram parameters as keyword
+arguments and get a ``HistogramConfig`` back.
+``x_data`` must be one-dimensional; call ``plot_hist`` once per dataset when plotting multiple distributions.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E13_histogram.py
    :language: python
@@ -30,10 +29,10 @@ once per dataset when plotting multiple distributions.
 Density Plots
 -------------
 
-``plot_density`` is a thin wrapper around ``plot_hist`` that automatically sets
-``density=True`` so the y-axis shows probability density instead of raw counts.
-Pass a ``HistogramConfig`` (or ``hgc``) as usual; ``density`` is enforced
-regardless of the config value. The same 1D input requirement applies.
+``plot_density`` is a thin wrapper around ``plot_hist`` that automatically sets ``density=True`` so the y-axis shows
+probability density instead of raw counts.
+Pass a ``HistogramConfig`` (or ``hgc``) as usual; ``density`` is enforced regardless of the config value.
+The same 1D input requirement applies.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E14_density.py
    :language: python
@@ -46,10 +45,9 @@ regardless of the config value. The same 1D input requirement applies.
 Plotting Two-Column Files
 -------------------------
 
-``plot_two_column_file`` reads any two-column delimited file directly. The file
-must contain at least two data rows and exactly two columns (x, y); use
-``skip_header=True`` to ignore a header row. Empty and single-row files raise
-``EmptyDataError``.
+``plot_two_column_file`` reads any two-column delimited file directly.
+The file must contain at least two data rows and exactly two columns (x, y); use ``skip_header=True`` to ignore a header row.
+Empty and single-row files raise ``EmptyDataError``.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E11_from_files.py
    :language: python
@@ -62,8 +60,8 @@ must contain at least two data rows and exactly two columns (x, y); use
 Existing Matplotlib Axes
 ------------------------
 
-All ``plotez`` functions accept an ``axis`` keyword, so they can draw into an
-existing matplotlib figure. Return types are axes-only:
+All ``plotez`` functions accept an ``axis`` keyword, so they can draw into an existing matplotlib figure.
+Return types are axes-only:
 
 * Single-axis functions return ``Axes``.
 * Dual-axis functions (``plot_with_dual_axes``, ``plot_xyy``, and ``plot_xxy``)

@@ -40,7 +40,8 @@ The return shape is ``(1, 2)`` for horizontal layouts and ``(2, 1)`` for vertica
 Arbitrary Grids
 ---------------
 
-``n_plotter`` handles arbitrary N x M grids. Config parameters passed as lists apply per subplot, cycling if the list is shorter than the panel count.
+``n_plotter`` handles arbitrary N x M grids. Config parameters passed as lists apply per subplot, cycling if the list
+is shorter than the panel count.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E9_grid_of_four.py
    :language: python
@@ -53,7 +54,8 @@ Arbitrary Grids
 Shared Axes
 -----------
 
-Pass ``figure_kwargs={"sharex": True, "sharey": True}`` to lock axis ranges across all panels; redundant tick labels are hidden automatically.
+Pass ``figure_kwargs={"sharex": True, "sharey": True}`` to lock axis ranges across all panels; redundant tick labels
+are hidden automatically.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E10_shared_axes.py
    :language: python

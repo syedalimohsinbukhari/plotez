@@ -1,9 +1,8 @@
 Wrappers and Shorthand Keys
 ===========================
 
-These factory functions provide a concise, keyword-driven way to build config
-objects without importing the dataclass names directly. All are available from
-the top-level ``plotez`` namespace.
+These factory functions provide a concise, keyword-driven way to build config objects without importing the dataclass
+names directly. All are available from the top-level ``plotez`` namespace.
 
 Wrapper Functions
 -----------------
@@ -39,8 +38,8 @@ Each function has a short alias that can be used interchangeably:
 Shorthand Key Reference
 -----------------------
 
-All ``populate()`` class methods and wrapper functions accept shorthand aliases
-in place of full matplotlib parameter names.
+All ``populate()`` class methods and wrapper functions accept shorthand aliases in place of full matplotlib parameter
+names.
 
 Line and Error-Bar Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

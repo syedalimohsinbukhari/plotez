@@ -1,8 +1,7 @@
 Plotting Functions
 ==================
 
-Public functions for line, scatter, error, histogram, file, dual-axis, and
-multi-panel plotting.
+Public functions for line, scatter, error, histogram, file, dual-axis, and multi-panel plotting.
 
 Single-Axis Plots
 -----------------

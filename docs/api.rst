@@ -1,9 +1,8 @@
 API Reference
 =============
 
-The API reference is divided by responsibility. Expand **API Reference** in the
-sidebar to browse plotting functions, configuration objects, internal utilities,
-wrapper functions, exceptions, and public type aliases.
+The API reference is divided by responsibility. Expand **API Reference** in the sidebar to browse plotting functions,
+configuration objects, internal utilities, wrapper functions, exceptions, and public type aliases.
 
 .. toctree::
    :hidden:

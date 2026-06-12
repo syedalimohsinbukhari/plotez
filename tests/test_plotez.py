@@ -1,5 +1,7 @@
 """Tests for main plotting functions."""
 
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
@@ -347,6 +349,53 @@ class TestNPlotter:
             subplot_titles=subplot_titles,
         )
         assert isinstance(axs, np.ndarray)
+
+    @pytest.mark.parametrize("labels", [["X1", "X2"], ("X1", "X2")])
+    def test_n_plotter_accepts_list_and_tuple_labels_without_deprecation(
+        self, sample_x_data_list, sample_y_data_list, labels
+    ):
+        """Test equivalent list and tuple label handling without deprecation."""
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            axs = n_plotter(
+                sample_x_data_list[:2],
+                sample_y_data_list[:2],
+                n_rows=1,
+                n_cols=2,
+                x_labels=labels,
+            )
+
+        assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
+        assert not any(item.category is DeprecationWarning for item in caught)
+
+    def test_n_plotter_pads_short_tuple_labels(self, sample_x_data_list, sample_y_data_list):
+        """Test that short tuple labels are padded like short list labels."""
+        with pytest.warns(UserWarning, match="Padding with empty strings"):
+            axs = n_plotter(
+                sample_x_data_list[:2],
+                sample_y_data_list[:2],
+                n_rows=1,
+                n_cols=2,
+                x_labels=("X1",),
+            )
+
+        assert [ax.get_xlabel() for ax in axs.flat] == ["X1", ""]
+
+    def test_n_plotter_trims_labels_without_mutating_input(self, sample_x_data_list, sample_y_data_list):
+        """Test trimming uses an internal copy of caller-provided labels."""
+        labels = ["X1", "X2", "unused"]
+
+        with pytest.warns(UserWarning, match="Trimming the last 1 element"):
+            axs = n_plotter(
+                sample_x_data_list[:2],
+                sample_y_data_list[:2],
+                n_rows=1,
+                n_cols=2,
+                x_labels=labels,
+            )
+
+        assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
+        assert labels == ["X1", "X2", "unused"]
 
     def test_n_plotter_scatter(self, sample_x_data_list, sample_y_data_list):
         """Test n_plotter with scatter plots."""
