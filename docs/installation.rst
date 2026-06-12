@@ -87,7 +87,7 @@ This installs the following additional tools:
 +--------------------+----------------------------------------+
 | sphinx-copybutton  | Copy-button for code blocks            |
 +--------------------+----------------------------------------+
-| sphinx-rtd-theme   | Read the Docs Sphinx theme             |
+| pydata-sphinx-theme| pydata Sphinx theme                    |
 +--------------------+----------------------------------------+
 | myst-parser        | Markdown support in Sphinx             |
 +--------------------+----------------------------------------+

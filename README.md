@@ -133,9 +133,9 @@ Dual axes done right. No `ax.twinx()` gymnastics.
 import numpy as np
 from plotez import n_plotter
 
-x_data = [np.linspace(0, 10, 100) for _ in range(4)]
-y_data = [np.sin(x_data[0]), np.cos(x_data[1]),
-          np.tan(x_data[2] / 5), x_data[3] ** 2 / 100]
+x_data = np.linspace(0, 10, 100)
+y_data = [np.sin(x_data), np.cos(x_data),
+          np.tan(x_data / 5), x_data ** 2 / 100]
 
 n_plotter(x_data, y_data, n_rows=2, n_cols=2)
 ```
