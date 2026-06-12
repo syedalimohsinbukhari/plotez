@@ -6,7 +6,7 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import HistogramConfig, hgc
-from plotez.backend.error_handling import ShapeError
+from plotez.errors import ShapeError
 from plotez.plotez import plot_hist
 
 

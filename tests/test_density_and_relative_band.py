@@ -6,8 +6,8 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import plot_density, plot_errorband_relative
-from plotez.backend.error_handling import ConfigurationError
 from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
+from plotez.errors import ConfigurationError
 
 
 @pytest.fixture(autouse=True)

@@ -15,7 +15,8 @@ from plotez import (
     plot_xyy,
     two_subplots,
 )
-from plotez.backend.error_handling import (
+from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
+from plotez.errors import (
     AxisLabelError,
     ColumnCountError,
     EmptyDataError,
@@ -24,7 +25,6 @@ from plotez.backend.error_handling import (
     TwinXDataError,
     TwinYDataError,
 )
-from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 
 
 class TestPlotTwoColumnFile:
@@ -665,50 +665,50 @@ class TestCustomExceptions:
             two_subplots(x_data=x_list, y_data=y_list, orientation="diagonal")
 
     def test_shape_error_inheritance(self):
-        """Test that ShapeError properly inherits from DataError and PlotError."""
-        from plotez.backend.error_handling import DataError, PlotEZError
+        """Test that ShapeError properly inherits from DataError and PlotEZError."""
+        from plotez.errors import DataError, PlotEZError
 
         assert issubclass(ShapeError, DataError)
         assert issubclass(ShapeError, PlotEZError)
 
     def test_empty_data_error_inheritance(self):
-        """Test that EmptyDataError properly inherits from DataError and PlotError."""
-        from plotez.backend.error_handling import DataError, PlotEZError
+        """Test that EmptyDataError properly inherits from DataError and PlotEZError."""
+        from plotez.errors import DataError, PlotEZError
 
         assert issubclass(EmptyDataError, DataError)
         assert issubclass(EmptyDataError, PlotEZError)
 
     def test_column_count_error_inheritance(self):
-        """Test that ColumnCountError properly inherits from DataError and PlotError."""
-        from plotez.backend.error_handling import DataError, PlotEZError
+        """Test that ColumnCountError properly inherits from DataError and PlotEZError."""
+        from plotez.errors import DataError, PlotEZError
 
         assert issubclass(ColumnCountError, DataError)
         assert issubclass(ColumnCountError, PlotEZError)
 
     def test_axis_label_error_inheritance(self):
-        """Test that AxisLabelError properly inherits from ConfigurationError and PlotError."""
-        from plotez.backend.error_handling import ConfigurationError, PlotEZError
+        """Test that AxisLabelError properly inherits from ConfigurationError and PlotEZError."""
+        from plotez.errors import ConfigurationError, PlotEZError
 
         assert issubclass(AxisLabelError, ConfigurationError)
         assert issubclass(AxisLabelError, PlotEZError)
 
     def test_twin_x_data_error_inheritance(self):
-        """Test that TwinXDataError properly inherits from ConfigurationError and PlotError."""
-        from plotez.backend.error_handling import ConfigurationError, PlotEZError
+        """Test that TwinXDataError properly inherits from ConfigurationError and PlotEZError."""
+        from plotez.errors import ConfigurationError, PlotEZError
 
         assert issubclass(TwinXDataError, ConfigurationError)
         assert issubclass(TwinXDataError, PlotEZError)
 
     def test_twin_y_data_error_inheritance(self):
-        """Test that TwinYDataError properly inherits from ConfigurationError and PlotError."""
-        from plotez.backend.error_handling import ConfigurationError, PlotEZError
+        """Test that TwinYDataError properly inherits from ConfigurationError and PlotEZError."""
+        from plotez.errors import ConfigurationError, PlotEZError
 
         assert issubclass(TwinYDataError, ConfigurationError)
         assert issubclass(TwinYDataError, PlotEZError)
 
     def test_catch_shape_error_as_data_error(self, sample_x_data, sample_y_data):
         """Test that ShapeError can be caught as DataError."""
-        from plotez.backend.error_handling import DataError
+        from plotez.errors import DataError
 
         bad_x_err = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
@@ -716,15 +716,15 @@ class TestCustomExceptions:
             plot_errorbar(x_data=sample_x_data, y_data=sample_y_data, x_err=bad_x_err)
 
     def test_catch_empty_data_error_as_plot_error(self):
-        """Test that EmptyDataError can be caught as PlotError."""
-        from plotez.backend.error_handling import PlotEZError
+        """Test that EmptyDataError can be caught as PlotEZError."""
+        from plotez.errors import PlotEZError
 
         with pytest.raises(PlotEZError):
             plot_with_dual_axes(x1_data=[], y1_data=[1, 2, 3], axis_labels=("X", "Y1", "Y2"))
 
     def test_catch_axis_label_error_as_configuration_error(self, sample_x_data, sample_y_data):
         """Test that AxisLabelError can be caught as ConfigurationError."""
-        from plotez.backend.error_handling import ConfigurationError
+        from plotez.errors import ConfigurationError
 
         with pytest.raises(ConfigurationError):
             plot_with_dual_axes(x1_data=sample_x_data, y1_data=sample_y_data, axis_labels=("X", "Y"))

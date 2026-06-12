@@ -5,7 +5,6 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import (
-    DataLengthError,
     n_plotter,
     plot_density,
     plot_errorband,
@@ -16,7 +15,7 @@ from plotez import (
     plot_with_dual_axes,
     plot_xy,
 )
-from plotez.backend.error_handling import DataError, EmptyDataError, ShapeError
+from plotez.errors import DataError, DataLengthError, EmptyDataError, ShapeError
 
 
 def test_plot_xy_rejects_2d_data_before_matplotlib():

@@ -29,9 +29,7 @@ from typing import Any, Literal
 
 import numpy as np
 
-from ..typing import ArrayLike, HatchStyle, NDArray
-from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from .error_handling import (
+from ..errors import (
     AxisLabelError,
     ConfigurationError,
     DataLengthError,
@@ -40,6 +38,8 @@ from .error_handling import (
     TwinXDataError,
     TwinYDataError,
 )
+from ..typing import ArrayLike, HatchStyle, NDArray
+from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 
 if TYPE_CHECKING:
     from ..typing import LSE
@@ -151,8 +151,8 @@ class ErrorBandConfig:
     """Configuration class for error bands (shaded fill regions)."""
 
     color: str | list[str] | None = None
-    alpha: int | float | list[int | float] = 0.25
-    linewidth: int | float | list[int | float] | None = None
+    alpha: float | list[float] = 0.25
+    linewidth: float | list[float] | None = None
     edgecolor: str | list[str] | None = None
     linestyle: str | list[str] | None = None
     hatch: HatchStyle | list[HatchStyle] | None = None
@@ -185,23 +185,23 @@ class ErrorPlotConfig:
 
     # Core signal identity
     color: str | None = None
-    linewidth: int | float | None = None
+    linewidth: float | None = None
     linestyle: str | None = None
-    alpha: int | float | None = None
+    alpha: float | None = None
 
     # Error structure (second layer of perception)
     ecolor: str | None = None
-    elinewidth: int | float | None = None
+    elinewidth: float | None = None
 
     # Markers (data discreteness)
     marker: str | None = None
-    markersize: int | float | None = None
+    markersize: float | None = None
     markerfacecolor: str | None = None
     markeredgecolor: str | None = None
 
     # Visual refinement
-    capsize: int | float | None = None
-    capthick: int | float | None = None
+    capsize: float | None = None
+    capthick: float | None = None
     errorevery: int | tuple | None = None
 
     # For extra params - pass as dict to this field directly
@@ -233,10 +233,10 @@ class HistogramConfig:
     density: bool | None = None
     histtype: str | None = None
     color: str | None = None
-    alpha: int | float | None = None
+    alpha: float | None = None
     edgecolor: str | None = None
     facecolor: str | None = None
-    linewidth: int | float | None = None
+    linewidth: float | None = None
     orientation: str | None = None
     cumulative: bool | None = None
     hatch: HatchStyle | None = None
@@ -266,14 +266,14 @@ class LinePlotConfig:
     """Configuration class for line plots."""
 
     color: str | list[str] | None = None
-    linewidth: int | float | list[int | float] | None = None
+    linewidth: float | list[float] | None = None
     linestyle: str | list[str] | None = None
-    alpha: int | float | list[int | float] | None = None
+    alpha: float | list[float] | None = None
     marker: str | list[str] | None = None
-    markersize: int | float | list[int | float] | None = None
+    markersize: float | list[float] | None = None
     markerfacecolor: str | list[str] | None = None
     markeredgecolor: str | list[str] | None = None
-    markeredgewidth: int | float | list[int | float] | None = None
+    markeredgewidth: float | list[float] | None = None
 
     # For extra params - pass as dict to this field directly
     _extra: dict[str, Any] = field(default_factory=dict, repr=False)
@@ -320,8 +320,8 @@ class ScatterPlotConfig:
     """Configuration class for scatter plots."""
 
     color: str | list[str] | None = None
-    s: int | float | list[int | float] | None = None
-    alpha: int | float | list[int | float] | None = None
+    s: float | list[float] | None = None
+    alpha: float | list[float] | None = None
     marker: str | list[str] | None = None
     cmap: str | list[str] | None = None
     edgecolors: str | list[str] | None = None

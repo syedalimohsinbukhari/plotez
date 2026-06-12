@@ -13,19 +13,6 @@ from ._wrappers import (
     spc,
 )
 from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
-from .error_handling import (
-    AxisLabelError,
-    ColumnCountError,
-    ConfigurationError,
-    DataError,
-    DataLengthError,
-    EmptyDataError,
-    OrientationError,
-    PlotEZError,
-    ShapeError,
-    TwinXDataError,
-    TwinYDataError,
-)
 from .utilities import (
     ErrorBandConfig,
     ErrorPlotConfig,
@@ -33,6 +20,9 @@ from .utilities import (
     LinePlotConfig,
     ScatterPlotConfig,
     dual_axes_data_validation,
+    error_offset_validation,
+    errorband_validation,
+    errorbar_validation,
     plot_or_scatter,
     split_dictionary,
     validate_1d,
@@ -55,20 +45,6 @@ __all__ = [
     "SCATTER_ATTRS",
     "ERROR_BAND_ATTRS",
     "HIST_ATTRS",
-    # Base errors
-    "PlotEZError",
-    "DataError",
-    "ConfigurationError",
-    # Data errors
-    "ShapeError",
-    "DataLengthError",
-    "EmptyDataError",
-    "ColumnCountError",
-    # Configuration errors
-    "OrientationError",
-    "AxisLabelError",
-    "TwinXDataError",
-    "TwinYDataError",
     # Config classes
     "ErrorPlotConfig",
     "ErrorBandConfig",
@@ -77,6 +53,9 @@ __all__ = [
     "HistogramConfig",
     # Utilities
     "dual_axes_data_validation",
+    "error_offset_validation",
+    "errorband_validation",
+    "errorbar_validation",
     "plot_or_scatter",
     "split_dictionary",
     "validate_1d",

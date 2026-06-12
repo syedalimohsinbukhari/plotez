@@ -12,7 +12,11 @@ requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 dynamic = ["version"]
-dependencies = ["matplotlib", "numpy"]
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "pydata-sphinx-theme>=0.18.0",
+]
 keywords = ["plotting", "visualization", "data visualization", "python plotting"]
 classifiers = [
     "Programming Language :: Python :: 3",

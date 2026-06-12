@@ -30,6 +30,7 @@ Features
 * **Extensive Customization**: Full control over plot appearance via independent config dataclasses
 * **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``, ``hgc``) available at top level
 * **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
+* **Early Input Validation**: 1D shape, matching-length, error-array, grid-size, and file-data checks fail before matplotlib
 * **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 * **Well Tested**: Comprehensive test suite with 85%+ coverage
 

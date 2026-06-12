@@ -41,6 +41,7 @@ with minimal boilerplate code.
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
 - **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
+- **Early Input Validation**: Clear `ShapeError`, `DataLengthError`, and `EmptyDataError` failures before matplotlib
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
 - **Well Tested**: Comprehensive test suite with 85%+ coverage
 
@@ -225,6 +226,7 @@ dataclass fields.
 
 Use `plot_hist` with the `hgc` shorthand to configure and plot a histogram in one go.
 Switch to `plot_density` to get normalised probability density instead of raw counts — everything else stays the same.
+Both functions accept one 1D dataset per call.
 
 ```python
 import numpy as np
