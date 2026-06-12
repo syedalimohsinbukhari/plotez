@@ -20,14 +20,13 @@ with minimal boilerplate code.
 
 | Item           | Status                                                                                  |
 |----------------|-----------------------------------------------------------------------------------------|
-| Latest version | v0.3.3                                                                                  |
+| Latest version | v0.3.3.post1                                                                            |
 | Python support | 3.10 · 3.11 · 3.12                                                                      |
 | Test coverage  | 85%+                                                                                    |
 | Type hints     | PEP 561 compliant (`py.typed`)                                                          |
 | Documentation  | [Read the Docs](https://plotez.readthedocs.io)                                          |
 | Changelog      | [CHANGELOG](https://github.com/syedalimohsinbukhari/plotez/blob/main/docs/CHANGELOG.md) |
 | License        | MIT                                                                                     |
-
 
 ## Features
 
