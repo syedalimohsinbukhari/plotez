@@ -1,4 +1,5 @@
 # Pre-commit hooks for code quality and formatting
+
 repos:
   # Black code formatter
   - repo: https://github.com/psf/black
@@ -56,12 +57,22 @@ repos:
         pass_filenames: false
         always_run: true
 
-  # pytest – run full test suite before every commit
+  # Version sync check – README.md must mention the version from version.py
   - repo: local
     hooks:
-      - id: pytest
-        name: pytest
-        entry: pytest
+      - id: check-version-sync
+        name: check version sync (README vs version.py)
+        entry: python version_sync.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # uv – upgrade lock file, sync env, and re-export both requirement files
+  - repo: local
+    hooks:
+      - id: uv-export
+        name: uv lock --upgrade && uv sync && uv export > requirements[dev].txt && uv export --no-group dev > requirements.txt
+        entry: bash -c 'uv lock --upgrade && uv sync && uv export --no-hashes --format requirements-txt > "requirements[dev].txt" && uv export --no-hashes --format requirements-txt --no-group dev > requirements.txt'
         language: system
         pass_filenames: false
         always_run: true

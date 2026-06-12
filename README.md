@@ -16,6 +16,19 @@
 plots
 with minimal boilerplate code.
 
+## Project Status
+
+| Item           | Status                                                                                  |
+|----------------|-----------------------------------------------------------------------------------------|
+| Latest version | v0.3.3                                                                                  |
+| Python support | 3.10 · 3.11 · 3.12                                                                      |
+| Test coverage  | 85%+                                                                                    |
+| Type hints     | PEP 561 compliant (`py.typed`)                                                          |
+| Documentation  | [Read the Docs](https://plotez.readthedocs.io)                                          |
+| Changelog      | [CHANGELOG](https://github.com/syedalimohsinbukhari/plotez/blob/main/docs/CHANGELOG.md) |
+| License        | MIT                                                                                     |
+
+
 ## Features
 
 - **Simple API**: Create complex plots with just a few lines of code
@@ -256,18 +269,6 @@ mypy src/plotez
 cd docs
 make html
 ```
-
-## Project Status
-
-| Item           | Status                                                                                  |
-|----------------|-----------------------------------------------------------------------------------------|
-| Latest version | v0.3.2                                                                                  |
-| Python support | 3.10 · 3.11 · 3.12                                                                      |
-| Test coverage  | 85%+                                                                                    |
-| Type hints     | PEP 561 compliant (`py.typed`)                                                          |
-| Documentation  | [Read the Docs](https://plotez.readthedocs.io)                                          |
-| Changelog      | [CHANGELOG](https://github.com/syedalimohsinbukhari/plotez/blob/main/docs/CHANGELOG.md) |
-| License        | MIT                                                                                     |
 
 ## Contributing
 

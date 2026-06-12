@@ -18,9 +18,10 @@ from .error_handling import (
     ColumnCountError,
     ConfigurationError,
     DataError,
+    DataLengthError,
     EmptyDataError,
     OrientationError,
-    PlotError,
+    PlotEZError,
     ShapeError,
     TwinXDataError,
     TwinYDataError,
@@ -34,6 +35,8 @@ from .utilities import (
     dual_axes_data_validation,
     plot_or_scatter,
     split_dictionary,
+    validate_1d,
+    validate_equal_length,
 )
 
 __all__ = [
@@ -53,11 +56,12 @@ __all__ = [
     "ERROR_BAND_ATTRS",
     "HIST_ATTRS",
     # Base errors
-    "PlotError",
+    "PlotEZError",
     "DataError",
     "ConfigurationError",
     # Data errors
     "ShapeError",
+    "DataLengthError",
     "EmptyDataError",
     "ColumnCountError",
     # Configuration errors
@@ -75,4 +79,6 @@ __all__ = [
     "dual_axes_data_validation",
     "plot_or_scatter",
     "split_dictionary",
+    "validate_1d",
+    "validate_equal_length",
 ]

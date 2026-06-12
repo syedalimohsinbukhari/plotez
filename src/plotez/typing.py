@@ -28,12 +28,7 @@ Figure = _Figure
 
 HatchStyle = Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
 
-AxesReturn = Axes | tuple[Axes, Axes] | NDArray
-
-# Deprecated – kept as a backward-compatible alias; will be removed in a future release.
-AxesFigReturn = AxesReturn
-
-# LABEL_MGMT = tuple[str, str, str, str, list[str | None]]
+AxesReturn = Axes | tuple[Axes, Axes]
 
 if TYPE_CHECKING:
     from . import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig

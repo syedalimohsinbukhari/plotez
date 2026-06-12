@@ -5,7 +5,57 @@ All notable changes to plotez will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.3.2] - 20-May-2026
+## [v0.3.3] - 07-Jun-2026
+
+### Added
+
+- **`DataLengthError` exception**: New `DataError` subclass for arrays that must have matching lengths. It is
+  exported from both `plotez.backend` and the top-level `plotez` namespace.
+- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Added specialized `ConfigurationError` subclasses for identifying
+  invalid x- and y-array dimensionality. Public plotting guards now consistently report these failures through the
+  broader `ShapeError` data exception.
+- **Shared validation utilities**: Added and exported `validate_1d` and `validate_equal_length`, with dedicated
+  helpers for error-bar arrays, absolute error-band bounds, and relative error-band offsets.
+- **Validation guards across plotting functions**:
+  - `plot_xy`, `plot_xyy`, `plot_xxy`, and direct `plot_with_dual_axes` calls now reject non-1D or mismatched data.
+  - `plot_errorbar` validates x/y data plus scalar, 1D symmetric, and `(2, N)` asymmetric error inputs.
+  - `plot_errorband` and `plot_errorband_relative` validate data, bounds, offsets, and inferred-band lengths before
+    performing NumPy arithmetic or calling matplotlib.
+  - `plot_hist` and `plot_density` now require a 1D `x_data` array.
+  - `n_plotter` now reports insufficient x/y datasets for the requested grid before indexing them.
+  - `plot_two_column_file` now raises `EmptyDataError` for empty or single-row files instead of leaking NumPy
+    indexing errors.
+- **Validation regression tests**: Added coverage for each guarded plotting path, including happy paths and the
+  regression where a 2D `plot_xy` input must raise `ShapeError` before matplotlib is called.
+- **Concise exception names**: Exceptions configured with `__module__ = "plotez"` now appear in tracebacks as names
+  such as `plotez.ShapeError` rather than using the internal `plotez.backend.error_handling` path.
+
+### Changed
+
+- **Histogram input contract**: `plot_hist` and `plot_density` no longer accept a 2D array as multiple histogram
+  datasets; callers must provide one 1D dataset per call.
+- **Validation error reporting**: Invalid shapes now raise `ShapeError`, incompatible lengths raise
+  `DataLengthError`, and empty file data raises `EmptyDataError`, replacing downstream matplotlib, NumPy, or
+  indexing exceptions with errors that identify the relevant argument.
+- **`PlotError` → `PlotEZError`** (**Breaking**): The base exception class has been renamed to avoid shadowing the
+  common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.)
+  now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
+- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now
+  correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
+- **`AxesReturn` type alias simplified**: `NDArray` removed from the union; the alias is now
+  `Axes | tuple[Axes, Axes]` only, matching the actual return types of all public functions.
+
+### Infrastructure
+
+- **`requirements.txt` split**: `requirements.txt` now contains base runtime dependencies only
+  (`uv export --no-group dev`); a new `requirements[dev].txt` holds the full pinned dev environment
+  (`uv export`), matching how `pip install -e ".[dev]"` consumers vs. CI consumers use the files.
+- **Pre-commit hooks added**: `.pre-commit-config.yaml` gains two new local hooks —
+  `check-version-sync` (runs `scripts/check_version_sync.py` to assert `README.md` matches `version.py`) and
+  `uv-export` (runs `uv lock --upgrade && uv sync` then regenerates both requirements files on every commit).
+  The duplicate `pytest` hook entry was also removed.
+
+## [v0.3.2/0.3.2.post1] - 20-May-2026
 
 ### Fixed
 

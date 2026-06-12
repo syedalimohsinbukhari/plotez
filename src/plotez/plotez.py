@@ -35,7 +35,14 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
+from .backend.error_handling import ColumnCountError, ConfigurationError, DataError, EmptyDataError, OrientationError
+from .backend.utilities import (
+    error_offset_validation,
+    errorband_validation,
+    errorbar_validation,
+    validate_1d,
+    validate_equal_length,
+)
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
@@ -46,8 +53,8 @@ from .typing import ArrayLike, Axes, AxesReturn, NDArray
 def plot_errorband_relative(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    y_lower: int | float | ArrayLike | None = None,
-    y_upper: int | float | ArrayLike | None = None,
+    y_lower: float | ArrayLike | None = None,
+    y_upper: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -61,9 +68,9 @@ def plot_errorband_relative(
     """
     Plot a line graph with a shaded error band using relative (offset) errors.
 
-    A convenience wrapper around :func:`plot_errorband` where ``y_lower`` and ``y_upper`` are interpreted as offsets
-    from ``y_data`` rather than absolute bounds.
-    Internally, the absolute bounds are computed as ``y_data - y_lower`` and ``y_data + y_upper`` before passing
+    A convenience wrapper around :func:`plot_errorband` where `y_lower` and `y_upper` are interpreted as offsets
+    from `y_data` rather than absolute bounds.
+    Internally, the absolute bounds are computed as `y_data - y_lower` and `y_data + y_upper` before passing
     to :func:`plot_errorband`.
 
     Parameters
@@ -73,13 +80,13 @@ def plot_errorband_relative(
     y_data :
         The central values to plot.
     y_lower :
-        The downward offset from ``y_data`` defining the lower band edge.
-        If ``None``, it is inferred as equal to ``y_upper``, implying a symmetric band.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        The downward offset from `y_data` defining the lower band edge.
+        If `None`, it is inferred as equal to `y_upper`, implying a symmetric band.
+        At least one of `y_lower` or `y_upper` must be provided.
     y_upper :
-        The upward offset from ``y_data`` defining the upper band edge.
-        If ``None``, it is inferred as equal to ``y_lower``, implying a symmetric band.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        The upward offset from `y_data` defining the upper band edge.
+        If `None`, it is inferred as equal to `y_lower`, implying a symmetric band.
+        At least one of `y_lower` or `y_upper` must be provided.
     x_label :
         The label for the x-axis.
     y_label :
@@ -88,22 +95,22 @@ def plot_errorband_relative(
         The title of the plot.
     data_label :
         The label for the data series, used in the legend.
-        If ``line=True``, the label is attached to the line.
-        If ``line=False``, it is attached to the band.
+        If `line=True`, the label is attached to the line.
+        If `line=False`, it is attached to the band.
     line :
         Whether to draw a line through the central values over the error band.
     band_config :
         Configuration for the error band styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     line_config :
         Configuration for the line styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     axis :
         Pre-existing Matplotlib axes to draw on.
-        If provided, ``figure_kwargs`` is ignored.
+        If provided, `figure_kwargs` is ignored.
     figure_kwargs :
-        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
-        Ignored if ``axis`` is provided.
+        Keyword arguments passed to `plt.subplots` when creating a new figure.
+        Ignored if `axis` is provided.
 
     Returns
     -------
@@ -113,18 +120,22 @@ def plot_errorband_relative(
     Raises
     ------
     ConfigurationError
-        If both ``y_lower`` and ``y_upper`` are ``None``.
+        If both `y_lower` and `y_upper` are `None`.
 
     See Also
     --------
     plot_errorband : The absolute-bounds version of this function.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+    validate_1d(x, y, names=["x_data", "y_data"])
+
+    lower_offset, upper_offset = error_offset_validation(y=y, y_lower=y_lower, y_upper=y_upper)
+
     return plot_errorband(
         x_data=x,
         y_data=y,
-        y_lower=(y - np.asarray(y_lower)) if y_lower is not None else None,
-        y_upper=(y + np.asarray(y_upper)) if y_upper is not None else None,
+        y_lower=(y - lower_offset) if lower_offset is not None else None,
+        y_upper=(y + upper_offset) if upper_offset is not None else None,
         x_label=x_label,
         y_label=y_label,
         plot_title=plot_title,
@@ -140,8 +151,8 @@ def plot_errorband_relative(
 def plot_errorband(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    y_lower: int | float | ArrayLike | None = None,
-    y_upper: int | float | ArrayLike | None = None,
+    y_lower: float | ArrayLike | None = None,
+    y_upper: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBand",
@@ -163,12 +174,12 @@ def plot_errorband(
         The central values to plot.
     y_lower :
         The lower bound of the error band.
-        If ``None``, it is inferred as a symmetric reflection of ``y_upper`` through ``y_data``.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        If `None`, it is inferred as a symmetric reflection of `y_upper` through `y_data`.
+        At least one of `y_lower` or `y_upper` must be provided.
     y_upper :
         The upper bound of the error band.
-        If ``None``, it is inferred as a symmetric reflection of ``y_lower`` through ``y_data``.
-        At least one of ``y_lower`` or ``y_upper`` must be provided.
+        If `None`, it is inferred as a symmetric reflection of `y_lower` through `y_data`.
+        At least one of `y_lower` or `y_upper` must be provided.
     x_label :
         The label for the x-axis.
     y_label :
@@ -177,22 +188,22 @@ def plot_errorband(
         The title of the plot.
     data_label :
         The label for the data series, used in the legend.
-        If ``line=True``, the label is attached to the line.
-        If ``line=False``, it is attached to the band.
+        If `line=True`, the label is attached to the line.
+        If `line=False`, it is attached to the band.
     line :
         Whether to draw a line through the central values over the error band.
     band_config :
         Configuration for the error band styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     line_config :
         Configuration for the line styling.
-        If ``None``, defaults are used.
+        If `None`, defaults are used.
     axis :
         Pre-existing Matplotlib axes to draw on.
-        If provided, ``figure_kwargs`` is ignored.
+        If provided, `figure_kwargs` is ignored.
     figure_kwargs :
-        Keyword arguments passed to ``plt.subplots`` when creating a new figure.
-        Ignored if ``axis`` is provided.
+        Keyword arguments passed to `plt.subplots` when creating a new figure.
+        Ignored if `axis` is provided.
 
     Returns
     -------
@@ -202,17 +213,13 @@ def plot_errorband(
     Raises
     ------
     ConfigurationError
-        If both ``y_lower`` and ``y_upper`` are ``None``.
+        If both `y_lower` and `y_upper` are `None`.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+    validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
 
-    if y_lower is None and y_upper is None:
-        raise ConfigurationError("At least one of `y_lower` or `y_upper` must be provided for the error band.")
-
-    if y_lower is not None:
-        y_lower = np.asarray(y_lower)
-    if y_upper is not None:
-        y_upper = np.asarray(y_upper)
+    y_lower, y_upper = errorband_validation(x=x, y=y, y_lower=y_lower, y_upper=y_upper)
 
     if y_lower is None:
         y_lower = y - (y_upper - y)
@@ -220,11 +227,11 @@ def plot_errorband(
         y_upper = y + (y - y_lower)
 
     if axis is not None:
-        ax = axis
+        axis = axis
         if figure_kwargs:
-            warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
+            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
     else:
-        _, ax = plt.subplots(**(figure_kwargs or {}))
+        _, axis = plt.subplots(**(figure_kwargs or {}))
 
     error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
     if isinstance(line_config, dict):
@@ -239,24 +246,24 @@ def plot_errorband(
 
             l_conf.pop("label", None)
 
-        ax.fill_between(x, y_lower, y_upper, **error_band_config)
-        ax.plot(x, y, label=_data_label, **l_conf)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, **error_band_config)
+        axis.plot(x, y, label=_data_label, **l_conf)
     else:
-        ax.fill_between(x, y_lower, y_upper, label=data_label, **error_band_config)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **error_band_config)
 
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    ax.set_title(plot_title)
-    ax.legend()
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(plot_title)
+    axis.legend()
 
-    return ax
+    return axis
 
 
 def plot_errorbar(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    x_err: int | float | ArrayLike | None = None,
-    y_err: int | float | ArrayLike | None = None,
+    x_err: float | ArrayLike | None = None,
+    y_err: float | ArrayLike | None = None,
     x_label: str = "X",
     y_label: str = "Y",
     plot_title: str = "XY ErrorBar",
@@ -299,7 +306,7 @@ def plot_errorbar(
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A matplotlib Axes object on which the plot will be rendered.
-        If `None`, a new subplot is created using ``figure_kwargs``.
+        If `None`, a new subplot is created using `figure_kwargs`.
 
     Returns
     -------
@@ -307,32 +314,28 @@ def plot_errorbar(
         The Matplotlib Axes on which the plot was drawn.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
-    if x_err is not None:
-        x_err: NDArray = np.asarray(x_err)
-        if x_err.ndim == 2 and x_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric x_err must have shape (2, N), got {x_err.shape}")
 
-    if y_err is not None:
-        y_err: NDArray = np.asarray(y_err)
-        if y_err.ndim == 2 and y_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric y_err must have shape (2, N), got {y_err.shape}")
+    validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
+
+    x_err, y_err = errorbar_validation(x=x, y=y, x_err=x_err, y_err=y_err)
 
     if axis is not None:
         if figure_kwargs:
-            warn("`figure_kwargs` is ignored when `axis` is provided.", UserWarning, stacklevel=2)
-        ax = axis
+            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
+        axis = axis
     else:
-        _, ax = plt.subplots(**(figure_kwargs or {}))
+        _, axis = plt.subplots(**(figure_kwargs or {}))
 
     ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
-    ax.errorbar(x, y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
+    axis.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
-    ax.set_title(plot_title)
-    ax.legend()
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(plot_title)
+    axis.legend()
 
-    return ax
+    return axis
 
 
 # =============================================================================
@@ -374,7 +377,7 @@ def plot_two_column_file(
     is_scatter :
         If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
@@ -390,8 +393,10 @@ def plot_two_column_file(
     ColumnCountError
         If the file does not contain exactly two columns.
     """
-    data = np.genfromtxt(file_name, delimiter=delimiter, skip_header=skip_header)
+    data = np.genfromtxt(fname=file_name, delimiter=delimiter, skip_header=skip_header)
 
+    if data.ndim == 1 or data.shape[0] == 0:
+        raise EmptyDataError("File contains no data rows.")
     if data.shape[1] != 2:
         raise ColumnCountError("The file must contain exactly two columns of data.")
 
@@ -445,20 +450,36 @@ def plot_xy(
     data_label :
         Data label for the plot to put in the legend.
     is_scatter :
-        If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
+        If True, creates a scatter plot. Otherwise, creates a line plot.
+        Defaults is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+        The axis object to draw the plots on.
+        If not passed, a new axis object will be created internally.
 
     Returns
     -------
-    Axes
-        The axes object of the plot.
+    Axes :
+        The axis object of the plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x_data` is not a 1D array.
+    YArrayNot1D:
+        If `y_data` is not a 1D array.
     """
-    _axis = plot_with_dual_axes(
+    x_data, y_data = np.asarray(x_data), np.asarray(y_data)
+
+    validate_1d(x_data, y_data, names=["x_data", "y_data"])
+    validate_equal_length(x_data, y_data, names=["x_data", "y_data"])
+
+    axis = plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y_data,
         x1y1_label=data_label,
@@ -471,8 +492,8 @@ def plot_xy(
         axis=axis,
     )
 
-    _axis: Axes
-    return _axis
+    assert isinstance(axis, Axes), f"Expected `Axes` object, got `{type(axis)}`"
+    return axis
 
 
 # =============================================================================
@@ -513,22 +534,37 @@ def plot_xyy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(r"X vs. Y$_1$", r"X vs. Y$_2$")``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        The labels for the two datasets. Default is `(r"X vs. Y$_1$", r"X vs. Y$_2$")`.
     is_scatter :
         Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
+        A Matplotlib axis to plot on.
+        If `None`, a new axis is created. Default is `None`.
 
     Returns
     -------
     tuple[Axes, Axes]
-        A tuple of ``(primary_axis, secondary_axis)`` for the dual y-axis plot.
+        A tuple of `(primary_axis, secondary_axis)` for the dual y-axis plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x_data` is not a 1D array.
+    YArrayNot1D:
+        If `y1_data` or `y2_data` is not a 1D array.
     """
+    x_data, y1_data, y2_data = np.asarray(x_data), np.asarray(y1_data), np.asarray(y2_data)
+
+    # both x_data, y1_data, and y2_data must be 1D arrays
+    validate_1d(x_data, y1_data, y2_data, names=["x_data", "y1_data", "y2_data"])
+    validate_equal_length(x_data, y1_data, y2_data, names=["x_data", "y1_data", "y2_data"])
+
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -546,7 +582,7 @@ def plot_xyy(
         axis=axis,
     )
 
-    _axis: tuple[Axes, Axes]
+    _axis: tuple[Axes, Axes]  # since `use_twin_x = True` there has to be a tuple Axes return
     return _axis
 
 
@@ -583,22 +619,38 @@ def plot_xxy(
     plot_title :
         The title for the plot.
     data_labels :
-        The labels for the two datasets. Default is ``(r"Y vs. X$_1$", r"Y vs. X$_2$")``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        The labels for the two datasets.
+        Default is `(r"Y vs. X$_1$", r"Y vs. X$_2$")`.
     is_scatter :
-        Whether to create a scatter plot (`True`) or a line plot (`False`). Default is `False`.
+        Whether to create a scatter plot (`True`) or a line plot (`False`).
+        Defaults is `False`.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
-        A Matplotlib axis to plot on. If `None`, a new axis is created. Default is `None`.
+        A Matplotlib axis to plot on.
+        If `None`, a new axis is created. Default is `None`.
 
     Returns
     -------
     tuple[Axes, Axes]
-        A tuple of ``(primary_axis, secondary_axis)`` for the dual x-axis plot.
+        A tuple of `(primary_axis, secondary_axis)` for the dual x-axis plot.
+
+    Raises
+    ------
+    XArrayNot1D:
+        If `x1_data` or `x2_data` is not a 1D array.
+    YArrayNot1D:
+        If `y_data` is not a 1D array.
     """
+    x1_data, x2_data, y_data = np.asarray(x1_data), np.asarray(x2_data), np.asarray(y_data)
+
+    validate_1d(x1_data, x2_data, y_data, names=["x1_data", "x2_data", "y_data"])
+    validate_equal_length(x1_data, x2_data, y_data, names=["x1_data", "x2_data", "y_data"])
+
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 
     _axis = plot_with_dual_axes(
@@ -658,15 +710,15 @@ def plot_with_dual_axes(
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot.
         Default is False.
     axis_labels :
-        List of axis labels in the form ``[x_label, y_label1, y_label2]``.
-        Defaults to ``["X", r"Y$_1$", r"Y$_2$"]`` when not provided.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        List of axis labels in the form `[x_label, y_label1, y_label2]`.
+        Defaults to `["X", r"Y$_1$", r"Y$_2$"]` when not provided.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     is_scatter :
         If True, creates scatter plot; otherwise, line plot. Default is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
@@ -675,7 +727,7 @@ def plot_with_dual_axes(
     Returns
     -------
     tuple[Axes, Axes] or Axes
-        A tuple of ``(primary_axis, secondary_axis)`` when dual axes are used, otherwise a single ``Axes``.
+        A tuple of `(primary_axis, secondary_axis)` when dual axes are used, otherwise a single `Axes`.
     """
     _axis_labels: list[str] = list(axis_labels) if axis_labels is not None else ["X", r"Y$_1$", r"Y$_2$"]
 
@@ -696,7 +748,7 @@ def plot_with_dual_axes(
     if plot_config is not None:
         plot_dict = plot_config.get_dict()
     else:
-        plot_dict = LinePlotConfig().get_dict()
+        plot_dict = ScatterPlotConfig().get_dict() if is_scatter else LinePlotConfig().get_dict()
 
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_dict.items()}
     plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
@@ -734,7 +786,7 @@ def plot_with_dual_axes(
             labels += labels2
         ax1.legend(handles, labels, loc="best")
 
-    return (ax1, ax2) if ax2 else ax1
+    return ax1 if ax2 is None else (ax1, ax2)
 
 
 # =============================================================================
@@ -765,39 +817,39 @@ def two_subplots(
         List containing y-axis data arrays for each subplot.
     x_labels :
         List of labels for the x-axes in each subplot.
-        Defaults to ``[r"X$_1$", r"X$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"X$_1$", r"X$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     y_labels :
         List of labels for the y-axes in each subplot.
-        Defaults to ``[r"Y$_1$", r"Y$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"Y$_1$", r"Y$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     data_labels :
         List of labels for the data series in each subplot.
-        Defaults to ``[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]``.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Defaults to `[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]`.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     subplot_titles :
         Titles for the individual subplots, if required.
-        Passing a mutable ``list`` is deprecated; use a ``tuple`` instead.
+        Passing a mutable `list` is deprecated; use a `tuple` instead.
     orientation :
-        Orientation of the subplots, either ``'h'`` for horizontal or ``'v'`` for vertical.
+        Orientation of the subplots, either `'h'` for horizontal or `'v'` for vertical.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
+        Keyword arguments for creating the figure and axes. Passed directly to `plt.subplots`.
 
     Returns
     -------
     NDArray
-        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
+        A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
 
     Raises
     ------
     OrientationError
-        If ``orientation`` is not ``'h'`` or ``'v'``.
+        If `orientation` is not `'h'` or `'v'`.
     """
     _x_labels: list[str] = list(x_labels) if x_labels is not None else [r"X$_1$", r"X$_2$"]
     _y_labels: list[str] = list(y_labels) if y_labels is not None else [r"Y$_1$", r"Y$_2$"]
@@ -843,17 +895,17 @@ def _label_sanitizer(
             return [""] * n
         if len(labels) < n:
             warn(
-                f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
-                f"({n} subplots) was requested. Padding with empty strings for the remaining {n - len(labels)}.",
-                UserWarning,
+                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
+                f"requested. Padding with empty strings for the remaining {n - len(labels)}.",
+                category=UserWarning,
                 stacklevel=3,
             )
             return labels + [""] * (n - len(labels))
         if len(labels) > n:
             warn(
-                f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
+                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
                 f"({n} subplots) was requested. Trimming the last {len(labels) - n} element(s).",
-                UserWarning,
+                category=UserWarning,
                 stacklevel=3,
             )
             return labels[:n]
@@ -908,15 +960,21 @@ def n_plotter(
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default ``LinePlotConfig`` is used.
+        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axes. Passed directly to ``plt.subplots``.
+        Keyword arguments for creating the figure and axes. Passed directly to `plt.subplots`.
 
     Returns
     -------
     NDArray
-        A shaped ``(n_rows, n_cols)`` array of Matplotlib ``Axes`` objects.
+        A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
     """
+    n = n_rows * n_cols
+    if len(x_data) < n:
+        raise DataError(f"Grid is {n_rows}x{n_cols} ({n} panels) but only {len(x_data)} x-datasets were provided.")
+    if len(y_data) < n:
+        raise DataError(f"Grid is {n_rows}x{n_cols} ({n} panels) but only {len(y_data)} y-datasets were provided.")
+
     sp_dict = dict(figure_kwargs) if figure_kwargs else {}
     sp_dict.pop("nrows", None)
     sp_dict.pop("ncols", None)
@@ -929,7 +987,7 @@ def n_plotter(
 
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
-    fig, axs = plt.subplots(n_rows, n_cols, **sp_dict, squeeze=False)
+    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
     flat_axs = axs.flatten()
 
     main_dict = [
@@ -1022,7 +1080,9 @@ def plot_density(
     """
     if isinstance(hist_config, dict):
         if not hist_config.get("density"):
-            warn("Setting `density=True` in `hist_config` for density plot.", UserWarning, stacklevel=2)
+            warn(
+                message="Setting `density=True` in `hist_config` for density plot.", category=UserWarning, stacklevel=2
+            )
         hist_config = {**hist_config, "density": True}
     elif isinstance(hist_config, HistogramConfig):
         hist_config.density = True
@@ -1079,6 +1139,7 @@ def plot_hist(
         The Matplotlib Axes on which the histogram was drawn.
     """
     x = np.asarray(x_data)
+    validate_1d(x, names=["x_data"])
     if isinstance(hist_config, dict):
         h_config = HistogramConfig.populate(hist_config).get_dict()
     elif isinstance(hist_config, HistogramConfig):
@@ -1097,7 +1158,7 @@ def plot_hist(
     if not h_config.get("bins"):
         h_config["bins"] = 32
 
-    ax.hist(x, label=data_label, **h_config)
+    ax.hist(x=x, label=data_label, **h_config)
 
     ax.set_xlabel(x_label)
     ax.set_ylabel("Density" if h_config.get("density") else y_label)
