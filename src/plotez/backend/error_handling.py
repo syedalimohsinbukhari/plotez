@@ -43,7 +43,7 @@ class ShapeError(DataError):
 
 
 class DataLengthError(DataError):
-    """Is raised when an array has an unexpected or incompatible shape."""
+    """Is raised when arrays that must align have incompatible lengths."""
 
     __module__ = "plotez"
 

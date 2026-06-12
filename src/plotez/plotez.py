@@ -35,8 +35,14 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import ColumnCountError, ConfigurationError, OrientationError, ShapeError
-from .backend.utilities import validate_1d, validate_equal_length
+from .backend.error_handling import ColumnCountError, ConfigurationError, DataError, EmptyDataError, OrientationError
+from .backend.utilities import (
+    error_offset_validation,
+    errorband_validation,
+    errorbar_validation,
+    validate_1d,
+    validate_equal_length,
+)
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
@@ -121,11 +127,15 @@ def plot_errorband_relative(
     plot_errorband : The absolute-bounds version of this function.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+    validate_1d(x, y, names=["x_data", "y_data"])
+
+    lower_offset, upper_offset = error_offset_validation(y=y, y_lower=y_lower, y_upper=y_upper)
+
     return plot_errorband(
         x_data=x,
         y_data=y,
-        y_lower=(y - np.asarray(y_lower)) if y_lower is not None else None,
-        y_upper=(y + np.asarray(y_upper)) if y_upper is not None else None,
+        y_lower=(y - lower_offset) if lower_offset is not None else None,
+        y_upper=(y + upper_offset) if upper_offset is not None else None,
         x_label=x_label,
         y_label=y_label,
         plot_title=plot_title,
@@ -206,14 +216,10 @@ def plot_errorband(
         If both `y_lower` and `y_upper` are `None`.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+    validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
 
-    if y_lower is None and y_upper is None:
-        raise ConfigurationError("At least one of `y_lower` or `y_upper` must be provided for the error band.")
-
-    if y_lower is not None:
-        y_lower = np.asarray(y_lower)
-    if y_upper is not None:
-        y_upper = np.asarray(y_upper)
+    y_lower, y_upper = errorband_validation(x=x, y=y, y_lower=y_lower, y_upper=y_upper)
 
     if y_lower is None:
         y_lower = y - (y_upper - y)
@@ -308,15 +314,11 @@ def plot_errorbar(
         The Matplotlib Axes on which the plot was drawn.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
-    if x_err is not None:
-        x_err: NDArray = np.asarray(x_err)
-        if x_err.ndim == 2 and x_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric `x_err` must have shape (2, N), got {x_err.shape}")
 
-    if y_err is not None:
-        y_err: NDArray = np.asarray(y_err)
-        if y_err.ndim == 2 and y_err.shape[0] != 2:
-            raise ShapeError(f"Asymmetric `y_err` must have shape (2, N), got {y_err.shape}")
+    validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
+
+    x_err, y_err = errorbar_validation(x=x, y=y, x_err=x_err, y_err=y_err)
 
     if axis is not None:
         if figure_kwargs:
@@ -393,6 +395,8 @@ def plot_two_column_file(
     """
     data = np.genfromtxt(fname=file_name, delimiter=delimiter, skip_header=skip_header)
 
+    if data.ndim == 1 or data.shape[0] == 0:
+        raise EmptyDataError("File contains no data rows.")
     if data.shape[1] != 2:
         raise ColumnCountError("The file must contain exactly two columns of data.")
 
@@ -965,6 +969,12 @@ def n_plotter(
     NDArray
         A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
     """
+    n = n_rows * n_cols
+    if len(x_data) < n:
+        raise DataError(f"Grid is {n_rows}x{n_cols} ({n} panels) but only {len(x_data)} x-datasets were provided.")
+    if len(y_data) < n:
+        raise DataError(f"Grid is {n_rows}x{n_cols} ({n} panels) but only {len(y_data)} y-datasets were provided.")
+
     sp_dict = dict(figure_kwargs) if figure_kwargs else {}
     sp_dict.pop("nrows", None)
     sp_dict.pop("ncols", None)
@@ -1129,6 +1139,7 @@ def plot_hist(
         The Matplotlib Axes on which the histogram was drawn.
     """
     x = np.asarray(x_data)
+    validate_1d(x, names=["x_data"])
     if isinstance(hist_config, dict):
         h_config = HistogramConfig.populate(hist_config).get_dict()
     elif isinstance(hist_config, HistogramConfig):

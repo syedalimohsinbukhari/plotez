@@ -6,6 +6,7 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import HistogramConfig, hgc
+from plotez.backend.error_handling import ShapeError
 from plotez.plotez import plot_hist
 
 
@@ -110,14 +111,11 @@ class TestPlotHistLegend:
 
         assert [t.get_text() for t in legend.get_texts()] == ["Normal"]
 
-    def test_multi_dataset_legend_has_correct_labels(self, multi_histogram_data):
-        """Test that multi-series histograms produce the correct legend entries."""
+    def test_multi_dataset_input_is_rejected(self, multi_histogram_data):
+        """Histogram inputs must be one-dimensional."""
         labels = ["Uniform", "Normal", "Exponential"]
-        ax = plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
-        legend = ax.get_legend()
-
-        assert legend is not None
-        assert [t.get_text() for t in legend.get_texts()] == labels
+        with pytest.raises(ShapeError, match="x_data"):
+            plot_hist(multi_histogram_data, data_label=labels, hist_config=hgc(bins=15, density=True, alpha=0.6))
 
 
 class TestPlotHistConfigInputs:

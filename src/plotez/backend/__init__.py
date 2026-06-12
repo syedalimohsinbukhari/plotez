@@ -18,6 +18,7 @@ from .error_handling import (
     ColumnCountError,
     ConfigurationError,
     DataError,
+    DataLengthError,
     EmptyDataError,
     OrientationError,
     PlotEZError,
@@ -34,6 +35,8 @@ from .utilities import (
     dual_axes_data_validation,
     plot_or_scatter,
     split_dictionary,
+    validate_1d,
+    validate_equal_length,
 )
 
 __all__ = [
@@ -58,6 +61,7 @@ __all__ = [
     "ConfigurationError",
     # Data errors
     "ShapeError",
+    "DataLengthError",
     "EmptyDataError",
     "ColumnCountError",
     # Configuration errors
@@ -75,4 +79,6 @@ __all__ = [
     "dual_axes_data_validation",
     "plot_or_scatter",
     "split_dictionary",
+    "validate_1d",
+    "validate_equal_length",
 ]

@@ -9,17 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Two new `ConfigurationError` subclasses raised when a data array
-  passed to `plot_xy`, `plot_xyy`, or `plot_xxy` has more than one dimension. Each message includes a hint to use
-  `n_plotter` for multi-array scenarios.
-- **Input dimensionality guards**: `plot_xy`, `plot_xyy`, and `plot_xxy` now call `np.asarray()` on their data
-  arguments and immediately raise `XArrayNot1D` / `YArrayNot1D` if `ndim > 1`, failing fast before any matplotlib
-  state is touched.
-- **`__module__ = "plotez"`**: Set on every exception class so tracebacks report `plotez.XArrayNot1D` instead of the
-  internal `plotez.backend.error_handling` path.
+- **`DataLengthError` exception**: New `DataError` subclass for arrays that must have matching lengths. It is
+  exported from both `plotez.backend` and the top-level `plotez` namespace.
+- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Added specialized `ConfigurationError` subclasses for identifying
+  invalid x- and y-array dimensionality. Public plotting guards now consistently report these failures through the
+  broader `ShapeError` data exception.
+- **Shared validation utilities**: Added and exported `validate_1d` and `validate_equal_length`, with dedicated
+  helpers for error-bar arrays, absolute error-band bounds, and relative error-band offsets.
+- **Validation guards across plotting functions**:
+  - `plot_xy`, `plot_xyy`, `plot_xxy`, and direct `plot_with_dual_axes` calls now reject non-1D or mismatched data.
+  - `plot_errorbar` validates x/y data plus scalar, 1D symmetric, and `(2, N)` asymmetric error inputs.
+  - `plot_errorband` and `plot_errorband_relative` validate data, bounds, offsets, and inferred-band lengths before
+    performing NumPy arithmetic or calling matplotlib.
+  - `plot_hist` and `plot_density` now require a 1D `x_data` array.
+  - `n_plotter` now reports insufficient x/y datasets for the requested grid before indexing them.
+  - `plot_two_column_file` now raises `EmptyDataError` for empty or single-row files instead of leaking NumPy
+    indexing errors.
+- **Validation regression tests**: Added coverage for each guarded plotting path, including happy paths and the
+  regression where a 2D `plot_xy` input must raise `ShapeError` before matplotlib is called.
+- **Concise exception names**: Exceptions configured with `__module__ = "plotez"` now appear in tracebacks as names
+  such as `plotez.ShapeError` rather than using the internal `plotez.backend.error_handling` path.
 
 ### Changed
 
+- **Histogram input contract**: `plot_hist` and `plot_density` no longer accept a 2D array as multiple histogram
+  datasets; callers must provide one 1D dataset per call.
+- **Validation error reporting**: Invalid shapes now raise `ShapeError`, incompatible lengths raise
+  `DataLengthError`, and empty file data raises `EmptyDataError`, replacing downstream matplotlib, NumPy, or
+  indexing exceptions with errors that identify the relevant argument.
 - **`PlotError` → `PlotEZError`** (**Breaking**): The base exception class has been renamed to avoid shadowing the
   common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.)
   now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
