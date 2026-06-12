@@ -4,13 +4,14 @@ All notable changes to plotez will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Starting with v0.3.3, each release lists incompatible API or behavior changes under a dedicated **Breaking Changes** heading.
 
-## [v0.3.3] - 07-Jun-2026
+## [v0.3.3] - 12-Jun-2026
 
 ### Added
 
 - **`DataLengthError` exception**: New `DataError` subclass for arrays that must have matching lengths. It is
-  exported from both `plotez.backend` and the top-level `plotez` namespace.
+  available from the new `plotez.errors` module.
 - **`XArrayNot1D` / `YArrayNot1D` exceptions**: Added specialized `ConfigurationError` subclasses for identifying
   invalid x- and y-array dimensionality. Public plotting guards now consistently report these failures through the
   broader `ShapeError` data exception.
@@ -27,23 +28,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     indexing errors.
 - **Validation regression tests**: Added coverage for each guarded plotting path, including happy paths and the
   regression where a 2D `plot_xy` input must raise `ShapeError` before matplotlib is called.
-- **Concise exception names**: Exceptions configured with `__module__ = "plotez"` now appear in tracebacks as names
-  such as `plotez.ShapeError` rather than using the internal `plotez.backend.error_handling` path.
+- **Dedicated exception namespace**: Added `plotez.errors` as the sole public exception module. Import exceptions
+  with statements such as `from plotez.errors import ShapeError`; tracebacks and documentation now use names such
+  as `plotez.errors.ShapeError`.
 
-### Changed
+### Breaking Changes
 
 - **Histogram input contract**: `plot_hist` and `plot_density` no longer accept a 2D array as multiple histogram
   datasets; callers must provide one 1D dataset per call.
 - **Validation error reporting**: Invalid shapes now raise `ShapeError`, incompatible lengths raise
   `DataLengthError`, and empty file data raises `EmptyDataError`, replacing downstream matplotlib, NumPy, or
   indexing exceptions with errors that identify the relevant argument.
-- **`PlotError` → `PlotEZError`** (**Breaking**): The base exception class has been renamed to avoid shadowing the
+- **`PlotError` → `PlotEZError`**: The base exception class has been renamed to avoid shadowing the
   common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.)
   now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
-- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now
-  correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
 - **`AxesReturn` type alias simplified**: `NDArray` removed from the union; the alias is now
   `Axes | tuple[Axes, Axes]` only, matching the actual return types of all public functions.
+- **Exception module**: All exceptions now live exclusively in `plotez.errors`. Imports through the top-level
+  package, `plotez.backend`, and the removed `plotez.backend.error_handling` module are no longer supported.
+
+### Changed
+
+- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now
+  correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
+
+### Fixed
+
+- **Backend circular import**: Validation utilities now import `ConfigurationError` directly from `plotez.errors`,
+  avoiding partially initialized backend modules while preserving the intended exception for missing error-band
+  bounds.
+- **Label collection normalization**: Label parameters continue to accept both `list[str]` and `tuple[str, ...]`
+  without deprecation. Grid labels are copied before padding or trimming, fixing short tuple inputs and preventing
+  mutation of caller-provided lists.
 
 ### Infrastructure
 

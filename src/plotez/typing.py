@@ -9,9 +9,9 @@
    * - ``NDArray``
      - Re-export of :class:`numpy.ndarray` but as a typehint – any array-like input accepted by NumPy.
    * - ``AxesReturn``
-     - ``Axes | tuple[Axes, Axes] | NDArray`` – unified return type for all plot functions.
-       Single-axis functions return ``Axes``; dual-axis functions return ``tuple[Axes, Axes]``;
-       grid functions (``n_plotter``, ``two_subplots``) return a shaped ``NDArray`` of ``Axes``.
+     - ``Axes | tuple[Axes, Axes]`` – return type for single- and dual-axis plot functions.
+       Grid functions (``n_plotter``, ``two_subplots``) return a shaped ``NDArray`` of
+       ``Axes`` directly.
 """
 
 from typing import TYPE_CHECKING, Literal

@@ -1,0 +1,29 @@
+.centered-table td, .centered-table th {
+    text-align: center;
+}
+
+.bd-page-width {
+    max-width: 100%; /* default is 88rem */
+    /* Set the parent container to use Flexbox */
+
+    .bd-sidebar-primary {
+        width: 20%
+    }
+
+    .bd-main .bd-content .bd-article-container {
+        max-width: 120em;
+        padding: 2.5em;
+    }
+
+    .bd-sidebar-secondary {
+        width: 25em;
+    }
+
+    .table {
+        vertical-align: middle;
+    }
+}
+
+.bd-main .bd-content .bd-article-container .bd-article :target {
+    background-color: transparent !important;
+}

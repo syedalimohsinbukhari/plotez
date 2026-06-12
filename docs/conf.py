@@ -24,20 +24,21 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 html_title = f"{project} v{release}"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_last_updated_fmt = "%b %d, %Y"
-pygments_style = "colorful"
+pygments_style = "sphinx"
 add_function_parentheses = True
 html_show_sphinx = True
 html_show_copyright = True
 show_version_warning_banner = True
 html_theme_options = {
-    # "show_toc_level": 3,
-    # "github_url": "https://github.com/syedalimohsinbukhari/plotez",
-    # "navbar_end": ["search-button", "theme-switcher", "navbar-icon-links"],
-    # "back_to_top_button": "True",
+    "show_toc_level": 3,
+    "github_url": "https://github.com/syedalimohsinbukhari/plotez",
+    "navbar_end": ["search-button", "theme-switcher", "navbar-icon-links"],
+    "back_to_top_button": "True",
 }
 
 # -- Extension configuration -------------------------------------------------

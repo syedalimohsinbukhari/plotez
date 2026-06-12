@@ -1,206 +1,24 @@
 API Reference
 =============
 
-This page contains the API reference for PlotEZ.
+The API reference is divided by responsibility. Expand **API Reference** in the sidebar to browse plotting functions,
+configuration objects, internal utilities, wrapper functions, exceptions, and public type aliases.
 
-Main Plotting Functions
------------------------
+.. toctree::
+   :hidden:
+   :maxdepth: 1
 
-.. automodule:: plotez.plotez
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   api_child/api_plotting
+   api_child/api_configuration
+   api_child/api_utilities
+   api_child/api_wrappers
+   api_child/api_errors_typing
 
-Utility Classes
----------------
+Reference Sections
+------------------
 
-Parameter Classes
-~~~~~~~~~~~~~~~~~
-
-.. autoclass:: plotez.backend.utilities.LinePlotConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: plotez.backend.utilities.ErrorPlotConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: plotez.backend.utilities.ErrorBandConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: plotez.backend.utilities.ScatterPlotConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: plotez.backend.utilities.HistogramConfig
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Utility Functions
-~~~~~~~~~~~~~~~~~
-
-.. autofunction:: plotez.backend.utilities.plot_or_scatter
-
-.. autofunction:: plotez.backend.utilities.split_dictionary
-
-.. autofunction:: plotez.backend.utilities.dual_axes_data_validation
-
-Convenience / Wrapper Functions
---------------------------------
-
-These factory functions provide a concise, keyword-driven way to build config objects without
-importing the dataclass names directly. All are available at the top-level ``plotez`` namespace.
-
-Each function also has a **short alias** that can be used interchangeably:
-
-+------------------------------+---------------+
-| Long-form function           | Short alias   |
-+==============================+===============+
-| ``line_plot_configuration``  | ``lpc``       |
-+------------------------------+---------------+
-| ``error_plot_configuration`` | ``epc``       |
-+------------------------------+---------------+
-| ``error_band_configuration`` | ``ebc``       |
-+------------------------------+---------------+
-| ``scatter_plot_configuration``| ``spc``      |
-+------------------------------+---------------+
-| ``histogram_config``         | ``hgc``       |
-+------------------------------+---------------+
-
-.. autofunction:: plotez.backend._wrappers.line_plot_configuration
-
-.. autofunction:: plotez.backend._wrappers.error_plot_configuration
-
-.. autofunction:: plotez.backend._wrappers.error_band_configuration
-
-.. autofunction:: plotez.backend._wrappers.scatter_plot_configuration
-
-.. autofunction:: plotez.backend._wrappers.histogram_config
-
-.. _shorthand-key-reference:
-
-Shorthand Key Reference
------------------------
-
-All ``populate()`` class methods and wrapper functions accept shorthand aliases in place of full
-matplotlib parameter names. The tables below list every recognised alias.
-
-Line / Error-bar parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-+----------+---------------------+
-| Alias    | Full parameter name |
-+==========+=====================+
-| ``ls``   | ``linestyle``       |
-+----------+---------------------+
-| ``lw``   | ``linewidth``       |
-+----------+---------------------+
-| ``c``    | ``color``           |
-+----------+---------------------+
-| ``ms``   | ``markersize``      |
-+----------+---------------------+
-| ``mec``  | ``markeredgecolor`` |
-+----------+---------------------+
-| ``mfc``  | ``markerfacecolor`` |
-+----------+---------------------+
-| ``mew``  | ``markeredgewidth`` |
-+----------+---------------------+
-
-Error-bar-only parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The ``ErrorPlotConfig`` / ``epc`` wrapper also accepts all line aliases above, plus:
-
-+----------------+---------------------+
-| Alias          | Full parameter name |
-+================+=====================+
-| ``ecolor``     | ``ecolor``          |
-+----------------+---------------------+
-| ``elinewidth`` | ``elinewidth``      |
-+----------------+---------------------+
-| ``capsize``    | ``capsize``         |
-+----------------+---------------------+
-| ``capthick``   | ``capthick``        |
-+----------------+---------------------+
-
-Scatter parameters
-~~~~~~~~~~~~~~~~~~
-
-+--------+---------------------+
-| Alias  | Full parameter name |
-+========+=====================+
-| ``c``  | ``color``           |
-+--------+---------------------+
-| ``s``  | ``size``            |
-+--------+---------------------+
-| ``ec`` | ``edgecolors``      |
-+--------+---------------------+
-| ``fc`` | ``facecolors``      |
-+--------+---------------------+
-
-Error band parameters
-~~~~~~~~~~~~~~~~~~~~~
-
-The ``ErrorBandConfig`` / ``ebc`` wrapper accepts the following shorthand aliases:
-
-+--------+---------------------+
-| Alias  | Full parameter name |
-+========+=====================+
-| ``c``  | ``color``           |
-+--------+---------------------+
-| ``ec`` | ``edgecolor``       |
-+--------+---------------------+
-| ``lw`` | ``linewidth``       |
-+--------+---------------------+
-| ``ls`` | ``linestyle``       |
-+--------+---------------------+
-
-``hatch``, ``interpolate``, and ``step`` are passed through under their own names.
-
-Histogram parameters
-~~~~~~~~~~~~~~~~~~~~
-
-The ``HistogramConfig`` / ``hgc`` wrapper accepts the following shorthand aliases
-(via ``populate()`` and the ``hgc`` factory function):
-
-+--------+---------------------+
-| Alias  | Full parameter name |
-+========+=====================+
-| ``c``  | ``color``           |
-+--------+---------------------+
-| ``lw`` | ``linewidth``       |
-+--------+---------------------+
-| ``ec`` | ``edgecolor``       |
-+--------+---------------------+
-
-``bins``, ``density``, ``histtype``, ``alpha``, ``facecolor``, ``orientation``,
-``cumulative``, and ``hatch`` are passed through under their own names.
-
-Error Handling
---------------
-
-.. automodule:: plotez.backend.error_handling
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Type Aliases
-------------
-
-.. note::
-
-   ``AxesFigReturn`` is deprecated as of v0.3.2 and kept only as a backward-compatible alias
-   for ``AxesReturn``. It will be removed in a future release. Use ``AxesReturn``
-   (``Axes | tuple[Axes, Axes] | NDArray``) for all new code.
-
-.. automodule:: plotez.typing
-   :members:
-   :undoc-members:
-   :show-inheritance:
+* :doc:`api_child/api_plotting` documents the public plotting functions.
+* :doc:`api_child/api_configuration` documents reusable plot configuration classes.
+* :doc:`api_child/api_utilities` documents shared plotting and validation helpers.
+* :doc:`api_child/api_wrappers` documents config factories and every shorthand key.
+* :doc:`api_child/api_errors_typing` documents the exception hierarchy and public type aliases.

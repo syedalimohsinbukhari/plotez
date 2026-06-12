@@ -5,7 +5,6 @@ A Python library for simplified matplotlib plotting.
 """
 
 from .backend import (
-    DataLengthError,
     ErrorBandConfig,
     ErrorPlotConfig,
     HistogramConfig,
@@ -58,8 +57,6 @@ __all__ = [
     "LinePlotConfig",
     "ScatterPlotConfig",
     "HistogramConfig",
-    # Error
-    "DataLengthError",
     # Convenience / wrapper functions (long-form)
     "line_plot_configuration",
     "error_plot_configuration",

@@ -35,7 +35,6 @@ from .backend import (
     dual_axes_data_validation,
     plot_or_scatter,
 )
-from .backend.error_handling import ColumnCountError, ConfigurationError, DataError, EmptyDataError, OrientationError
 from .backend.utilities import (
     error_offset_validation,
     errorband_validation,
@@ -43,6 +42,7 @@ from .backend.utilities import (
     validate_1d,
     validate_equal_length,
 )
+from .errors import ColumnCountError, ConfigurationError, DataError, EmptyDataError, OrientationError
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
 
 # =============================================================================
@@ -121,6 +121,10 @@ def plot_errorband_relative(
     ------
     ConfigurationError
         If both `y_lower` and `y_upper` are `None`.
+    ShapeError
+        If data or an array-valued offset is not one-dimensional.
+    DataLengthError
+        If an array-valued offset does not match ``y_data``.
 
     See Also
     --------
@@ -214,6 +218,10 @@ def plot_errorband(
     ------
     ConfigurationError
         If both `y_lower` and `y_upper` are `None`.
+    ShapeError
+        If data or an array-valued bound is not one-dimensional.
+    DataLengthError
+        If data and array-valued bounds do not have matching lengths.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
     validate_1d(x, y, names=["x_data", "y_data"])
@@ -312,6 +320,13 @@ def plot_errorbar(
     -------
     Axes
         The Matplotlib Axes on which the plot was drawn.
+
+    Raises
+    ------
+    ShapeError
+        If x/y data is not one-dimensional or an asymmetric error array is not shaped ``(2, N)``.
+    DataLengthError
+        If x/y data or an error array has an incompatible length.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
 
@@ -390,6 +405,8 @@ def plot_two_column_file(
 
     Raises
     ------
+    EmptyDataError
+        If the file is empty or contains only one data row.
     ColumnCountError
         If the file does not contain exactly two columns.
     """
@@ -469,10 +486,10 @@ def plot_xy(
 
     Raises
     ------
-    XArrayNot1D:
-        If `x_data` is not a 1D array.
-    YArrayNot1D:
-        If `y_data` is not a 1D array.
+    ShapeError
+        If ``x_data`` or ``y_data`` is not one-dimensional.
+    DataLengthError
+        If ``x_data`` and ``y_data`` have different lengths.
     """
     x_data, y_data = np.asarray(x_data), np.asarray(y_data)
 
@@ -554,10 +571,10 @@ def plot_xyy(
 
     Raises
     ------
-    XArrayNot1D:
-        If `x_data` is not a 1D array.
-    YArrayNot1D:
-        If `y1_data` or `y2_data` is not a 1D array.
+    ShapeError
+        If any data array is not one-dimensional.
+    DataLengthError
+        If ``x_data``, ``y1_data``, and ``y2_data`` have different lengths.
     """
     x_data, y1_data, y2_data = np.asarray(x_data), np.asarray(y1_data), np.asarray(y2_data)
 
@@ -593,7 +610,7 @@ def plot_xxy(
     y_label: str = "Y",
     x1_label: str = r"X$_1$",
     x2_label: str = r"X$_2$",
-    data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
+    data_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str = "",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -641,10 +658,10 @@ def plot_xxy(
 
     Raises
     ------
-    XArrayNot1D:
-        If `x1_data` or `x2_data` is not a 1D array.
-    YArrayNot1D:
-        If `y_data` is not a 1D array.
+    ShapeError
+        If any data array is not one-dimensional.
+    DataLengthError
+        If ``x1_data``, ``x2_data``, and ``y_data`` have different lengths.
     """
     x1_data, x2_data, y_data = np.asarray(x1_data), np.asarray(x2_data), np.asarray(y_data)
 
@@ -681,7 +698,7 @@ def plot_with_dual_axes(
     x1y2_label: str = r"X$_1$ vs. Y$_2$",
     x2y1_label: str = r"X$_2$ vs. Y$_1$",
     use_twin_x: bool = False,
-    axis_labels: list[str] | tuple[str, ...] | None = None,  # noqa
+    axis_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str = "DualAxesPlot",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -710,9 +727,9 @@ def plot_with_dual_axes(
         If True, creates a dual y-axis plot. If False, creates a dual x-axis plot.
         Default is False.
     axis_labels :
-        List of axis labels in the form `[x_label, y_label1, y_label2]`.
+        List or tuple of axis labels in the form
+        `[x_label, y_label1, y_label2]`.
         Defaults to `["X", r"Y$_1$", r"Y$_2$"]` when not provided.
-        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     is_scatter :
@@ -797,11 +814,11 @@ def plot_with_dual_axes(
 def two_subplots(
     x_data: ArrayLike | list[ArrayLike],
     y_data: ArrayLike | list[ArrayLike],
-    x_labels: list[str] | tuple[str, ...] | None = None,  # noqa
-    y_labels: list[str] | tuple[str, ...] | None = None,  # noqa
-    data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
+    x_labels: list[str] | tuple[str, ...] | None = None,
+    y_labels: list[str] | tuple[str, ...] | None = None,
+    data_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str = "TwoSubPlots",
-    subplot_titles: list[str] | tuple[str, ...] | None = None,  # noqa
+    subplot_titles: list[str] | tuple[str, ...] | None = None,
     orientation: str = "h",
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
@@ -816,22 +833,18 @@ def two_subplots(
     y_data :
         List containing y-axis data arrays for each subplot.
     x_labels :
-        List of labels for the x-axes in each subplot.
+        List or tuple of labels for the x-axes in each subplot.
         Defaults to `[r"X$_1$", r"X$_2$"]`.
-        Passing a mutable `list` is deprecated; use a `tuple` instead.
     y_labels :
-        List of labels for the y-axes in each subplot.
+        List or tuple of labels for the y-axes in each subplot.
         Defaults to `[r"Y$_1$", r"Y$_2$"]`.
-        Passing a mutable `list` is deprecated; use a `tuple` instead.
     data_labels :
-        List of labels for the data series in each subplot.
+        List or tuple of labels for the data series in each subplot.
         Defaults to `[r"X$_1$ vs. Y$_1$", r"X$_2$ vs. Y$_2$"]`.
-        Passing a mutable `list` is deprecated; use a `tuple` instead.
     plot_title :
         Title of the plot.
     subplot_titles :
-        Titles for the individual subplots, if required.
-        Passing a mutable `list` is deprecated; use a `tuple` instead.
+        List or tuple of titles for the individual subplots, if required.
     orientation :
         Orientation of the subplots, either `'h'` for horizontal or `'v'` for vertical.
     is_scatter :
@@ -848,6 +861,8 @@ def two_subplots(
 
     Raises
     ------
+    DataError
+        If fewer x- or y-datasets are supplied than the requested grid requires.
     OrientationError
         If `orientation` is not `'h'` or `'v'`.
     """
@@ -882,34 +897,35 @@ def two_subplots(
 def _label_sanitizer(
     n_rows: int,
     n_cols: int,
-    x_labels: list[str] | None,
-    y_labels: list[str] | None,
-    data_labels: list[str] | None,
-    subplot_titles: list[str] | None,
+    x_labels: list[str] | tuple[str, ...] | None,
+    y_labels: list[str] | tuple[str, ...] | None,
+    data_labels: list[str] | tuple[str, ...] | None,
+    subplot_titles: list[str] | tuple[str, ...] | None,
     plot_title: str | None,
 ) -> tuple[list[str], list[str], list[str], list[str], str]:
     n = n_rows * n_cols
 
-    def _pad(labels: list[str] | None, name: str) -> list[str]:
+    def _pad(labels: list[str] | tuple[str, ...] | None, name: str) -> list[str]:
         if labels is None:
             return [""] * n
-        if len(labels) < n:
+        normalized = list(labels)
+        if len(normalized) < n:
             warn(
-                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
-                f"requested. Padding with empty strings for the remaining {n - len(labels)}.",
+                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
+                f"requested. Padding with empty strings for the remaining {n - len(normalized)}.",
                 category=UserWarning,
                 stacklevel=3,
             )
-            return labels + [""] * (n - len(labels))
-        if len(labels) > n:
+            return normalized + [""] * (n - len(normalized))
+        if len(normalized) > n:
             warn(
-                message=f"`{name}` has {len(labels)} element(s) but a {n_rows}×{n_cols} grid "
-                f"({n} subplots) was requested. Trimming the last {len(labels) - n} element(s).",
+                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid "
+                f"({n} subplots) was requested. Trimming the last {len(normalized) - n} element(s).",
                 category=UserWarning,
                 stacklevel=3,
             )
-            return labels[:n]
-        return labels
+            return normalized[:n]
+        return normalized
 
     return (
         _pad(labels=x_labels, name="x_labels"),
@@ -925,11 +941,11 @@ def n_plotter(
     y_data: ArrayLike | list[ArrayLike],
     n_rows: int,
     n_cols: int,
-    x_labels: list[str] | None = None,
-    y_labels: list[str] | None = None,
-    data_labels: list[str] | None = None,
+    x_labels: list[str] | tuple[str, ...] | None = None,
+    y_labels: list[str] | tuple[str, ...] | None = None,
+    data_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str | None = None,
-    subplot_titles: list[str] | None = None,
+    subplot_titles: list[str] | tuple[str, ...] | None = None,
     is_scatter: bool = False,
     plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
     figure_kwargs: dict | None = None,
@@ -948,15 +964,15 @@ def n_plotter(
     n_cols :
         Number of columns in the subplot grid.
     x_labels :
-        List of labels for the x-axes of each subplot.
+        List or tuple of labels for the x-axes of each subplot.
     y_labels :
-        List of labels for the y-axes of each subplot.
+        List or tuple of labels for the y-axes of each subplot.
     data_labels :
-        List of labels for the data series in each subplot.
+        List or tuple of labels for the data series in each subplot.
     plot_title :
         Title of the plot.
     subplot_titles :
-        Titles for the individual subplots, if required.
+        List or tuple of titles for the individual subplots, if required.
     is_scatter :
         If `True`, plots data as scatter plots; otherwise, plots as line plots.
     plot_config :
@@ -968,8 +984,14 @@ def n_plotter(
     -------
     NDArray
         A shaped `(n_rows, n_cols)` array of Matplotlib `Axes` objects.
+
+    Raises
+    ------
+    DataError
+        If fewer x- or y-datasets are supplied than the requested grid requires.
     """
     n = n_rows * n_cols
+
     if len(x_data) < n:
         raise DataError(f"Grid is {n_rows}x{n_cols} ({n} panels) but only {len(x_data)} x-datasets were provided.")
     if len(y_data) < n:
@@ -1137,6 +1159,11 @@ def plot_hist(
     -------
     Axes
         The Matplotlib Axes on which the histogram was drawn.
+
+    Raises
+    ------
+    ShapeError
+        If ``x_data`` is not one-dimensional.
     """
     x = np.asarray(x_data)
     validate_1d(x, names=["x_data"])
