@@ -1,6 +1,6 @@
 """Created on Feb 24 03:02:20 2026."""
 
-__all__ = ["ERROR_ATTRS", "ERROR_BAND_ATTRS", "HIST_ATTRS", "LINE_ATTRS", "SCATTER_ATTRS"]
+__all__ = ["ERROR_ATTRS", "ERROR_BAND_ATTRS", "HIST_ATTRS", "LINE_ATTRS", "SCATTER_ATTRS", "BAR_PLOT_ATTRS"]
 
 LINE_ATTRS = {
     "ls": "linestyle",
@@ -21,6 +21,7 @@ ERROR_ATTRS = LINE_ATTRS | {
 
 SCATTER_ATTRS = {"c": "color", "s": "s", "ec": "edgecolors", "fc": "facecolors"}
 
+BAR_PLOT_ATTRS = {"ec": "edgecolor", "lw": "linewidth", "fc": "color"}
 
 ERROR_BAND_ATTRS = {"color": "color"}
 

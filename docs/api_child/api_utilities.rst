@@ -8,8 +8,6 @@ Plot Dispatch
 
 .. autofunction:: plotez.backend.plot_or_scatter
 
-.. autofunction:: plotez.backend.split_dictionary
-
 Validation
 ----------
 

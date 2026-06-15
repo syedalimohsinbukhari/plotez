@@ -24,7 +24,6 @@ from .utilities import (
     errorband_validation,
     errorbar_validation,
     plot_or_scatter,
-    split_dictionary,
     validate_1d,
     validate_equal_length,
 )
@@ -57,7 +56,6 @@ __all__ = [
     "errorband_validation",
     "errorbar_validation",
     "plot_or_scatter",
-    "split_dictionary",
     "validate_1d",
     "validate_equal_length",
 ]

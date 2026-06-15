@@ -22,14 +22,14 @@ __all__ = [
 
 def line_plot_configuration(
     c: str | list[str] | None = None,
-    lw: int | float | list[int | float] | None = None,
+    lw: float | list[float] | None = None,
     ls: str | list[str] | None = None,
-    alpha: int | float | list[int | float] | None = None,
+    alpha: float | list[float] | None = None,
     marker: str | list[str] | None = None,
-    ms: int | float | list[int | float] | None = None,
+    ms: float | list[float] | None = None,
     mfc: str | list[str] | None = None,
     mec: str | list[str] | None = None,
-    mew: int | float | list[int | float] | None = None,
+    mew: float | list[float] | None = None,
     **kwargs,
 ):
     """
@@ -79,8 +79,8 @@ def line_plot_configuration(
 
 def error_band_configuration(
     c: str | None = None,
-    alpha: int | float = 0.25,
-    lw: int | float | None = None,
+    alpha: float = 0.25,
+    lw: float | None = None,
     ec: str | None = None,
     ls: str | None = None,
     hatch: HatchStyle | list[HatchStyle] | None = None,
@@ -132,17 +132,17 @@ def error_band_configuration(
 
 def error_plot_configuration(
     c: str | None = None,
-    lw: int | float | None = None,
+    lw: float | None = None,
     ls: str | None = None,
-    alpha: int | float | None = None,
+    alpha: float | None = None,
     ecolor: str | None = None,
-    elinewidth: int | float | None = None,
+    elinewidth: float | None = None,
     marker: str | None = None,
-    ms: int | float | None = None,
+    ms: float | None = None,
     mfc: str | None = None,
     mec: str | None = None,
-    capsize: int | float | None = None,
-    capthick: int | float | None = None,
+    capsize: float | None = None,
+    capthick: float | None = None,
     errorevery: int | tuple | None = None,
     **kwargs,
 ):
@@ -205,8 +205,8 @@ def error_plot_configuration(
 
 def scatter_plot_configuration(
     c: str | list[str] | None = None,
-    s: int | float | list[int | float] | None = None,
-    alpha: int | float | list[int | float] | None = None,
+    s: float | list[float] | None = None,
+    alpha: float | list[float] | None = None,
     marker: str | list[str] | None = None,
     cmap: str | list[str] | None = None,
     ec: str | list[str] | None = None,
@@ -250,10 +250,10 @@ def histogram_config(
     density: bool | None = None,
     histtype: str | None = None,
     color: str | None = None,
-    alpha: int | float | None = None,
+    alpha: float | None = None,
     edgecolor: str | None = None,
     facecolor: str | None = None,
-    linewidth: int | float | None = None,
+    linewidth: float | None = None,
     orientation: str | None = None,
     cumulative: bool | None = None,
     hatch: HatchStyle | None = None,

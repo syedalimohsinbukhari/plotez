@@ -6,6 +6,7 @@ Utility classes and functions for plot parameter management and data validation.
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 __all__ = [
@@ -19,7 +20,6 @@ __all__ = [
     "LinePlotConfig",
     "plot_or_scatter",
     "ScatterPlotConfig",
-    "split_dictionary",
     "validate_1d",
     "validate_equal_length",
 ]
@@ -38,11 +38,11 @@ from ..errors import (
     TwinXDataError,
     TwinYDataError,
 )
-from ..typing import ArrayLike, HatchStyle, NDArray
-from .CONSTANTS import ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
+from ..typing import ArrayLike, Axes, HatchStyle, NDArray
+from .CONSTANTS import BAR_PLOT_ATTRS, ERROR_ATTRS, ERROR_BAND_ATTRS, HIST_ATTRS, LINE_ATTRS, SCATTER_ATTRS
 
 if TYPE_CHECKING:
-    from ..typing import LSE
+    pass
 
 
 def _populate(_class, dictionary: dict[str, Any], mapping):
@@ -296,23 +296,40 @@ class LinePlotConfig:
         return f"{self.__class__.__name__}({param_str})"
 
 
-def plot_or_scatter(axes, scatter: bool):
+def plot_or_scatter(axis: Axes | None = None, scatter: bool = False, axes: Axes | None = None):
     """
     Return the plot or scatter method based on the specified plot type.
 
     Parameters
     ----------
-    axes :
+    axis :
         The matplotlib axis on which to apply the plot or scatter method.
     scatter :
         If True, returns the scatter method; otherwise, returns the plot method.
+    axes :
+        .. deprecated:: v0.3.4
+            Use ``axis`` instead. This parameter will be removed in a future version.
 
     Returns
     -------
     function
-        The matplotlib plotting method (`axes.scatter` if scatter is True, otherwise `axes.plot`).
+        The matplotlib plotting method (``axis.scatter`` if ``scatter`` is True, otherwise ``axis.plot``).
     """
-    return axes.scatter if scatter else axes.plot
+    if axis is None and axes is None:
+        raise ValueError("Either 'axis' or 'axes' must be provided.")
+
+    if axes is not None:
+        warnings.warn(
+            "Parameter 'axes' is deprecated and will be removed in a future version. " "Use 'axis' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        axis = axes
+
+    if not isinstance(axis, Axes):
+        raise TypeError(f"'axis' must be a matplotlib Axes object, got {type(axis).__name__!r}.")
+
+    return axis.scatter if scatter else axis.plot
 
 
 @dataclass
@@ -348,49 +365,38 @@ class ScatterPlotConfig:
         return f"{self.__class__.__name__}({param_str})"
 
 
-def split_dictionary(plot_instance: LSE) -> tuple[LSE, LSE]:
-    """
-    Split a config instance's parameters into two separate instances.
+@dataclass
+class BarPlotConfig:
+    """Configuration class for bar/hbar plots."""
 
-    Parameters
-    ----------
-    plot_instance :
-        An instance with parameters stored as lists or tuples.
-        Each parameter should be a list or tuple containing exactly two values, corresponding to settings for the
-        two resulting instances.
+    color: str | None = None
+    edgecolor: str | None = None
+    linewidth: float | None = None
+    alpha: float | None = None
+    width: float | None = None  # bar width for plot_bar; routed to height for plot_hbar
+    align: str | None = None  # 'center' or 'edge'
+    capsize: float | None = None  # error bar cap size; first-class since errors= is first-class
+    ecolor: str | None = None  # error bar color
 
-    Returns
-    -------
-    Tuple
-        Two instances of the same type as `plot_instance`, with parameters split based on the values in `plot_instance`.
-        The first instance (`instance1`) and second instance (`instance2`) will have their attributes set according
-        to the first and second elements, respectively, from each list or tuple in `plot_instance`.
+    # For extra params - pass as dict to this field directly
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False)
 
-    Raises
-    ------
-    ValueError
-        If any parameter in `plot_instance` is not a list or tuple with exactly two elements.
+    @classmethod
+    def populate(cls, dictionary: dict[str, Any]) -> "BarPlotConfig":
+        """Create a ScatterPlotConfig instance from a dictionary, using a mapping for shorthand keys."""
+        return _populate(_class=cls, dictionary=dictionary, mapping=BAR_PLOT_ATTRS)
 
-    Notes
-    -----
-        The parameters with only one element are broadcast to both instances rather than raising an error.
-    """
-    parameters = plot_instance.get_dict()
-    params_instance1, params_instance2 = {}, {}
+    def get_dict(self) -> dict[str, Any]:
+        """Get all parameters as dict for matplotlib."""
+        result = {k: v for k, v in self.__dict__.items() if not k.startswith("_") and v is not None}
+        result.update(self._extra)
+        return result
 
-    for param_name, values in parameters.items():
-        if isinstance(values, (list, tuple)) and len(values) >= 2:
-            params_instance1[param_name] = values[0]
-            params_instance2[param_name] = values[1]
-        else:
-            # Scalar or single-element: both instances get the same value
-            params_instance1[param_name] = values
-            params_instance2[param_name] = values
-
-    instance1 = plot_instance.__class__.populate(params_instance1)
-    instance2 = plot_instance.__class__.populate(params_instance2)
-
-    return instance1, instance2
+    def __repr__(self):
+        """Pretty repr showing both explicit and extra params."""
+        all_params = self.get_dict()
+        param_str = ", ".join(f"{k}={v!r}" for k, v in sorted(all_params.items()))
+        return f"{self.__class__.__name__}({param_str})"
 
 
 def validate_1d(*arrays: NDArray, names: list[str]) -> None:

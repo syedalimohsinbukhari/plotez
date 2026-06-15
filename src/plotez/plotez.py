@@ -19,6 +19,7 @@ __all__ = [
     "n_plotter",
     "plot_density",
     "plot_hist",
+    "plot_bar",
 ]
 
 from warnings import warn
@@ -36,6 +37,7 @@ from .backend import (
     plot_or_scatter,
 )
 from .backend.utilities import (
+    BarPlotConfig,
     error_offset_validation,
     errorband_validation,
     errorbar_validation,
@@ -768,7 +770,7 @@ def plot_with_dual_axes(
         plot_dict = ScatterPlotConfig().get_dict() if is_scatter else LinePlotConfig().get_dict()
 
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_dict.items()}
-    plot_or_scatter(axes=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
+    plot_or_scatter(axis=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
 
     ax2 = None
 
@@ -787,12 +789,12 @@ def plot_with_dual_axes(
     if use_twin_x:
         ax2 = ax1.twinx()
         if y2_data is not None:
-            plot_or_scatter(axes=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
+            plot_or_scatter(axis=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(_axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
-        plot_or_scatter(axes=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
+        plot_or_scatter(axis=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
         ax2.set_xlabel(_axis_labels[2])
 
     if x1y1_label or x1y2_label or x2y1_label:
@@ -1009,8 +1011,8 @@ def n_plotter(
 
     plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
 
-    fig, axs = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
-    flat_axs = axs.flatten()
+    fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
+    flat_axes = axes.flatten()
 
     main_dict = [
         {
@@ -1032,26 +1034,26 @@ def n_plotter(
 
     shared_y = sp_dict.get("sharey", False)
     shared_x1 = sp_dict.get("sharex", False)
-    shared_x2 = len(flat_axs) - int(len(flat_axs) / n_rows if n_rows > n_cols else n_cols)
+    shared_x2 = len(flat_axes) - int(len(flat_axes) / n_rows if n_rows > n_cols else n_cols)
 
-    for index, ax, x_, y_, sp_ in zip(range(n_cols * n_rows), flat_axs, _x_labels, _y_labels, _subplot_titles):
+    for index, axis, x_, y_, sp_ in zip(range(n_cols * n_rows), flat_axes, _x_labels, _y_labels, _subplot_titles):
         label = f"{_x_labels[index]} vs {_y_labels[index]}" if _data_labels is None else _data_labels[index]
-        plot_or_scatter(axes=ax, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
+        plot_or_scatter(axis=axis, scatter=is_scatter)(x_data[index], y_data[index], label=label, **main_dict[index])
         if shared_x1:
             if not index < shared_x2:
-                ax.set_xlabel(x_)
+                axis.set_xlabel(x_)
         else:
-            ax.set_xlabel(x_)
+            axis.set_xlabel(x_)
         if not (shared_y and index % n_cols != 0):
-            ax.set_ylabel(y_)
+            axis.set_ylabel(y_)
         if label:
-            ax.legend(loc="best")
+            axis.legend(loc="best")
 
-        ax.set_title(sp_)
+        axis.set_title(sp_)
 
     fig.suptitle(_plot_title)
 
-    return axs
+    return axes
 
 
 def plot_density(
@@ -1175,9 +1177,9 @@ def plot_hist(
         h_config = HistogramConfig().get_dict()
 
     if axis is not None:
-        ax = axis
+        axis = axis
     else:
-        _, ax = plt.subplots(**(figure_kwargs or {}))
+        _, axis = plt.subplots(**(figure_kwargs or {}))
 
     if data_label and "label" in h_config:
         raise ConfigurationError("Both `data_label` and `hist_config['label']` cannot be provided.")
@@ -1185,13 +1187,69 @@ def plot_hist(
     if not h_config.get("bins"):
         h_config["bins"] = 32
 
-    ax.hist(x=x, label=data_label, **h_config)
+    axis.hist(x=x, label=data_label, **h_config)
 
-    ax.set_xlabel(x_label)
-    ax.set_ylabel("Density" if h_config.get("density") else y_label)
-    ax.set_title(plot_title)
+    axis.set_xlabel(x_label)
+    axis.set_ylabel("Density" if h_config.get("density") else y_label)
+    axis.set_title(plot_title)
 
     if data_label:
-        ax.legend()
+        axis.legend()
 
-    return ax
+    return axis
+
+
+def plot_bar(
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    plot_title: str = "Bar Plot",
+    x_label: str = "X",
+    y_label: str = "Y",
+    bar_config: BarPlotConfig | dict | None = None,
+    axis: Axes | None = None,
+) -> Axes:
+    """Generate a bar plot with configuration and customization options.
+
+    Parameters
+    ----------
+    x_data :
+        The data for the x-axis values of the bar plot.
+    y_data :
+        The data for the y-axis values of the bar plot.
+    plot_title :
+        The title of the plot, defaults to "Bar Plot".
+    x_label :
+        The label for the x-axis, defaults to "X".
+    y_label :
+        The label for the y-axis, defaults to "Y".
+    bar_config :
+        The configuration options for the bar plot.
+        If a dictionary is provided, it will be converted to a `BarPlotConfig`.
+        If not provided, a default configuration will be used.
+    axis :
+        A Matplotlib `Axes` object where the bar plot will be drawn.
+        If None, a new axis will be created.
+
+    Returns
+    -------
+    Axes
+        The Matplotlib `Axes` object containing the bar plot.
+    """
+    if isinstance(bar_config, dict):
+        b_config = BarPlotConfig.populate(bar_config).get_dict()
+    elif isinstance(bar_config, BarPlotConfig):
+        b_config = bar_config.get_dict()
+    else:
+        b_config = HistogramConfig().get_dict()
+
+    if axis is not None:
+        axis = axis
+    else:
+        _, axis = plt.subplots()
+
+    axis.bar(x_data, y_data, **b_config)
+    axis.set_xlabel(x_label)
+    axis.set_ylabel(y_label)
+    axis.set_title(plot_title)
+
+    return axis

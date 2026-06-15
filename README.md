@@ -20,7 +20,7 @@ with minimal boilerplate code.
 
 | Item           | Status                                                                                  |
 |----------------|-----------------------------------------------------------------------------------------|
-| Latest version | v0.3.3.post1                                                                            |
+| Latest version | v0.3.4                                                                                  |
 | Python support | 3.10 · 3.11 · 3.12                                                                      |
 | Test coverage  | 85%+                                                                                    |
 | Type hints     | PEP 561 compliant (`py.typed`)                                                          |
