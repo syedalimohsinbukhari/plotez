@@ -1,4 +1,4 @@
-![BANNER](plotez_banner.svg)
+![BANNER](plotez_readme_banner.svg)
 
 # plotEZ
 
