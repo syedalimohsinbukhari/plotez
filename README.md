@@ -1,3 +1,5 @@
+![BANNER](plotez_banner.svg)
+
 # plotEZ
 
 **Mundane plotting made easy.**
