@@ -1,9 +1,8 @@
 <svg width="1280" height="452" viewBox="0 0 680 240" style="width:100%;height:auto;display:block;"
      xmlns="http://www.w3.org/2000/svg" role="img">
-    <title>plotez — matplotlib, made effortless</title>
+    <title>plotez — Mundane plotting made easy.</title>
     <desc>
-        Banner for plotez Python library: logo on the left, a Gaussian fit with scatter data and error bars on the
-        right
+        Banner for plotez Python library: logo on the left, Gaussian fit with scatter data and error bars on the right.
     </desc>
     <rect width="680" height="240" fill="#0D1117"/>
     <line x1="270" y1="45" x2="270" y2="225" stroke="#1A2535" stroke-width="1"/>
@@ -80,14 +79,14 @@
         <circle cx="585" cy="162" r="3"/>
         <circle cx="615" cy="186" r="3"/>
     </g>
-    <text x="42" y="148" font-family="'JetBrains Mono','Courier New',monospace" font-size="58" font-weight="700"
+    <text x="42" y="128" font-family="'JetBrains Mono','Courier New',monospace" font-size="58" font-weight="700"
           letter-spacing="-1" fill="#FFFFFF">plot<tspan fill="#F5A623">ez</tspan>
     </text>
-    <text x="66" y="160" font-family="'JetBrains Mono','Courier New',monospace" font-size="11" fill="#56657A">
+    <text x="66" y="140" font-family="'JetBrains Mono','Courier New',monospace" font-size="11" fill="#56657A">
         Mundane plotting made easy.
     </text>
-    <rect x="38" y="168" width="210" height="20" rx="3" fill="#131C28"/>
-    <text x="44" y="181" font-family="'JetBrains Mono','Courier New',monospace" font-size="10" fill="#3FB950">$ pip
+    <rect x="38" y="148" width="210" height="20" rx="3" fill="#131C28"/>
+    <text x="44" y="161" font-family="'JetBrains Mono','Courier New',monospace" font-size="10" fill="#3FB950">$ pip
         install plotez
     </text>
     <rect x="0" y="234" width="680" height="6" fill="#F5A623" opacity="0.68"/>

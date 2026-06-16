@@ -8,6 +8,10 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import (
+    ErrorBandConfig,
+    ErrorPlotConfig,
+    LinePlotConfig,
+    ScatterPlotConfig,
     n_plotter,
     plot_errorband,
     plot_errorbar,
@@ -17,7 +21,6 @@ from plotez import (
     plot_xyy,
     two_subplots,
 )
-from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 from plotez.errors import (
     AxisLabelError,
     ColumnCountError,
@@ -357,13 +360,7 @@ class TestNPlotter:
         """Test equivalent list and tuple label handling without deprecation."""
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=labels,
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=labels)
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
         assert not any(item.category is DeprecationWarning for item in caught)
@@ -371,13 +368,7 @@ class TestNPlotter:
     def test_n_plotter_pads_short_tuple_labels(self, sample_x_data_list, sample_y_data_list):
         """Test that short tuple labels are padded like short list labels."""
         with pytest.warns(UserWarning, match="Padding with empty strings"):
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=("X1",),
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=("X1",))
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", ""]
 
@@ -386,13 +377,7 @@ class TestNPlotter:
         labels = ["X1", "X2", "unused"]
 
         with pytest.warns(UserWarning, match="Trimming the last 1 element"):
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=labels,
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=labels)
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
         assert labels == ["X1", "X2", "unused"]

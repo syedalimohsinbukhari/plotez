@@ -5,8 +5,7 @@ import numpy as np
 import pytest
 from matplotlib.axes import Axes
 
-from plotez import plot_density, plot_errorband_relative
-from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
+from plotez import ErrorBandConfig, LinePlotConfig, plot_density, plot_errorband_relative
 from plotez.errors import ConfigurationError
 
 

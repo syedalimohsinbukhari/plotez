@@ -4,7 +4,7 @@ from typing import Literal
 
 from plotez.typing import HatchStyle
 
-from .utilities import ErrorBandConfig, ErrorPlotConfig, HistogramConfig, LinePlotConfig, ScatterPlotConfig
+from ..configurations import ErrorBandConfig, ErrorPlotConfig, HistogramConfig, LinePlotConfig, ScatterPlotConfig
 
 __all__ = [
     "ebc",

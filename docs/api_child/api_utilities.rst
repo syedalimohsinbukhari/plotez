@@ -19,6 +19,6 @@ Validation
 
 .. autofunction:: plotez.backend.errorbar_validation
 
-.. autofunction:: plotez.backend.errorband_validation
+.. autofunction:: plotez.backend.error_band_validation
 
 .. autofunction:: plotez.backend.error_offset_validation

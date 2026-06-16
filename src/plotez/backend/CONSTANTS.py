@@ -1,6 +1,6 @@
 """Created on Feb 24 03:02:20 2026."""
 
-__all__ = ["ERROR_ATTRS", "ERROR_BAND_ATTRS", "HIST_ATTRS", "LINE_ATTRS", "SCATTER_ATTRS", "BAR_PLOT_ATTRS"]
+__all__ = ["BAR_PLOT_ATTRS", "ERROR_ATTRS", "ERROR_BAND_ATTRS", "HIST_ATTRS", "LINE_ATTRS", "SCATTER_ATTRS"]
 
 LINE_ATTRS = {
     "ls": "linestyle",

@@ -22,7 +22,7 @@ with minimal boilerplate code.
 
 | Item           | Status                                                                                  |
 |----------------|-----------------------------------------------------------------------------------------|
-| Latest version | v0.3.4                                                                                  |
+| Latest version | v0.4.0                                                                                  |
 | Python support | 3.10 · 3.11 · 3.12                                                                      |
 | Test coverage  | 85%+                                                                                    |
 | Type hints     | PEP 561 compliant (`py.typed`)                                                          |
@@ -89,8 +89,7 @@ That's it. Three lines for a labeled plot.
 
 ```python
 import numpy as np
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import ErrorPlotConfig, plot_errorbar
 
 rng = np.random.default_rng(1234)
 
@@ -134,9 +133,9 @@ Dual axes done right. No `ax.twinx()` gymnastics.
 import numpy as np
 from plotez import n_plotter
 
-x_data = np.linspace(0, 10, 100)
-y_data = [np.sin(x_data), np.cos(x_data),
-          np.tan(x_data / 5), x_data ** 2 / 100]
+x_data = [np.linspace(0, 10, 100) for _ in range(4)]
+y_data = [np.sin(x_data[0]), np.cos(x_data[1]),
+          np.tan(x_data[2] / 5), x_data[3] ** 2 / 100]
 
 n_plotter(x_data, y_data, n_rows=2, n_cols=2)
 ```
@@ -153,8 +152,7 @@ Use `ErrorBandConfig` and `LinePlotConfig` for explicit, IDE-friendly configurat
 
 ```python
 import numpy as np
-from plotez import plot_errorband
-from plotez.backend import ErrorBandConfig, LinePlotConfig
+from plotez import ErrorBandConfig, LinePlotConfig, plot_errorband
 
 x = np.linspace(0, 10, 50)
 y = np.sin(x)
@@ -198,8 +196,7 @@ plot_errorband(x, y, y_lower, y_upper,
 
 ```python
 import numpy as np
-from plotez import plot_xyy
-from plotez.backend import LinePlotConfig
+from plotez import LinePlotConfig, plot_xyy
 
 x = np.linspace(0, 10, 50)
 y1, y2 = np.sin(x), np.cos(x)

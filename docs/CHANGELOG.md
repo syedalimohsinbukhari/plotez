@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Starting with v0.3.3, each release lists incompatible API or behavior changes under a dedicated **Breaking Changes** heading.
 
+## [v0.4.0] - 16-Jun-2026
+
+### Breaking Changes
+
+- **Configuration import paths cleaned up**: Config classes are no longer re-exported from `plotez.backend` or
+  `plotez.backend.utilities`. Import them from `plotez` for the public convenience API or from `plotez.configurations`
+- for the canonical module path.
+- **Wrapper module path cleaned up**: Wrapper helpers now live in `plotez.backend.wrappers`; the old private
+  `plotez.backend._wrappers` module has been removed. The top-level `plotez` wrapper imports remain supported.
+- **Backend package re-exports reduced**: `plotez.backend` no longer re-exports config classes or wrapper helpers.
+  Import utilities from `plotez.backend` only when using backend validation or dispatch helpers directly.
+
+### Changed
+
+- **Version bump**: Updated package version from `v0.3.3` to `v0.4.0`.
+- **Docs and examples**: Updated config examples to use top-level `plotez` imports.
+
 ## [v0.3.3] - 12-Jun-2026
 
 ### Added

@@ -20,32 +20,105 @@ __all__ = [
     "plot_density",
     "plot_hist",
     "plot_bar",
+    "plot_hbar",
 ]
 
+from typing import Any
 from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .backend import (
+from .backend.base_config import PlotEZConfig
+from .backend.utilities import (
+    dual_axes_data_validation,
+    error_band_validation,
+    error_offset_validation,
+    errorbar_validation,
+    plot_or_scatter,
+    validate_1d,
+    validate_equal_length,
+)
+from .configurations import (
+    BarPlotConfig,
     ErrorBandConfig,
     ErrorPlotConfig,
     HistogramConfig,
     LinePlotConfig,
     ScatterPlotConfig,
-    dual_axes_data_validation,
-    plot_or_scatter,
-)
-from .backend.utilities import (
-    BarPlotConfig,
-    error_offset_validation,
-    errorband_validation,
-    errorbar_validation,
-    validate_1d,
-    validate_equal_length,
 )
 from .errors import ColumnCountError, ConfigurationError, DataError, EmptyDataError, OrientationError
 from .typing import ArrayLike, Axes, AxesReturn, NDArray
+
+# =============================================================================
+# Helper functions
+# =============================================================================
+
+
+def _config_handler(
+    input_config: PlotEZConfig | dict[str, Any] | None, default_config: type[PlotEZConfig]
+) -> dict[str, Any]:
+    if isinstance(input_config, dict):
+        config = default_config.populate(input_config).get_dict()
+    elif isinstance(input_config, default_config):
+        config = input_config.get_dict()
+    else:
+        config = default_config().get_dict()
+
+    return config
+
+
+def _fig_kwargs_handler(axis, fig_kwargs) -> Axes:
+    if axis is not None:
+        if fig_kwargs:
+            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=3)
+    else:
+        _, axis = plt.subplots(**(fig_kwargs or {}))
+
+    return axis
+
+
+def _label_sanitizer(
+    n_rows: int,
+    n_cols: int,
+    x_labels: list[str] | tuple[str, ...] | None,
+    y_labels: list[str] | tuple[str, ...] | None,
+    data_labels: list[str] | tuple[str, ...] | None,
+    subplot_titles: list[str] | tuple[str, ...] | None,
+    plot_title: str | None,
+) -> tuple[list[str], list[str], list[str], list[str], str]:
+    n = n_rows * n_cols
+
+    def _pad(labels: list[str] | tuple[str, ...] | None, name: str) -> list[str]:
+        if labels is None:
+            return [""] * n
+        normalized = list(labels)
+        if len(normalized) < n:
+            warn(
+                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
+                f"requested. Padding with empty strings for the remaining {n - len(normalized)}.",
+                category=UserWarning,
+                stacklevel=3,
+            )
+            return normalized + [""] * (n - len(normalized))
+        if len(normalized) > n:
+            warn(
+                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid "
+                f"({n} subplots) was requested. Trimming the last {len(normalized) - n} element(s).",
+                category=UserWarning,
+                stacklevel=3,
+            )
+            return normalized[:n]
+        return normalized
+
+    return (
+        _pad(labels=x_labels, name="x_labels"),
+        _pad(labels=y_labels, name="y_labels"),
+        _pad(labels=data_labels, name="data_labels"),
+        _pad(labels=subplot_titles, name="subplot_titles"),
+        plot_title or "",
+    )
+
 
 # =============================================================================
 # Error Visualization Functions
@@ -63,9 +136,9 @@ def plot_errorband_relative(
     data_label: str = "X vs. Y",
     line: bool = True,
     band_config: ErrorBandConfig | None = None,
-    line_config: LinePlotConfig | dict | None = None,
+    line_config: LinePlotConfig | dict[str, Any] | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> Axes:
     """
     Plot a line graph with a shaded error band using relative (offset) errors.
@@ -164,10 +237,10 @@ def plot_errorband(
     plot_title: str = "XY ErrorBand",
     data_label: str = "X vs. Y",
     line: bool = True,
-    band_config: ErrorBandConfig | None = None,
-    line_config: LinePlotConfig | dict | None = None,
+    band_config: ErrorBandConfig | dict[str, Any] | None = None,
+    line_config: LinePlotConfig | dict[str, Any] | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> Axes:
     """
     Plot a line graph with a shaded error band representing uncertainty.
@@ -229,7 +302,7 @@ def plot_errorband(
     validate_1d(x, y, names=["x_data", "y_data"])
     validate_equal_length(x, y, names=["x_data", "y_data"])
 
-    y_lower, y_upper = errorband_validation(x=x, y=y, y_lower=y_lower, y_upper=y_upper)
+    y_lower, y_upper = error_band_validation(x=x, y=y, y_lower=y_lower, y_upper=y_upper)
 
     if y_lower is None:
         y_lower = y - (y_upper - y)
@@ -243,10 +316,10 @@ def plot_errorband(
     else:
         _, axis = plt.subplots(**(figure_kwargs or {}))
 
-    error_band_config = band_config.get_dict() if band_config else ErrorBandConfig().get_dict()
+    ebc = _config_handler(band_config, ErrorBandConfig)
     if isinstance(line_config, dict):
         line_config: LinePlotConfig = LinePlotConfig.populate(line_config)
-    l_conf = line_config.get_dict() if line_config else LinePlotConfig().get_dict()
+    l_conf = _config_handler(line_config, LinePlotConfig)
 
     if line:
         _data_label = data_label or l_conf.get("label") or None
@@ -256,10 +329,10 @@ def plot_errorband(
 
             l_conf.pop("label", None)
 
-        axis.fill_between(x=x, y1=y_lower, y2=y_upper, **error_band_config)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, **ebc)
         axis.plot(x, y, label=_data_label, **l_conf)
     else:
-        axis.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **error_band_config)
+        axis.fill_between(x=x, y1=y_lower, y2=y_upper, label=data_label, **ebc)
 
     axis.set_xlabel(x_label)
     axis.set_ylabel(y_label)
@@ -278,9 +351,9 @@ def plot_errorbar(
     y_label: str = "Y",
     plot_title: str = "XY ErrorBar",
     data_label: str = "X vs. Y",
-    errorbar_config: ErrorPlotConfig | None = None,
+    errorbar_config: ErrorPlotConfig | dict[str, Any] | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> Axes:
     """
     Plot an error bar graph with optional error ranges, labels, and configurations.
@@ -331,20 +404,12 @@ def plot_errorbar(
         If x/y data or an error array has an incompatible length.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
-
     validate_1d(x, y, names=["x_data", "y_data"])
-    validate_equal_length(x, y, names=["x_data", "y_data"])
-
     x_err, y_err = errorbar_validation(x=x, y=y, x_err=x_err, y_err=y_err)
 
-    if axis is not None:
-        if figure_kwargs:
-            warn(message="`figure_kwargs` is ignored when `axis` is provided.", category=UserWarning, stacklevel=2)
-        axis = axis
-    else:
-        _, axis = plt.subplots(**(figure_kwargs or {}))
+    ebc = _config_handler(errorbar_config, ErrorPlotConfig)
 
-    ebc = errorbar_config.get_dict() if errorbar_config else ErrorPlotConfig().get_dict()
+    axis = _fig_kwargs_handler(axis, figure_kwargs)
     axis.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
     axis.set_xlabel(x_label)
@@ -369,8 +434,8 @@ def plot_two_column_file(
     data_label: str = "XY Data",
     plot_title: str = "XY Plot",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> Axes:
     """Read a two-column file (x, y) and plot the data.
@@ -448,8 +513,8 @@ def plot_xy(
     data_label: str = "XY Data",
     plot_title: str = "XY Plot",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> Axes:
     """Plot the x_data against y_data with customizable options.
@@ -530,8 +595,8 @@ def plot_xyy(
     data_labels: list[str] | tuple[str, ...] | None = None,  # noqa
     plot_title: str = "XYY Plot",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> tuple[Axes, Axes]:
     """Plot two sets of y-data (`y1_data` and `y2_data`) against the same x-data (`x_data`) on the same plot.
@@ -586,7 +651,7 @@ def plot_xyy(
 
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"X vs. Y$_1$", r"X vs. Y$_2$"]
 
-    _axis = plot_with_dual_axes(
+    axis = plot_with_dual_axes(
         x1_data=x_data,
         y1_data=y1_data,
         y2_data=y2_data,
@@ -601,8 +666,8 @@ def plot_xyy(
         axis=axis,
     )
 
-    _axis: tuple[Axes, Axes]  # since `use_twin_x = True` there has to be a tuple Axes return
-    return _axis
+    axis: tuple[Axes, Axes]
+    return axis
 
 
 def plot_xxy(
@@ -615,8 +680,8 @@ def plot_xxy(
     data_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str = "",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> tuple[Axes, Axes]:
     """Plot two sets of x-data (`x1_data` and `x2_data`) against the same y-data (`y_data`) on the same plot.
@@ -672,7 +737,7 @@ def plot_xxy(
 
     _data_labels: list[str] = list(data_labels) if data_labels is not None else [r"Y vs. X$_1$", r"Y vs. X$_2$"]
 
-    _axis = plot_with_dual_axes(
+    axis = plot_with_dual_axes(
         x1_data=x1_data,
         y1_data=y_data,
         x2_data=x2_data,
@@ -687,8 +752,8 @@ def plot_xxy(
         axis=axis,
     )
 
-    _axis: tuple[Axes, Axes]
-    return _axis
+    axis: tuple[Axes, Axes]
+    return axis
 
 
 def plot_with_dual_axes(
@@ -703,8 +768,8 @@ def plot_with_dual_axes(
     axis_labels: list[str] | tuple[str, ...] | None = None,
     plot_title: str = "DualAxesPlot",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> AxesReturn:
     """Plot the data with options for dual axes (x or y) or single axis.
@@ -823,8 +888,8 @@ def two_subplots(
     subplot_titles: list[str] | tuple[str, ...] | None = None,
     orientation: str = "h",
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> NDArray:
     """Create two subplots arranged horizontally or vertically, with optional customization.
 
@@ -896,48 +961,6 @@ def two_subplots(
     )
 
 
-def _label_sanitizer(
-    n_rows: int,
-    n_cols: int,
-    x_labels: list[str] | tuple[str, ...] | None,
-    y_labels: list[str] | tuple[str, ...] | None,
-    data_labels: list[str] | tuple[str, ...] | None,
-    subplot_titles: list[str] | tuple[str, ...] | None,
-    plot_title: str | None,
-) -> tuple[list[str], list[str], list[str], list[str], str]:
-    n = n_rows * n_cols
-
-    def _pad(labels: list[str] | tuple[str, ...] | None, name: str) -> list[str]:
-        if labels is None:
-            return [""] * n
-        normalized = list(labels)
-        if len(normalized) < n:
-            warn(
-                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid ({n} subplots) was "
-                f"requested. Padding with empty strings for the remaining {n - len(normalized)}.",
-                category=UserWarning,
-                stacklevel=3,
-            )
-            return normalized + [""] * (n - len(normalized))
-        if len(normalized) > n:
-            warn(
-                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid "
-                f"({n} subplots) was requested. Trimming the last {len(normalized) - n} element(s).",
-                category=UserWarning,
-                stacklevel=3,
-            )
-            return normalized[:n]
-        return normalized
-
-    return (
-        _pad(labels=x_labels, name="x_labels"),
-        _pad(labels=y_labels, name="y_labels"),
-        _pad(labels=data_labels, name="data_labels"),
-        _pad(labels=subplot_titles, name="subplot_titles"),
-        plot_title or "",
-    )
-
-
 def n_plotter(
     x_data: ArrayLike | list[ArrayLike],
     y_data: ArrayLike | list[ArrayLike],
@@ -949,8 +972,8 @@ def n_plotter(
     plot_title: str | None = None,
     subplot_titles: list[str] | tuple[str, ...] | None = None,
     is_scatter: bool = False,
-    plot_config: LinePlotConfig | ScatterPlotConfig | None = None,
-    figure_kwargs: dict | None = None,
+    plot_config: LinePlotConfig | ScatterPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> NDArray:
     """
     Plot multiple subplots in a grid with optional customization for each subplot.
@@ -1009,7 +1032,10 @@ def n_plotter(
             "Set `is_scatter=True` or pass a `LinePlotConfig` instead."
         )
 
-    plot_items = plot_config.get_dict() if plot_config else LinePlotConfig().get_dict()  # type: ignore
+    if is_scatter:
+        plot_items = _config_handler(plot_config, ScatterPlotConfig)
+    else:
+        plot_items = _config_handler(plot_config, LinePlotConfig)
 
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
     flat_axes = axes.flatten()
@@ -1062,9 +1088,9 @@ def plot_density(
     y_label: str = "Density",
     plot_title: str = "Density Plot",
     data_label: str | None = None,
-    hist_config: HistogramConfig | dict | None = None,
+    hist_config: HistogramConfig | dict[str, Any] | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> Axes:
     """
     Plot a density histogram based on the given data and configuration.
@@ -1131,9 +1157,9 @@ def plot_hist(
     y_label: str = "Counts",
     plot_title: str = "Histogram",
     data_label: str | None = None,
-    hist_config: HistogramConfig | dict | None = None,
+    hist_config: HistogramConfig | dict[str, Any] | None = None,
     axis: Axes | None = None,
-    figure_kwargs: dict | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
 ) -> Axes:
     """
     Plot a histogram of the data.
@@ -1169,28 +1195,20 @@ def plot_hist(
     """
     x = np.asarray(x_data)
     validate_1d(x, names=["x_data"])
-    if isinstance(hist_config, dict):
-        h_config = HistogramConfig.populate(hist_config).get_dict()
-    elif isinstance(hist_config, HistogramConfig):
-        h_config = hist_config.get_dict()
-    else:
-        h_config = HistogramConfig().get_dict()
 
-    if axis is not None:
-        axis = axis
-    else:
-        _, axis = plt.subplots(**(figure_kwargs or {}))
+    hist_config = _config_handler(hist_config, HistogramConfig)
 
-    if data_label and "label" in h_config:
+    if data_label and "label" in hist_config:
         raise ConfigurationError("Both `data_label` and `hist_config['label']` cannot be provided.")
 
-    if not h_config.get("bins"):
-        h_config["bins"] = 32
+    if not hist_config.get("bins"):
+        hist_config["bins"] = 32
 
-    axis.hist(x=x, label=data_label, **h_config)
+    axis = _fig_kwargs_handler(axis, figure_kwargs)
+    axis.hist(x=x, label=data_label, **hist_config)
 
     axis.set_xlabel(x_label)
-    axis.set_ylabel("Density" if h_config.get("density") else y_label)
+    axis.set_ylabel("Density" if hist_config.get("density") else y_label)
     axis.set_title(plot_title)
 
     if data_label:
@@ -1205,7 +1223,8 @@ def plot_bar(
     plot_title: str = "Bar Plot",
     x_label: str = "X",
     y_label: str = "Y",
-    bar_config: BarPlotConfig | dict | None = None,
+    bar_config: BarPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
 ) -> Axes:
     """Generate a bar plot with configuration and customization options.
@@ -1226,6 +1245,8 @@ def plot_bar(
         The configuration options for the bar plot.
         If a dictionary is provided, it will be converted to a `BarPlotConfig`.
         If not provided, a default configuration will be used.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
     axis :
         A Matplotlib `Axes` object where the bar plot will be drawn.
         If None, a new axis will be created.
@@ -1235,19 +1256,86 @@ def plot_bar(
     Axes
         The Matplotlib `Axes` object containing the bar plot.
     """
-    if isinstance(bar_config, dict):
-        b_config = BarPlotConfig.populate(bar_config).get_dict()
-    elif isinstance(bar_config, BarPlotConfig):
-        b_config = bar_config.get_dict()
-    else:
-        b_config = HistogramConfig().get_dict()
+    return _bar_plot(
+        x_data=x_data,
+        y_data=y_data,
+        x_label=x_label,
+        y_label=y_label,
+        plot_title=plot_title,
+        figure_kwargs=figure_kwargs,
+        bar_config=bar_config,
+        axis=axis,
+        is_bar=True,
+    )
 
-    if axis is not None:
-        axis = axis
-    else:
-        _, axis = plt.subplots()
 
-    axis.bar(x_data, y_data, **b_config)
+def _is_bar(axis: Axes, is_bar=True):
+    return axis.bar if is_bar else axis.barh
+
+
+def plot_hbar(
+    x_data: ArrayLike,
+    y_data: ArrayLike,
+    plot_title: str = "Bar Plot",
+    x_label: str = "X",
+    y_label: str = "Y",
+    bar_config: BarPlotConfig | dict[str, Any] | None = None,
+    figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
+) -> Axes:
+    """Generate a horizontal bar plot with configuration and customization options.
+
+    Parameters
+    ----------
+    x_data :
+        The data for the x-axis values of the bar plot.
+    y_data :
+        The data for the y-axis values of the bar plot.
+    plot_title :
+        The title of the plot, defaults to "Bar Plot".
+    x_label :
+        The label for the x-axis, defaults to "X".
+    y_label :
+        The label for the y-axis, defaults to "Y".
+    bar_config :
+        The configuration options for the bar plot.
+        If a dictionary is provided, it will be converted to a `BarPlotConfig`.
+        If not provided, a default configuration will be used.
+    figure_kwargs :
+        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+    axis :
+        A Matplotlib `Axes` object where the bar plot will be drawn.
+        If None, a new axis will be created.
+
+    Returns
+    -------
+    Axes
+        The Matplotlib `Axes` object containing the bar plot.
+    """
+    return _bar_plot(
+        x_data=x_data,
+        y_data=y_data,
+        x_label=x_label,
+        y_label=y_label,
+        plot_title=plot_title,
+        figure_kwargs=figure_kwargs,
+        bar_config=bar_config,
+        axis=axis,
+        is_bar=False,
+    )
+
+
+def _bar_plot(x_data, y_data, x_label, y_label, plot_title, figure_kwargs, bar_config, axis, is_bar) -> Axes:
+    x_data, y_data = np.asarray(x_data), np.asarray(y_data)
+
+    validate_1d(x_data, y_data, names=["x_data", "y_data"])
+    validate_equal_length(x_data, y_data, names=["x_data", "y_data"])
+
+    axis = _fig_kwargs_handler(axis, figure_kwargs)
+
+    b_config = _config_handler(bar_config, BarPlotConfig)
+    _is_bar(axis=axis, is_bar=is_bar)(x_data, y_data, **b_config)
+
     axis.set_xlabel(x_label)
     axis.set_ylabel(y_label)
     axis.set_title(plot_title)
