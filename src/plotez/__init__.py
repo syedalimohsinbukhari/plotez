@@ -27,11 +27,11 @@ from .configurations import (
 from .plotez import (
     n_plotter,
     plot_bar,
+    plot_barh,
     plot_density,
     plot_errorband,
     plot_errorband_relative,
     plot_errorbar,
-    plot_hbar,
     plot_hist,
     plot_two_column_file,
     plot_with_dual_axes,
@@ -55,7 +55,7 @@ __all__ = [
     "plot_errorbar",
     "plot_errorband",
     "plot_errorband_relative",
-    "plot_hbar",
+    "plot_barh",
     "plot_hist",
     "plot_density",
     # Config classes

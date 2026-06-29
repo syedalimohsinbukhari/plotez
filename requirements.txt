@@ -20,7 +20,12 @@ numpy==2.2.6 ; python_full_version < '3.11'
     #   contourpy
     #   matplotlib
     #   plotez
-numpy==2.4.6 ; python_full_version >= '3.11'
+numpy==2.4.6 ; python_full_version == '3.11.*'
+    # via
+    #   contourpy
+    #   matplotlib
+    #   plotez
+numpy==2.5.0 ; python_full_version >= '3.12'
     # via
     #   contourpy
     #   matplotlib

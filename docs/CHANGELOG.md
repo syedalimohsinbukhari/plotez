@@ -23,7 +23,7 @@ Starting with v0.3.3, each release lists incompatible API or behavior changes un
 - **Version bump**: Updated package version from `v0.3.3` to `v0.4.0`.
 - **Docs and examples**: Updated config examples to use top-level `plotez` imports.
 
-## [v0.3.3] - 12-Jun-2026
+## [v0.3.3/v0.3.3.post1] - 12-Jun-2026
 
 ### Added
 
@@ -88,7 +88,7 @@ Starting with v0.3.3, each release lists incompatible API or behavior changes un
   `uv-export` (runs `uv lock --upgrade && uv sync` then regenerates both requirements files on every commit).
   The duplicate `pytest` hook entry was also removed.
 
-## [v0.3.2/0.3.2.post1] - 20-May-2026
+## [v0.3.2/v0.3.2.post1] - 20-May-2026
 
 ### Fixed
 

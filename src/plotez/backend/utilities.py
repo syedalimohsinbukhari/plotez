@@ -116,7 +116,7 @@ def plot_or_scatter(axis: Axes | None = None, scatter: bool = False, axes: Axes 
     scatter :
         If True, returns the scatter method; otherwise, returns the plot method.
     axes :
-        .. deprecated:: v0.3.4
+        .. deprecated:: v0.4.0
             Use ``axis`` instead. This parameter will be removed in a future version.
 
     Returns

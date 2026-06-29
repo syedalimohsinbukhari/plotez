@@ -150,14 +150,15 @@ class LinePlotConfig(PlotEZConfig):
 class BarPlotConfig(PlotEZConfig):
     """Configuration class for bar/hbar plots."""
 
-    color: str | None = None
-    edgecolor: str | None = None
-    linewidth: float | None = None
-    alpha: float | None = None
-    width: float | None = None  # bar width for plot_bar; routed to height for plot_hbar
+    color: str | list[str] | None = None
+    edgecolor: str | list[str] | None = None
+    linewidth: float | list[float] | None = None
+    alpha: float | list[float] | None = None
+    width: float | list[float] | None = None  # bar width for plot_bar; routed to height for plot_hbar
     align: str | None = None  # 'center' or 'edge'
     capsize: float | None = None  # error bar cap size; first-class since errors= is first-class
     ecolor: str | None = None  # error bar color
+    hatch: HatchStyle | list[HatchStyle] | None = None
 
     @classmethod
     def populate(cls, dictionary: dict[str, Any]) -> "BarPlotConfig":

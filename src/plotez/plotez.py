@@ -20,7 +20,7 @@ __all__ = [
     "plot_density",
     "plot_hist",
     "plot_bar",
-    "plot_hbar",
+    "plot_barh",
 ]
 
 from typing import Any
@@ -1041,10 +1041,7 @@ def n_plotter(
     flat_axes = axes.flatten()
 
     main_dict = [
-        {
-            key: (value[c % len(value)] if isinstance(value, (list, tuple)) else value)
-            for key, value in plot_items.items()
-        }
+        {key: (value[c % len(value)] if isinstance(value, list) else value) for key, value in plot_items.items()}
         for c in range(n_cols * n_rows)
     ]
 
@@ -1269,14 +1266,10 @@ def plot_bar(
     )
 
 
-def _is_bar(axis: Axes, is_bar=True):
-    return axis.bar if is_bar else axis.barh
-
-
-def plot_hbar(
+def plot_barh(
     x_data: ArrayLike,
     y_data: ArrayLike,
-    plot_title: str = "Bar Plot",
+    plot_title: str = "Horizontal Bar Plot",
     x_label: str = "X",
     y_label: str = "Y",
     bar_config: BarPlotConfig | dict[str, Any] | None = None,
@@ -1288,15 +1281,15 @@ def plot_hbar(
     Parameters
     ----------
     x_data :
-        The data for the x-axis values of the bar plot.
+        The category values, drawn along the y-axis (vertical positions of bars).
     y_data :
-        The data for the y-axis values of the bar plot.
+        The bar lengths (widths), drawn along the x-axis.
     plot_title :
-        The title of the plot, defaults to "Bar Plot".
+        The title of the plot, defaults to "Horizontal Bar Plot".
     x_label :
-        The label for the x-axis, defaults to "X".
+        The label for the category axis (displayed on the y-axis).
     y_label :
-        The label for the y-axis, defaults to "Y".
+        The label for the value axis (displayed on the x-axis).
     bar_config :
         The configuration options for the bar plot.
         If a dictionary is provided, it will be converted to a `BarPlotConfig`.
@@ -1334,10 +1327,33 @@ def _bar_plot(x_data, y_data, x_label, y_label, plot_title, figure_kwargs, bar_c
     axis = _fig_kwargs_handler(axis, figure_kwargs)
 
     b_config = _config_handler(bar_config, BarPlotConfig)
-    _is_bar(axis=axis, is_bar=is_bar)(x_data, y_data, **b_config)
+    bar_fn = axis.bar if is_bar else axis.barh
 
-    axis.set_xlabel(x_label)
-    axis.set_ylabel(y_label)
+    if any(isinstance(v, list) for v in b_config.values()):
+        n = len(x_data)
+        for v in b_config.values():
+            if isinstance(v, list) and len(v) != n:
+                warn(
+                    message=f"A `bar_config` list has {len(v)} element(s) but {n} bars are being drawn. "
+                    f"Values will be cycled.",
+                    category=UserWarning,
+                    stacklevel=3,
+                )
+                break
+        for i, (xi, yi) in enumerate(zip(x_data, y_data)):
+            bar_dict = {
+                key: (value[i % len(value)] if isinstance(value, list) else value) for key, value in b_config.items()
+            }
+            bar_fn(xi, yi, **bar_dict)
+    else:
+        bar_fn(x_data, y_data, **b_config)
+
+    if is_bar:
+        axis.set_xlabel(x_label)
+        axis.set_ylabel(y_label)
+    else:
+        axis.set_xlabel(y_label)
+        axis.set_ylabel(x_label)
     axis.set_title(plot_title)
 
     return axis

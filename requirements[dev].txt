@@ -17,13 +17,13 @@ beautifulsoup4==4.15.0
     # via pydata-sphinx-theme
 black==26.5.1
 build==1.5.0
-certifi==2026.5.20
+certifi==2026.6.17
     # via requests
 cfgv==3.5.0
     # via pre-commit
 charset-normalizer==3.4.7
     # via requests
-click==8.4.1
+click==8.4.2
     # via black
 colorama==0.4.6 ; os_name == 'nt' or sys_platform == 'win32'
     # via
@@ -36,7 +36,7 @@ contourpy==1.3.2 ; python_full_version < '3.11'
     # via matplotlib
 contourpy==1.3.3 ; python_full_version >= '3.11'
     # via matplotlib
-coverage==7.14.1
+coverage==7.14.3
     # via pytest-cov
 cycler==0.12.1
     # via matplotlib
@@ -119,7 +119,12 @@ numpy==2.2.6 ; python_full_version < '3.11'
     #   contourpy
     #   matplotlib
     #   plotez
-numpy==2.4.6 ; python_full_version >= '3.11'
+numpy==2.4.6 ; python_full_version == '3.11.*'
+    # via
+    #   contourpy
+    #   matplotlib
+    #   plotez
+numpy==2.5.0 ; python_full_version >= '3.12'
     # via
     #   contourpy
     #   matplotlib
@@ -170,7 +175,7 @@ pyqt6-qt6==6.11.1
     # via pyqt6
 pyqt6-sip==13.11.1
     # via pyqt6
-pytest==9.1.0
+pytest==9.1.1
     # via pytest-cov
 pytest-cov==7.1.0
 python-dateutil==2.9.0.post0
