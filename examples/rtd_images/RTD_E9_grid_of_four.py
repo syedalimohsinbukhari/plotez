@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import n_plotter
-from plotez.backend import LinePlotConfig
+from plotez import LinePlotConfig, n_plotter
 
 x_data = [np.linspace(0, 10, 100) for _ in range(4)]
 y_data = [np.sin(x_data[0]), np.cos(x_data[1]), np.tan(x_data[2] / 5), x_data[3] ** 2 / 50]

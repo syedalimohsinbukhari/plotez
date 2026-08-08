@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import ErrorPlotConfig, plot_errorbar
 
 x = np.linspace(0, 10, 20)
 y = np.sin(x)

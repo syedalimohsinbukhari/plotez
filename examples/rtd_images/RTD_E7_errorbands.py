@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_errorband
-from plotez.backend import ErrorBandConfig, LinePlotConfig
+from plotez import ErrorBandConfig, LinePlotConfig, plot_errorband
 
 x = np.linspace(0, 10, 200)  # Dense sampling
 y = np.sin(x)

@@ -3,8 +3,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import ErrorPlotConfig, plot_errorbar
 
 rng = np.random.default_rng(1234)
 
