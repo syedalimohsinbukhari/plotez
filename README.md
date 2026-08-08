@@ -41,6 +41,9 @@ with minimal boilerplate code.
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
+- **Opt-In Styling**: Publication-ready style convention is off by default (importing plotez never
+  mutates your project's matplotlib rcParams); opt in via `plotez.enable_style()` at runtime or the
+  `PLOTEZ_AUTO_STYLE` environment variable at import time
 - **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 - **Early Input Validation**: Clear `ShapeError`, `DataLengthError`, and `EmptyDataError` failures before matplotlib
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
@@ -242,6 +245,36 @@ plot_hist(data, x_label="Value", y_label="Counts",
 ![README_E7_histogram](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E7_histogram.png)
 
 Swap `plot_hist` for `plot_density` to get the probability density on the y-axis.
+
+### Opt-In Styling
+
+plotez never changes your project's global matplotlib style just because you imported it. Call
+`plotez.enable_style()` to apply its publication-ready convention (serif fonts, grid, tick geometry) at
+runtime, and `plotez.disable_style()` to revert to matplotlib's own defaults — or set
+`PLOTEZ_AUTO_STYLE=1` in the environment before `import plotez` to apply it automatically.
+
+```python
+import plotez
+from plotez import plot_errorbar
+
+fig = plt.figure(figsize=(15, 4.5))
+
+ax1 = fig.add_subplot(1, 3, 1)
+plot_errorbar(x, y, y_err=y_err, plot_title="Default (no plotez style)", axis=ax1)
+
+plotez.enable_style()
+ax2 = fig.add_subplot(1, 3, 2)
+plot_errorbar(x, y, y_err=y_err, plot_title="After enable_style()", axis=ax2)
+
+plotez.disable_style()
+ax3 = fig.add_subplot(1, 3, 3)
+plot_errorbar(x, y, y_err=y_err, plot_title="After disable_style()", axis=ax3)
+```
+
+![README_E8_style_comparison](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E8_style_comparison.png)
+
+Set `PLOTEZ_AUTO_STYLE=1` before `import plotez` to skip the explicit `enable_style()` call and apply the
+convention globally for the process.
 
 ## Development
 

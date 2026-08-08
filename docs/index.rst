@@ -28,6 +28,7 @@ Features
 * **File Integration**: Direct plotting from CSV files
 * **Axes-Only Returns**: All functions return ``Axes`` (or shaped ``ndarray`` of ``Axes`` for grid functions); the parent ``Figure`` is always accessible via ``ax.get_figure()``
 * **Extensive Customization**: Full control over plot appearance via independent config dataclasses
+* **Opt-In Styling**: Publication-ready style convention is off by default; opt in via ``plotez.enable_style()`` or the ``PLOTEZ_AUTO_STYLE`` environment variable
 * **Convenience Wrappers**: Short-form factory functions (``lpc``, ``epc``, ``ebc``, ``spc``, ``hgc``) available at top level
 * **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 * **Early Input Validation**: 1D shape, matching-length, error-array, grid-size, and file-data checks fail before matplotlib

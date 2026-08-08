@@ -4,6 +4,9 @@ PlotEZ - Mundane plotting made easy.
 A Python library for simplified matplotlib plotting.
 """
 
+import os
+
+from ._plotez_constants import SAVE_DPI, disable_style, enable_style, update_style
 from .backend.wrappers import (
     ebc,
     epc,
@@ -42,6 +45,13 @@ from .plotez import (
 )
 from .version import __version__
 
+# Set PLOTEZ_AUTO_STYLE=1 (or "true"/"yes") before importing plotez to apply its
+# rcParams convention on import. Off by default so importing plotez in a larger
+# project never silently changes that project's own matplotlib style; call
+# `plotez.enable_style()` explicitly if you want plotez's look.
+if os.environ.get("PLOTEZ_AUTO_STYLE", "0").strip().lower() in ("1", "true", "yes"):
+    update_style()
+
 __all__ = [
     # Plotting functions
     "plot_two_column_file",
@@ -77,6 +87,11 @@ __all__ = [
     "ebc",
     "spc",
     "hgc",
+    # Style convention
+    "update_style",
+    "enable_style",
+    "disable_style",
+    "SAVE_DPI",
     # Version
     "__version__",
 ]

@@ -103,7 +103,7 @@ def _label_sanitizer(
             return normalized + [""] * (n - len(normalized))
         if len(normalized) > n:
             warn(
-                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}×{n_cols} grid "
+                message=f"`{name}` has {len(normalized)} element(s) but a {n_rows}x{n_cols} grid "
                 f"({n} subplots) was requested. Trimming the last {len(normalized) - n} element(s).",
                 category=UserWarning,
                 stacklevel=3,
@@ -316,10 +316,10 @@ def plot_errorband(
     else:
         _, axis = plt.subplots(**(figure_kwargs or {}))
 
-    ebc = _config_handler(band_config, ErrorBandConfig)
+    ebc = _config_handler(input_config=band_config, default_config=ErrorBandConfig)
     if isinstance(line_config, dict):
         line_config: LinePlotConfig = LinePlotConfig.populate(line_config)
-    l_conf = _config_handler(line_config, LinePlotConfig)
+    l_conf = _config_handler(input_config=line_config, default_config=LinePlotConfig)
 
     if line:
         _data_label = data_label or l_conf.get("label") or None
@@ -407,9 +407,9 @@ def plot_errorbar(
     validate_1d(x, y, names=["x_data", "y_data"])
     x_err, y_err = errorbar_validation(x=x, y=y, x_err=x_err, y_err=y_err)
 
-    ebc = _config_handler(errorbar_config, ErrorPlotConfig)
+    ebc = _config_handler(input_config=errorbar_config, default_config=ErrorPlotConfig)
 
-    axis = _fig_kwargs_handler(axis, figure_kwargs)
+    axis = _fig_kwargs_handler(axis=axis, fig_kwargs=figure_kwargs)
     axis.errorbar(x=x, y=y, xerr=x_err, yerr=y_err, label=data_label, **ebc)
 
     axis.set_xlabel(x_label)
@@ -853,12 +853,14 @@ def plot_with_dual_axes(
 
     if use_twin_x:
         ax2 = ax1.twinx()
+        ax2.grid(False)  # avoid a second, misaligned grid from the twin axis's own scale
         if y2_data is not None:
             plot_or_scatter(axis=ax2, scatter=is_scatter)(x1_data, y2_data, label=x1y2_label, **dict2)
             ax2.set_ylabel(_axis_labels[2])
 
     elif x2_data is not None:
         ax2 = ax1.twiny()
+        ax2.grid(False)  # avoid a second, misaligned grid from the twin axis's own scale
         plot_or_scatter(axis=ax2, scatter=is_scatter)(x2_data, y1_data, label=x2y1_label, **dict2)
         ax2.set_xlabel(_axis_labels[2])
 
@@ -1033,9 +1035,9 @@ def n_plotter(
         )
 
     if is_scatter:
-        plot_items = _config_handler(plot_config, ScatterPlotConfig)
+        plot_items = _config_handler(input_config=plot_config, default_config=ScatterPlotConfig)
     else:
-        plot_items = _config_handler(plot_config, LinePlotConfig)
+        plot_items = _config_handler(input_config=plot_config, default_config=LinePlotConfig)
 
     fig, axes = plt.subplots(nrows=n_rows, ncols=n_cols, **sp_dict, squeeze=False)
     flat_axes = axes.flatten()
@@ -1193,7 +1195,7 @@ def plot_hist(
     x = np.asarray(x_data)
     validate_1d(x, names=["x_data"])
 
-    hist_config = _config_handler(hist_config, HistogramConfig)
+    hist_config = _config_handler(input_config=hist_config, default_config=HistogramConfig)
 
     if data_label and "label" in hist_config:
         raise ConfigurationError("Both `data_label` and `hist_config['label']` cannot be provided.")
@@ -1201,7 +1203,7 @@ def plot_hist(
     if not hist_config.get("bins"):
         hist_config["bins"] = 32
 
-    axis = _fig_kwargs_handler(axis, figure_kwargs)
+    axis = _fig_kwargs_handler(axis=axis, fig_kwargs=figure_kwargs)
     axis.hist(x=x, label=data_label, **hist_config)
 
     axis.set_xlabel(x_label)
@@ -1324,9 +1326,9 @@ def _bar_plot(x_data, y_data, x_label, y_label, plot_title, figure_kwargs, bar_c
     validate_1d(x_data, y_data, names=["x_data", "y_data"])
     validate_equal_length(x_data, y_data, names=["x_data", "y_data"])
 
-    axis = _fig_kwargs_handler(axis, figure_kwargs)
+    axis = _fig_kwargs_handler(axis=axis, fig_kwargs=figure_kwargs)
 
-    b_config = _config_handler(bar_config, BarPlotConfig)
+    b_config = _config_handler(input_config=bar_config, default_config=BarPlotConfig)
     bar_fn = axis.bar if is_bar else axis.barh
 
     if any(isinstance(v, list) for v in b_config.values()):

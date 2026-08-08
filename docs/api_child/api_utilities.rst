@@ -22,3 +22,12 @@ Validation
 .. autofunction:: plotez.backend.utilities.error_band_validation
 
 .. autofunction:: plotez.backend.utilities.error_offset_validation
+
+Styling
+-------
+
+.. autofunction:: plotez._plotez_constants.update_style
+
+.. autofunction:: plotez._plotez_constants.enable_style
+
+.. autofunction:: plotez._plotez_constants.disable_style
