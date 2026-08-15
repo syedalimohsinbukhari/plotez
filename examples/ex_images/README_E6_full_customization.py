@@ -3,13 +3,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import LinePlotConfig, plot_xyy
+from plotez import SAVE_DPI, LinePlotConfig, plot_xyy
 
 x = np.linspace(0, 10, 50)
 y1, y2 = np.sin(x), np.cos(x)
 
-# The `LinePlotConfig` class can also handle non-defined keywords using
-# the `_extra` parameter
+# The `LinePlotConfig` class can also handle non-defined keywords using the `_extra` parameter
 config = LinePlotConfig(
     linestyle=["--", "-."],
     color=["crimson", "gold"],
@@ -22,5 +21,5 @@ config = LinePlotConfig(
 plot_xyy(x, y1, y2, plot_config=config)
 
 # plt.show()
-plt.savefig("README_E6_full_customization.png", dpi=300)
+plt.savefig("README_E6_full_customization.png", dpi=SAVE_DPI)
 plt.close()

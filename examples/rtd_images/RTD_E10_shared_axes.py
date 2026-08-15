@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import LinePlotConfig, n_plotter
+from plotez import SAVE_DPI, LinePlotConfig, n_plotter
 
 rng = np.random.default_rng(1234)
 
@@ -29,5 +29,5 @@ n_plotter(
 )
 
 # plt.show()
-plt.savefig("RTD_E10_shared_axes.png", dpi=300)
+plt.savefig("RTD_E10_shared_axes.png", dpi=SAVE_DPI)
 plt.close()

@@ -254,21 +254,34 @@ runtime, and `plotez.disable_style()` to revert to matplotlib's own defaults —
 `PLOTEZ_AUTO_STYLE=1` in the environment before `import plotez` to apply it automatically.
 
 ```python
+import matplotlib.pyplot as plt
+import numpy as np
+
 import plotez
 from plotez import plot_errorbar
+
+rng = np.random.default_rng(7)
+
+x = np.linspace(0, 10, 20)
+y = np.sin(x)
+y_err = 0.2 * rng.random(size=y.shape)
+
 
 fig = plt.figure(figsize=(15, 4.5))
 
 ax1 = fig.add_subplot(1, 3, 1)
-plot_errorbar(x, y, y_err=y_err, plot_title="Default (no plotez style)", axis=ax1)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="Default (no plotez style)", axis=ax1)
 
 plotez.enable_style()
 ax2 = fig.add_subplot(1, 3, 2)
-plot_errorbar(x, y, y_err=y_err, plot_title="After enable_style()", axis=ax2)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="After enable_style()", axis=ax2)
 
 plotez.disable_style()
 ax3 = fig.add_subplot(1, 3, 3)
-plot_errorbar(x, y, y_err=y_err, plot_title="After disable_style()", axis=ax3)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="After disable_style()", axis=ax3)
 ```
 
 ![README_E8_style_comparison](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E8_style_comparison.png)

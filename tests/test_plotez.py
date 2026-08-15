@@ -500,7 +500,7 @@ class TestPlotErrorbar:
         """Test that passing both figure_kwargs and axis emits a warning."""
         fig, ax = plt.subplots()
         with pytest.warns(UserWarning):
-            result = plot_errorbar(sample_x_data, sample_y_data, axis=ax, figure_kwargs={"figsize": (10, 6)})
+            result = plot_errorbar(sample_x_data, sample_y_data, figure_kwargs={"figsize": (10, 6)}, axis=ax)
         assert result == ax
 
     def test_errorbar_logarithmic_axes(self):

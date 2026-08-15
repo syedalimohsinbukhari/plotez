@@ -94,7 +94,7 @@ class TestPlotErrorbandRelative:
         x, y = xy
         fig, ax = plt.subplots()
         with pytest.warns(UserWarning):
-            result = plot_errorband_relative(x, y, y_upper=0.2, axis=ax, figure_kwargs={"figsize": (8, 4)})
+            result = plot_errorband_relative(x, y, y_upper=0.2, figure_kwargs={"figsize": (8, 4)}, axis=ax)
         assert result is ax
 
     def test_custom_labels(self, xy):

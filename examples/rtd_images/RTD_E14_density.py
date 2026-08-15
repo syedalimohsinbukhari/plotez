@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import hgc, plot_density
+from plotez import SAVE_DPI, hgc, plot_density
 
 data = np.genfromtxt("histogram_data.csv", delimiter=",", skip_header=1)
 normal_data = data[:, 1]  # second column is 'normal'
@@ -22,5 +22,5 @@ ax = plot_density(
 plt.tight_layout()
 
 # plt.show()
-plt.savefig("RTD_E14_density.png", dpi=300)
+plt.savefig("RTD_E14_density.png", dpi=SAVE_DPI)
 plt.close()

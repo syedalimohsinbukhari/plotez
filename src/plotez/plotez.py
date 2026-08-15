@@ -137,16 +137,10 @@ def plot_errorband_relative(
     line: bool = True,
     band_config: ErrorBandConfig | None = None,
     line_config: LinePlotConfig | dict[str, Any] | None = None,
-    axis: Axes | None = None,
     figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
 ) -> Axes:
-    """
-    Plot a line graph with a shaded error band using relative (offset) errors.
-
-    A convenience wrapper around :func:`plot_errorband` where `y_lower` and `y_upper` are interpreted as offsets
-    from `y_data` rather than absolute bounds.
-    Internally, the absolute bounds are computed as `y_data - y_lower` and `y_data + y_upper` before passing
-    to :func:`plot_errorband`.
+    """Plot a line graph with a shaded error band using relative (offset) errors.
 
     Parameters
     ----------
@@ -206,7 +200,9 @@ def plot_errorband_relative(
     plot_errorband : The absolute-bounds version of this function.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+
     validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
 
     lower_offset, upper_offset = error_offset_validation(y=y, y_lower=y_lower, y_upper=y_upper)
 
@@ -222,8 +218,8 @@ def plot_errorband_relative(
         line=line,
         band_config=band_config,
         line_config=line_config,
-        axis=axis,
         figure_kwargs=figure_kwargs,
+        axis=axis,
     )
 
 
@@ -239,11 +235,10 @@ def plot_errorband(
     line: bool = True,
     band_config: ErrorBandConfig | dict[str, Any] | None = None,
     line_config: LinePlotConfig | dict[str, Any] | None = None,
-    axis: Axes | None = None,
     figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
 ) -> Axes:
-    """
-    Plot a line graph with a shaded error band representing uncertainty.
+    """Plot a line graph with a shaded error band representing uncertainty.
 
     Parameters
     ----------
@@ -277,12 +272,12 @@ def plot_errorband(
     line_config :
         Configuration for the line styling.
         If `None`, defaults are used.
-    axis :
-        Pre-existing Matplotlib axes to draw on.
-        If provided, `figure_kwargs` is ignored.
     figure_kwargs :
         Keyword arguments passed to `plt.subplots` when creating a new figure.
         Ignored if `axis` is provided.
+    axis :
+        Pre-existing Matplotlib axes to draw on.
+        If provided, `figure_kwargs` is ignored.
 
     Returns
     -------
@@ -299,6 +294,7 @@ def plot_errorband(
         If data and array-valued bounds do not have matching lengths.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+
     validate_1d(x, y, names=["x_data", "y_data"])
     validate_equal_length(x, y, names=["x_data", "y_data"])
 
@@ -352,11 +348,10 @@ def plot_errorbar(
     plot_title: str = "XY ErrorBar",
     data_label: str = "X vs. Y",
     errorbar_config: ErrorPlotConfig | dict[str, Any] | None = None,
-    axis: Axes | None = None,
     figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
 ) -> Axes:
-    """
-    Plot an error bar graph with optional error ranges, labels, and configurations.
+    """Plot an error bar graph with optional error ranges, labels, and configurations.
 
     Parameters
     ----------
@@ -386,7 +381,8 @@ def plot_errorbar(
     errorbar_config :
         Custom configurations for the error bars. If `None`, default configurations are used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+        Ignored if `axis` is provided.
     axis :
         A matplotlib Axes object on which the plot will be rendered.
         If `None`, a new subplot is created using `figure_kwargs`.
@@ -404,7 +400,9 @@ def plot_errorbar(
         If x/y data or an error array has an incompatible length.
     """
     x, y = np.asarray(x_data), np.asarray(y_data)
+
     validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
     x_err, y_err = errorbar_validation(x=x, y=y, x_err=x_err, y_err=y_err)
 
     ebc = _config_handler(input_config=errorbar_config, default_config=ErrorPlotConfig)
@@ -443,11 +441,13 @@ def plot_two_column_file(
     Parameters
     ----------
     file_name :
-        The path to the file to be plotted. The file should contain two columns (x and y data).
+        The path to the file to be plotted.
+        The file should contain two columns (x and y data).
     delimiter :
         The delimiter used in the file (default is ',').
     skip_header :
-        If True, skips the first row in the given data file, otherwise does nothing. Default is False.
+        If True, skips the first row in the given data file, otherwise does nothing.
+        Default is False.
     x_label :
         The label for the x-axis.
     y_label :
@@ -457,13 +457,17 @@ def plot_two_column_file(
     plot_title :
         The title for the plot.
     is_scatter :
-        If True, creates a scatter plot. Otherwise, creates a line plot. Default is False.
+        If True, creates a scatter plot, otherwise, creates a line plot.
+        Default is False.
     plot_config :
-        Configuration object for line or scatter styling. If None, a default `LinePlotConfig` is used.
+        Configuration object for line or scatter styling.
+        If None, a default `LinePlotConfig` is used.
     figure_kwargs :
-        Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+        Keyword arguments for creating the figure and axis when `axis` is not provided.
+         Ignored if `axis` is provided.
     axis :
-        The axis object to draw the plots on. If not passed, a new axis object will be created internally.
+        The axis object to draw the plots on.
+        If not passed, a new axis object will be created internally.
 
     Returns
     -------
@@ -534,7 +538,7 @@ def plot_xy(
     data_label :
         Data label for the plot to put in the legend.
     is_scatter :
-        If True, creates a scatter plot. Otherwise, creates a line plot.
+        If True, creates a scatter plot, otherwise, creates a line plot.
         Defaults is False.
     plot_config :
         Configuration object for line or scatter styling.
@@ -558,14 +562,14 @@ def plot_xy(
     DataLengthError
         If ``x_data`` and ``y_data`` have different lengths.
     """
-    x_data, y_data = np.asarray(x_data), np.asarray(y_data)
+    x, y = np.asarray(x_data), np.asarray(y_data)
 
-    validate_1d(x_data, y_data, names=["x_data", "y_data"])
-    validate_equal_length(x_data, y_data, names=["x_data", "y_data"])
+    validate_1d(x, y, names=["x_data", "y_data"])
+    validate_equal_length(x, y, names=["x_data", "y_data"])
 
     axis = plot_with_dual_axes(
-        x1_data=x_data,
-        y1_data=y_data,
+        x1_data=x,
+        y1_data=y,
         x1y1_label=data_label,
         use_twin_x=False,
         axis_labels=(x_label, y_label, ""),
@@ -829,10 +833,14 @@ def plot_with_dual_axes(
     else:
         _, ax1 = plt.subplots(**(figure_kwargs or {}))
 
-    if plot_config is not None:
+    if isinstance(plot_config, dict):
+        plot_dict = plot_config
+    elif plot_config is not None:
         plot_dict = plot_config.get_dict()
     else:
         plot_dict = ScatterPlotConfig().get_dict() if is_scatter else LinePlotConfig().get_dict()
+
+    assert isinstance(plot_dict, dict), "Something ain't right"
 
     dict1 = {key: (value[0] if isinstance(value, list) else value) for key, value in plot_dict.items()}
     plot_or_scatter(axis=ax1, scatter=is_scatter)(x1_data, y1_data, label=x1y1_label, **dict1)
@@ -1088,8 +1096,8 @@ def plot_density(
     plot_title: str = "Density Plot",
     data_label: str | None = None,
     hist_config: HistogramConfig | dict[str, Any] | None = None,
-    axis: Axes | None = None,
     figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
 ) -> Axes:
     """
     Plot a density histogram based on the given data and configuration.
@@ -1114,13 +1122,13 @@ def plot_density(
         The histogram configuration, either as an instance of `HistogramConfig`, a dictionary, or None.
         If provided, it is used to configure the histogram and ensures that `density=True` is set.
         Default is None.
-    axis :
-        The Matplotlib Axes object on which to draw the plot.
-        If None, a new set of axes is created. Default is None.
     figure_kwargs :
         Optional keyword arguments passed when creating a new Matplotlib figure.
         These arguments are ignored if an existing axis is provided.
         Default is None.
+    axis :
+        The Matplotlib Axes object on which to draw the plot.
+        If None, a new set of axes is created. Default is None.
 
     Returns
     -------
@@ -1138,6 +1146,8 @@ def plot_density(
     else:
         hist_config = HistogramConfig(density=True)
 
+    x_data = np.asarray(x_data)
+
     return plot_hist(
         x_data=x_data,
         x_label=x_label,
@@ -1145,8 +1155,8 @@ def plot_density(
         plot_title=plot_title,
         data_label=data_label,
         hist_config=hist_config,
-        axis=axis,
         figure_kwargs=figure_kwargs,
+        axis=axis,
     )
 
 
@@ -1157,8 +1167,8 @@ def plot_hist(
     plot_title: str = "Histogram",
     data_label: str | None = None,
     hist_config: HistogramConfig | dict[str, Any] | None = None,
-    axis: Axes | None = None,
     figure_kwargs: dict[str, Any] | None = None,
+    axis: Axes | None = None,
 ) -> Axes:
     """
     Plot a histogram of the data.
@@ -1177,10 +1187,10 @@ def plot_hist(
         Label(s) for the data series. This is used in plot's legend generation.
     hist_config :
         Configuration object for histogram styling. If `None`, default configurations are used.
-    axis :
-        An existing matplotlib axis object on which to plot. If `None`, a new figure and axis are created.
     figure_kwargs :
         Keyword arguments for creating the figure and axis when `axis` is not provided. Ignored if `axis` is provided.
+    axis :
+        An existing matplotlib axis object on which to plot. If `None`, a new figure and axis are created.
 
     Returns
     -------
