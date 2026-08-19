@@ -65,7 +65,7 @@ fonttools==4.63.0
     # via matplotlib
 identify==2.6.19
     # via pre-commit
-idna==3.18
+idna==3.19
     # via requests
 imagesize==2.0.0
     # via sphinx
@@ -160,7 +160,7 @@ pydata-sphinx-theme==0.20.0 ; python_full_version >= '3.11'
 pydocstyle==6.3.0
 pyflakes==3.4.0
     # via flake8
-pygments==2.20.0
+pygments==2.21.0
     # via
     #   accessible-pygments
     #   pydata-sphinx-theme

@@ -52,7 +52,7 @@ def line_plot_configuration(
     mfc :
         Marker face color.
     mec :
-        Marker-edge color.
+        Marker edge color.
     mew :
         Marker-edge width.
     **kwargs :
@@ -259,7 +259,41 @@ def histogram_config(
     hatch: HatchStyle | None = None,
     **kwargs,
 ):
-    """Create a HistogramConfig instance with the given parameters."""
+    """
+    Create a configuration object for histogram plots.
+
+    Parameters
+    ----------
+    bins :
+        Number of histogram bins.
+    density :
+        If `True`, normalize the histogram to form a probability density.
+    histtype :
+        Histogram drawing style (e.g., 'bar', 'barstacked', 'step', 'stepfilled').
+    color :
+        Bar color.
+    alpha :
+        Transparency level (0.0 to 1.0).
+    edgecolor :
+        Edge color of the bars.
+    facecolor :
+        Face color of the bars.
+    linewidth :
+        Edge line width.
+    orientation :
+        Orientation of the histogram (e.g., 'vertical', 'horizontal').
+    cumulative :
+        If `True`, each bin gives the counts in that bin plus all bins for smaller values.
+    hatch :
+        Hatching pattern (e.g., '/', '|', '-', '+', 'x').
+    **kwargs :
+        Additional keyword arguments passed to the underlying histogram function.
+
+    Returns
+    -------
+    HistogramConfig
+        Configuration object for histogram plots.
+    """
     return HistogramConfig(
         bins=bins,
         density=density,
