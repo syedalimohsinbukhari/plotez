@@ -126,3 +126,23 @@ Histogram Parameters
 
 ``bins``, ``density``, ``histtype``, ``alpha``, ``facecolor``, ``orientation``,
 ``cumulative``, and ``hatch`` pass through under their own names.
+
+Bar Parameters
+~~~~~~~~~~~~~~
+
+``BarPlotConfig`` has no dedicated wrapper function yet — build it directly, or pass a plain ``dict`` as
+``bar_config`` to ``plot_bar`` / ``plot_barh``, which accepts the same aliases via ``populate()``:
+
++--------+---------------------+
+| Alias  | Full parameter name |
++========+=====================+
+| ``ec`` | ``edgecolor``       |
++--------+---------------------+
+| ``lw`` | ``linewidth``       |
++--------+---------------------+
+| ``fc`` | ``color``           |
++--------+---------------------+
+
+``color``, ``alpha``, ``width``, ``align``, ``capsize``, ``ecolor``, and ``hatch`` pass through under their own
+names. ``color``, ``edgecolor``, ``linewidth``, ``alpha``, ``width``, and ``hatch`` also accept a ``list`` to style
+each bar individually.

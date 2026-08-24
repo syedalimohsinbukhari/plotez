@@ -6,23 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Starting with v0.3.3, each release lists incompatible API or behavior changes under a dedicated **Breaking Changes** heading.
 
-## [v0.4.0] - [UNDER CONSTRUCTION]
+## [v0.4.0] - 24-Aug-2026
 
 ### Breaking Changes
 
 - **Configuration import paths cleaned up**: Config classes are no longer re-exported from `plotez.backend` or `plotez.backend.utilities`. Import them from `plotez` for the public convenience API or from `plotez.configurations` for the canonical module path.
 - **Wrapper module path cleaned up**: Wrapper helpers now live in `plotez.backend.wrappers`; the old private `plotez.backend._wrappers` module has been removed. The top-level `plotez` wrapper imports remain supported.
 - **Backend package re-exports reduced**: `plotez.backend` no longer re-exports config classes or wrapper helpers. Import utilities from `plotez.backend` only when using backend validation or dispatch helpers directly.
-- **Styling is off by default**: `plotez` no longer applies its publication-ready `rcParams` convention automatically on import. Previously, importing `plotez` silently mutated matplotlib's global style for the whole process. Call `plotez.enable_style()` explicitly to opt in, or set `PLOTEZ_AUTO_STYLE=1` (or `true`/`yes`) before `import plotez` to restore the previous always-on behavior.
 
 ### Added
 
-- **`enable_style()` / `disable_style()`**: New public functions (`plotez._plotez_constants`, re-exported from top-level `plotez`). `enable_style(grid=True)` (re-)applies plotez's convention; `disable_style()` calls `plt.rcdefaults()`.
+- **Publication-ready styling convention**: New optional `rcParams` convention (serif fonts, figure DPI, line/marker geometry, tick direction, grid style) for publication-ready figures. `plotez` never mutates matplotlib's global style on import by default — call `plotez.enable_style()` to opt in at runtime, or set `PLOTEZ_AUTO_STYLE=1` (or `true`/`yes`) before `import plotez` to apply it automatically on import.
+- **`enable_style()` / `disable_style()`**: New public functions (`plotez._plotez_constants`, re-exported from top-level `plotez`). `enable_style(grid=True)` applies plotez's convention; `disable_style()` calls `plt.rcdefaults()`.
 - **`grid` kwarg on `update_style()` / `enable_style()`**: `grid=False` keeps every other styling choice but leaves `axes.grid` off.
-- **`PLOTEZ_AUTO_STYLE` environment variable**: set to `1`/`true`/`yes` before `import plotez` to apply the styling convention automatically on import.
 - **Examples**: `examples/ex_images/README_E8_style_comparison.py` and `examples/rtd_images/RTD_E16_style_comparison.py` — 3-panel comparisons of default vs. `enable_style()` vs. `disable_style()`/`enable_style(grid=False)`.
 - **`plot_config` accepts a plain `dict`**: `plot_with_dual_axes` now accepts a plain `dict` for `plot_config` in addition to `LinePlotConfig`/`ScatterPlotConfig` instances. Previously a `dict` raised `AttributeError` (only `Config.get_dict()` was called). This also enables dict `plot_config` on every function built on top of it: `plot_xy`, `plot_xyy`, `plot_xxy`, `plot_two_column_file`, `two_subplots`, and `n_plotter`.
 - **`tests/test_dict_config_support.py`**: New test module covering the dict `plot_config` support above, plain-`dict` tests for `errorbar_config`/`band_config`/`line_config` on `plot_errorbar`/`plot_errorband`/`plot_errorband_relative` (previously only exercised with typed config objects), and first-ever coverage for `plot_xxy`.
+- **`plot_bar` / `plot_barh`**: New functions for vertical and horizontal bar plots, sharing a common `_bar_plot` dispatch internally. `plot_barh` swaps which axis `x_label`/`y_label` map to (category axis stays on the labelled side regardless of orientation).
+- **`BarPlotConfig`**: New dataclass for bar styling (`color`, `edgecolor`, `linewidth`, `alpha`, `width`, `align`, `capsize`, `ecolor`, `hatch`). `color`, `edgecolor`, `linewidth`, `alpha`, `width`, and `hatch` accept a `list` to style each bar individually; a list shorter than the bar count cycles with a `UserWarning`.
+- **`BAR_PLOT_ATTRS` shorthand aliases**: `ec`/`lw`/`fc` map to `edgecolor`/`linewidth`/`color` for `BarPlotConfig.populate()` and plain-`dict` `bar_config` arguments. No `bpc`/`bar_plot_configuration` wrapper function exists yet — build `BarPlotConfig` directly or pass a `dict`.
+- **Examples**: `examples/ex_images/README_E9_bar_plot.py` and `examples/rtd_images/RTD_E17_bar_plot.py`, plus a "Bar Plots" section in `docs/quickstart_child/data_workflows.rst`, `README.md`, and `docs/index.rst`.
 
 ### Changed
 
@@ -33,6 +36,10 @@ Starting with v0.3.3, each release lists incompatible API or behavior changes un
 
 - **Twin-axis double grid**: `plot_with_dual_axes` now calls `ax2.grid(False)` on `twinx()`/`twiny()` axes to avoid a second, misaligned grid overlay when plotez's style convention has grid enabled.
 - **`plot_errorband_relative` `band_config` type hint**: Was `ErrorBandConfig | None`, missing the `dict[str, Any]` union that `_config_handler` already accepted at runtime; corrected to `ErrorBandConfig | dict[str, Any] | None`.
+- **`ERROR_BAND_ATTRS` shorthand aliases were silently ignored**: Was `{"color": "color"}` — the `c`/`ec`/`lw`/`ls` aliases documented for `ErrorBandConfig.populate()` and dict `band_config` arguments (matching the `ebc()` wrapper's own parameter names) actually fell through to `_extra` and were forwarded to `fill_between()` verbatim, raising `AttributeError`. Corrected to map `c`/`ec`/`lw`/`ls` to `color`/`edgecolor`/`linewidth`/`linestyle`.
+- **`docs/api_child/api_plotting.rst`**: Added the missing "Bar Plots" section (`plot_bar`, `plot_barh` were undocumented in the API reference despite being public).
+- **`docs/quickstart_child/styling.rst`**: `RTD_E16_style_comparison.py`'s `literalinclude` range stopped mid-statement inside the second panel's `plot_hist()` call, omitting the third `enable_style(grid=False)` panel, the legend loop, and `tight_layout()` entirely; extended to cover the full example.
+- **`docs/quickstart_child/configuration_validation.rst`**: Documented that a plain `dict` is accepted anywhere a config object is (not just `_extra` on named fields), and clarified that dict `plot_config` on `plot_xy`/`plot_xyy`/`plot_xxy`/`plot_with_dual_axes`/`two_subplots`/`n_plotter` is forwarded to matplotlib as-is (no plotez-side alias resolution), unlike `bar_config`/`errorbar_config`/`band_config`/`line_config`/`hist_config`, which run a dict through the matching class's `populate()`.
 
 ## [v0.3.3/v0.3.3.post1] - 12-Jun-2026
 

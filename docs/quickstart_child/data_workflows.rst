@@ -42,6 +42,22 @@ The same 1D input requirement applies.
 
 ----
 
+Bar Plots
+---------
+
+``plot_bar`` and ``plot_barh`` share a common ``BarPlotConfig`` and the same ``_bar_plot`` dispatch internally —
+``x_data`` supplies the categories and ``y_data`` the bar lengths either way, ``plot_barh`` just swaps which axis
+each maps to. Pass a ``list`` for ``color``, ``edgecolor``, ``linewidth``, ``alpha``, ``width``, or ``hatch`` to
+style each bar individually; a scalar applies to every bar.
+
+.. literalinclude:: ../../examples/rtd_images/RTD_E17_bar_plot.py
+   :language: python
+   :lines: 3-26
+
+.. image:: ../../examples/rtd_images/RTD_E17_bar_plot.png
+
+----
+
 Plotting Two-Column Files
 -------------------------
 

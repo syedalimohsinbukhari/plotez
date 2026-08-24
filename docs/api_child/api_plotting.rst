@@ -20,6 +20,13 @@ Single-Axis Plots
 
 .. autofunction:: plotez.plot_two_column_file
 
+Bar Plots
+---------
+
+.. autofunction:: plotez.plot_bar
+
+.. autofunction:: plotez.plot_barh
+
 Dual-Axis Plots
 ---------------
 

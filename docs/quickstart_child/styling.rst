@@ -22,7 +22,7 @@ creation time, each panel below is created right after its corresponding style c
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E16_style_comparison.py
    :language: python
-   :lines: 3-38
+   :lines: 3-59
 
 .. image:: ../../examples/rtd_images/RTD_E16_style_comparison.png
 

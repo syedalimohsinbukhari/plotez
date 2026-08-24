@@ -37,6 +37,8 @@ with minimal boilerplate code.
 - **Error Band Plotting**: Shaded error band support via `plot_errorband`, `plot_errorband_relative`, and
   `ErrorBandConfig`
 - **Histogram & Density Plotting**: `plot_hist` and `plot_density` with `HistogramConfig` / `hgc`
+- **Bar & Horizontal Bar Plotting**: `plot_bar` and `plot_barh` with `BarPlotConfig`, including per-bar styling via
+  list-valued parameters
 - **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
@@ -245,6 +247,29 @@ plot_hist(data, x_label="Value", y_label="Counts",
 ![README_E7_histogram](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E7_histogram.png)
 
 Swap `plot_hist` for `plot_density` to get the probability density on the y-axis.
+
+---
+
+### Bar Plots
+
+`plot_bar` and `plot_barh` share a `BarPlotConfig`; pass a `list` for `color`, `edgecolor`, `linewidth`, `alpha`,
+`width`, or `hatch` to style each bar individually.
+
+```python
+import numpy as np
+from plotez import BarPlotConfig, plot_bar
+
+categories = ["A", "B", "C", "D", "E"]
+values = np.array([23, 45, 12, 39, 28])
+
+b_cfg = BarPlotConfig(color="steelblue", edgecolor="black", alpha=0.85)
+plot_bar(categories, values, x_label="Category", y_label="Value", bar_config=b_cfg)
+```
+
+![README_E9_bar_plot](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E9_bar_plot.png)
+
+Swap `plot_bar` for `plot_barh` to flip to horizontal bars — `x_data` stays the categories, `y_data` stays the bar
+lengths.
 
 ### Opt-In Styling
 
