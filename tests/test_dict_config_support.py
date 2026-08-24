@@ -258,6 +258,21 @@ class TestPlotErrorbandDictConfig:
         )
         assert isinstance(result, Axes)
 
+    def test_dict_band_config_with_alias_keys(self, sample_x_data, sample_y_data, sample_y_lower, sample_y_upper):
+        """Shorthand alias keys (`c`, `ec`, `lw`, `ls`) resolve through populate(), matching `ebc()`.
+
+        Regression test: `ERROR_BAND_ATTRS` previously only mapped `color` to itself, so these aliases
+        fell through to `_extra` and were passed to `fill_between` verbatim, raising `AttributeError`.
+        """
+        result = plot_errorband(
+            sample_x_data,
+            sample_y_data,
+            sample_y_lower,
+            sample_y_upper,
+            band_config={"c": "red", "ec": "black", "lw": 2, "ls": "--"},
+        )
+        assert isinstance(result, Axes)
+
 
 class TestPlotErrorbandRelativeDictConfig:
     """plot_errorband_relative with plain dict band_config and line_config."""

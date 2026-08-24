@@ -23,6 +23,7 @@ Features
 * **Error Bar Plotting**: Comprehensive error bar support with enhanced styling options
 * **Error Band Plotting**: Shaded error band support via ``plot_errorband``, ``plot_errorband_relative``, and ``ErrorBandConfig``
 * **Histogram & Density Plotting**: ``plot_hist`` and ``plot_density`` with ``HistogramConfig`` / ``hgc``
+* **Bar & Horizontal Bar Plotting**: ``plot_bar`` and ``plot_barh`` with ``BarPlotConfig``, including per-bar styling via list-valued parameters
 * **Dual-Axis Support**: Easy creation of dual y-axis or dual x-axis plots
 * **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling; layout (``tight_layout``) is fully user-controlled
 * **File Integration**: Direct plotting from CSV files

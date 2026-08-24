@@ -56,8 +56,6 @@ plot_hist(
 for ax in (ax1, ax2, ax3):
     ax.legend(loc="best")
 
-plt.tight_layout()
-
 # plt.show()
 plt.savefig("RTD_E16_style_comparison.png", dpi=SAVE_DPI)
 plt.close()

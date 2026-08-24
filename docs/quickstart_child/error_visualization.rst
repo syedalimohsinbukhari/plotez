@@ -20,7 +20,7 @@ Caps are shown by default and controlled via ``capsize``.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E4_errorbar.py
    :language: python
-   :lines: 3-15
+   :lines: 3-14
 
 .. image:: ../../examples/rtd_images/RTD_E4_errorbar.png
 
@@ -34,7 +34,7 @@ Styled Error Bars
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E5_errorbar_customized.py
    :language: python
-   :lines: 3-32
+   :lines: 3-31
 
 .. image:: ../../examples/rtd_images/RTD_E5_errorbar_customized.png
 
@@ -48,7 +48,7 @@ lower errors and the second contains upper errors.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E6_asym_errors.py
    :language: python
-   :lines: 3-14
+   :lines: 3-13
 
 .. image:: ../../examples/rtd_images/RTD_E6_asym_errors.png
 
@@ -64,7 +64,7 @@ Array-valued bounds must be 1D and have the same length as ``x_data`` and ``y_da
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E7_errorbands.py
    :language: python
-   :lines: 3-26
+   :lines: 3-24
 
 .. image:: ../../examples/rtd_images/RTD_E7_errorbands.png
 
@@ -80,6 +80,6 @@ Array-valued offsets must be 1D and match the length of ``y_data``.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E15_errorband_relative.py
    :language: python
-   :lines: 3-25
+   :lines: 3-27
 
 .. image:: ../../examples/rtd_images/RTD_E15_errorband_relative.png

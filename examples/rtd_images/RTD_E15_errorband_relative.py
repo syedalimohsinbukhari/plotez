@@ -26,8 +26,6 @@ ax = plot_errorband_relative(
     line_config=line_cfg,
 )
 
-plt.tight_layout()
-
 # plt.show()
 plt.savefig("RTD_E15_errorband_relative.png", dpi=SAVE_DPI)
 plt.close()

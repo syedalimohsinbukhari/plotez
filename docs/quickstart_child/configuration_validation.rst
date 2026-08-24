@@ -13,13 +13,29 @@ Complete class signatures, fields, and shorthand tables are available in :doc:`.
 Config Classes
 --------------
 
-``LinePlotConfig`` and its siblings ``ErrorPlotConfig``, ``ErrorBandConfig``, ``ScatterPlotConfig``, and
-``HistogramConfig`` provide IDE autocomplete and can be reused across plots.
+``LinePlotConfig`` and its siblings ``ErrorPlotConfig``, ``ErrorBandConfig``, ``ScatterPlotConfig``,
+``HistogramConfig``, and ``BarPlotConfig`` provide IDE autocomplete and can be reused across plots.
 Any matplotlib parameter not covered by a named field can be forwarded through the ``_extra`` dictionary.
+
+Every ``*_config`` / ``plot_config`` keyword also accepts a plain ``dict`` in place of the config object —
+useful for one-off styling without an import:
+
+.. code-block:: python
+
+   from plotez import plot_xy
+
+   plot_xy(x, y, plot_config={"color": "steelblue", "linewidth": 2, "linestyle": "--"})
+
+For ``bar_config``, ``errorbar_config``, ``band_config``/``line_config``, and ``hist_config``, a dict is run
+through the matching config class's ``populate()``, so shorthand aliases (see :ref:`shorthand-key-reference`)
+resolve normally. For ``plot_config`` on ``plot_xy`` and its dual-axis/grid relatives, a dict is forwarded to
+matplotlib as-is — full parameter names always work; aliases like ``c``/``lw``/``ls`` happen to as well, but
+only because matplotlib's own ``Line2D``/``PathCollection`` recognize them natively, not because plotez
+resolves them.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E5-2_errorbar_customized.py
    :language: python
-   :lines: 3-33
+   :lines: 3-32
 
 .. image:: ../../examples/rtd_images/RTD_E5-2_errorbar_customized.png
 

@@ -31,6 +31,9 @@ import time
 import traceback
 from pathlib import Path
 
+import matplotlib
+import matplotlib.pyplot as plt
+
 # ---------------------------------------------------------------------------
 # ANSI colours (disabled automatically when stdout is not a tty)
 # ---------------------------------------------------------------------------
@@ -63,6 +66,10 @@ def collect_examples(root: Path, pattern: str) -> list[Path]:
 def run_file(path: Path, verbose: bool) -> tuple[bool, float, str | None]:
     """Execute `path` as a Python script inside its own directory.
 
+    Runs inside `matplotlib.rc_context()` and closes all figures afterward so that one example's
+    `rcParams` mutations (e.g. `plotez.enable_style()`) or leftover figures can't leak into the next
+    example run in this same process.
+
     Returns
     -------
     (success, elapsed_seconds, error_message_or_None)
@@ -79,7 +86,8 @@ def run_file(path: Path, verbose: bool) -> tuple[bool, float, str | None]:
         module.__file__ = str(path)
 
         t0 = time.perf_counter()
-        spec.loader.exec_module(module)  # type: ignore[union-attr]
+        with matplotlib.rc_context():
+            spec.loader.exec_module(module)  # type: ignore[union-attr]
         elapsed = time.perf_counter() - t0
 
         return True, elapsed, None
@@ -89,6 +97,7 @@ def run_file(path: Path, verbose: bool) -> tuple[bool, float, str | None]:
         return False, elapsed, traceback.format_exc()
 
     finally:
+        plt.close("all")
         os.chdir(original_dir)
         sys.argv = original_argv
 

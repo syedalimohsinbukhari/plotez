@@ -19,8 +19,6 @@ ax = plot_hist(
     hist_config=h_cfg,
 )
 
-plt.tight_layout()
-
 # plt.show()
 plt.savefig("RTD_E13_histogram.png", dpi=SAVE_DPI)
 plt.close()
