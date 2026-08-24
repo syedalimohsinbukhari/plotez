@@ -135,7 +135,7 @@ def plot_errorband_relative(
     plot_title: str = "XY ErrorBand",
     data_label: str = "X vs. Y",
     line: bool = True,
-    band_config: ErrorBandConfig | None = None,
+    band_config: ErrorBandConfig | dict[str, Any] | None = None,
     line_config: LinePlotConfig | dict[str, Any] | None = None,
     figure_kwargs: dict[str, Any] | None = None,
     axis: Axes | None = None,
