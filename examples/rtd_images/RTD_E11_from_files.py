@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 
-from plotez import plot_two_column_file
+from plotez import SAVE_DPI, plot_two_column_file
 
 plot_two_column_file(
     "sensor_data.csv",
@@ -16,5 +16,5 @@ plot_two_column_file(
 )
 
 # plt.show()
-plt.savefig("RTD_E11_from_files.png", dpi=300)
+plt.savefig("RTD_E11_from_files.png", dpi=SAVE_DPI)
 plt.close()

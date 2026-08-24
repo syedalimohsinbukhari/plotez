@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import plotez
-from plotez import hgc, plot_hist
+from plotez import SAVE_DPI, hgc, plot_hist
 
 data = np.genfromtxt("histogram_data.csv", delimiter=",", skip_header=1)
 normal_data = data[:, 1]  # second column is 'normal'
@@ -59,5 +59,5 @@ for ax in (ax1, ax2, ax3):
 plt.tight_layout()
 
 # plt.show()
-plt.savefig("RTD_E16_style_comparison.png", dpi=300)
+plt.savefig("RTD_E16_style_comparison.png", dpi=SAVE_DPI)
 plt.close()

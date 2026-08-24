@@ -21,6 +21,8 @@ Starting with v0.3.3, each release lists incompatible API or behavior changes un
 - **`grid` kwarg on `update_style()` / `enable_style()`**: `grid=False` keeps every other styling choice but leaves `axes.grid` off.
 - **`PLOTEZ_AUTO_STYLE` environment variable**: set to `1`/`true`/`yes` before `import plotez` to apply the styling convention automatically on import.
 - **Examples**: `examples/ex_images/README_E8_style_comparison.py` and `examples/rtd_images/RTD_E16_style_comparison.py` — 3-panel comparisons of default vs. `enable_style()` vs. `disable_style()`/`enable_style(grid=False)`.
+- **`plot_config` accepts a plain `dict`**: `plot_with_dual_axes` now accepts a plain `dict` for `plot_config` in addition to `LinePlotConfig`/`ScatterPlotConfig` instances. Previously a `dict` raised `AttributeError` (only `Config.get_dict()` was called). This also enables dict `plot_config` on every function built on top of it: `plot_xy`, `plot_xyy`, `plot_xxy`, `plot_two_column_file`, `two_subplots`, and `n_plotter`.
+- **`tests/test_dict_config_support.py`**: New test module covering the dict `plot_config` support above, plain-`dict` tests for `errorbar_config`/`band_config`/`line_config` on `plot_errorbar`/`plot_errorband`/`plot_errorband_relative` (previously only exercised with typed config objects), and first-ever coverage for `plot_xxy`.
 
 ### Changed
 
@@ -30,6 +32,7 @@ Starting with v0.3.3, each release lists incompatible API or behavior changes un
 ### Fixed
 
 - **Twin-axis double grid**: `plot_with_dual_axes` now calls `ax2.grid(False)` on `twinx()`/`twiny()` axes to avoid a second, misaligned grid overlay when plotez's style convention has grid enabled.
+- **`plot_errorband_relative` `band_config` type hint**: Was `ErrorBandConfig | None`, missing the `dict[str, Any]` union that `_config_handler` already accepted at runtime; corrected to `ErrorBandConfig | dict[str, Any] | None`.
 
 ## [v0.3.3/v0.3.3.post1] - 12-Jun-2026
 

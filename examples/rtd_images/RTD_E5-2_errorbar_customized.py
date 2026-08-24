@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import ErrorPlotConfig, plot_errorbar
+from plotez import SAVE_DPI, ErrorPlotConfig, plot_errorbar
 
 x = np.linspace(0, 10, 20)
 y = np.sin(x)
@@ -32,5 +32,5 @@ plot_errorbar(
 )
 
 # plt.show()
-plt.savefig("RTD_E5-2_errorbar_customized.png", dpi=300)
+plt.savefig("RTD_E5-2_errorbar_customized.png", dpi=SAVE_DPI)
 plt.close()

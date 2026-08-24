@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import two_subplots
+from plotez import SAVE_DPI, two_subplots
 
 x = np.linspace(0, 10, 100)
 y1 = np.sin(x)
@@ -20,5 +20,5 @@ two_subplots(
 )
 
 # plt.show()
-plt.savefig("RTD_E8_two_subplots.png", dpi=300)
+plt.savefig("RTD_E8_two_subplots.png", dpi=SAVE_DPI)
 plt.close()

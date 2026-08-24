@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_xy
+from plotez import SAVE_DPI, plot_xy
 
 x = np.linspace(0, 10, 100)
 y = np.sin(x)
@@ -18,5 +18,5 @@ plot_xy(
 )
 
 # plt.show()
-plt.savefig("RTD_E2_custom_labels.png", dpi=300)
+plt.savefig("RTD_E2_custom_labels.png", dpi=SAVE_DPI)
 plt.close()

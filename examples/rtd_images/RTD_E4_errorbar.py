@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_errorbar
+from plotez import SAVE_DPI, plot_errorbar
 
 rng = np.random.default_rng(1234)
 
@@ -14,5 +14,5 @@ y_err = 0.3 * rng.random(size=y.shape)
 plot_errorbar(x, y, y_err=y_err)
 
 # plt.show()
-plt.savefig("RTD_E4_errorbar.png", dpi=300)
+plt.savefig("RTD_E4_errorbar.png", dpi=SAVE_DPI)
 plt.close()

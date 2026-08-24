@@ -3,7 +3,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from plotez import plot_xyy
+from plotez import SAVE_DPI, plot_xyy
 
 x = np.linspace(0, 10, 100)
 y1 = np.sin(x)
@@ -14,5 +14,5 @@ plot_xyy(
 )
 
 # plt.show()
-plt.savefig("README_E3_dual_y_axis.png", dpi=300)
+plt.savefig("README_E3_dual_y_axis.png", dpi=SAVE_DPI)
 plt.close()
