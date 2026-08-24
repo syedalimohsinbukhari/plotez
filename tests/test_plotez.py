@@ -8,7 +8,14 @@ import pytest
 from matplotlib.axes import Axes
 
 from plotez import (
+    BarPlotConfig,
+    ErrorBandConfig,
+    ErrorPlotConfig,
+    LinePlotConfig,
+    ScatterPlotConfig,
     n_plotter,
+    plot_bar,
+    plot_barh,
     plot_errorband,
     plot_errorbar,
     plot_two_column_file,
@@ -17,7 +24,6 @@ from plotez import (
     plot_xyy,
     two_subplots,
 )
-from plotez.backend.utilities import ErrorBandConfig, ErrorPlotConfig, LinePlotConfig, ScatterPlotConfig
 from plotez.errors import (
     AxisLabelError,
     ColumnCountError,
@@ -357,13 +363,7 @@ class TestNPlotter:
         """Test equivalent list and tuple label handling without deprecation."""
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=labels,
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=labels)
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
         assert not any(item.category is DeprecationWarning for item in caught)
@@ -371,13 +371,7 @@ class TestNPlotter:
     def test_n_plotter_pads_short_tuple_labels(self, sample_x_data_list, sample_y_data_list):
         """Test that short tuple labels are padded like short list labels."""
         with pytest.warns(UserWarning, match="Padding with empty strings"):
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=("X1",),
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=("X1",))
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", ""]
 
@@ -386,13 +380,7 @@ class TestNPlotter:
         labels = ["X1", "X2", "unused"]
 
         with pytest.warns(UserWarning, match="Trimming the last 1 element"):
-            axs = n_plotter(
-                sample_x_data_list[:2],
-                sample_y_data_list[:2],
-                n_rows=1,
-                n_cols=2,
-                x_labels=labels,
-            )
+            axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, x_labels=labels)
 
         assert [ax.get_xlabel() for ax in axs.flat] == ["X1", "X2"]
         assert labels == ["X1", "X2", "unused"]
@@ -436,6 +424,13 @@ class TestNPlotter:
         # Check the main plot title via figure
         fig = axs.flat[0].get_figure()
         assert fig.texts[0].get_text() == "" if fig.texts else True
+
+    def test_n_plotter_rgba_tuple_not_cycled(self, sample_x_data_list, sample_y_data_list):
+        """RGBA color tuple must not be treated as a 4-element cycle sequence."""
+        lp = LinePlotConfig(color=(0.1, 0.2, 0.3, 1.0))
+        axs = n_plotter(sample_x_data_list[:2], sample_y_data_list[:2], n_rows=1, n_cols=2, plot_config=lp)
+        colors = [ax.lines[0].get_color() for ax in axs.flat]
+        np.testing.assert_array_equal(colors[0], colors[1])
 
 
 class TestPlotErrorbar:
@@ -505,7 +500,7 @@ class TestPlotErrorbar:
         """Test that passing both figure_kwargs and axis emits a warning."""
         fig, ax = plt.subplots()
         with pytest.warns(UserWarning):
-            result = plot_errorbar(sample_x_data, sample_y_data, axis=ax, figure_kwargs={"figsize": (10, 6)})
+            result = plot_errorbar(sample_x_data, sample_y_data, figure_kwargs={"figsize": (10, 6)}, axis=ax)
         assert result == ax
 
     def test_errorbar_logarithmic_axes(self):
@@ -777,3 +772,115 @@ class TestCustomExceptions:
 
         with pytest.raises(ConfigurationError):
             plot_with_dual_axes(x1_data=sample_x_data, y1_data=sample_y_data, axis_labels=("X", "Y"))
+
+
+class TestPlotBar:
+    """Test plot_bar function."""
+
+    X = [1, 2, 3]
+    Y = [4, 5, 6]
+
+    def test_bar_basic(self):
+        """Basic call returns an Axes object."""
+        result = plot_bar(self.X, self.Y)
+        assert isinstance(result, Axes)
+
+    def test_bar_axis_labels_and_title(self):
+        """Axis labels and title are applied correctly."""
+        ax = plot_bar(self.X, self.Y, x_label="Cat", y_label="Val", plot_title="My Bar")
+        assert ax.get_xlabel() == "Cat"
+        assert ax.get_ylabel() == "Val"
+        assert ax.get_title() == "My Bar"
+
+    def test_bar_on_existing_axis(self):
+        """Plotting on a pre-existing axis reuses it."""
+        fig, ax = plt.subplots()
+        result = plot_bar(self.X, self.Y, axis=ax)
+        assert result is ax
+
+    def test_bar_with_config_object(self):
+        """BarPlotConfig instance is accepted without error."""
+        cfg = BarPlotConfig(color="steelblue", edgecolor="black", linewidth=1.0)
+        result = plot_bar(self.X, self.Y, bar_config=cfg)
+        assert isinstance(result, Axes)
+
+    def test_bar_with_dict_config(self):
+        """Dict bar_config is accepted without error."""
+        result = plot_bar(self.X, self.Y, bar_config={"color": "salmon", "alpha": 0.7})
+        assert isinstance(result, Axes)
+
+    def test_bar_scalar_alpha(self):
+        """Scalar alpha uses the single-call path; all patches share that alpha."""
+        ax = plot_bar(self.X, self.Y, bar_config={"alpha": 0.5})
+        # Single-call path → one BarContainer with three patches
+        assert len(ax.containers) == 1
+        for patch in ax.containers[0]:
+            assert patch.get_alpha() == pytest.approx(0.5)
+
+    def test_bar_list_alpha(self):
+        """List alpha distributes one value per bar."""
+        alphas = [0.3, 0.6, 1.0]
+        ax = plot_bar(self.X, self.Y, bar_config={"alpha": alphas})
+        # Per-bar path → one BarContainer per data point
+        assert len(ax.containers) == len(self.X)
+        for container, expected in zip(ax.containers, alphas):
+            assert container[0].get_alpha() == pytest.approx(expected)
+
+    def test_bar_list_color(self):
+        """List color distributes one color per bar without error."""
+        ax = plot_bar(self.X, self.Y, bar_config={"color": ["red", "green", "blue"]})
+        assert len(ax.containers) == len(self.X)
+
+    def test_bar_rgba_tuple_not_cycled(self):
+        """RGBA tuple color is treated as a single color, not a 4-element cycle."""
+        ax = plot_bar(self.X, self.Y, bar_config={"color": (0.1, 0.2, 0.3, 1.0)})
+        # Tuple is not a list, so the single-call path is used → one container
+        assert len(ax.containers) == 1
+
+    def test_bar_list_length_mismatch_warns(self):
+        """A list shorter than the bar count triggers a UserWarning about cycling."""
+        with pytest.warns(UserWarning, match="Values will be cycled"):
+            plot_bar(self.X, self.Y, bar_config={"alpha": [0.3, 0.6]})
+
+    def test_bar_list_cycles_when_shorter(self):
+        """Shorter list cycles modulo — no error, bars are drawn."""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            ax = plot_bar(self.X, self.Y, bar_config={"alpha": [0.3, 0.6]})
+        assert len(ax.containers) == len(self.X)
+
+
+class TestPlotBarh:
+    """Test plot_barh function."""
+
+    X = [1, 2, 3]
+    Y = [4, 5, 6]
+
+    def test_barh_basic(self):
+        """Basic call returns an Axes object."""
+        result = plot_barh(self.X, self.Y)
+        assert isinstance(result, Axes)
+
+    def test_barh_default_title(self):
+        """Default plot title is 'Horizontal Bar Plot'."""
+        ax = plot_barh(self.X, self.Y)
+        assert ax.get_title() == "Horizontal Bar Plot"
+
+    def test_barh_axis_labels_swapped(self):
+        """For barh, x_label appears on the y-axis and y_label on the x-axis."""
+        ax = plot_barh(self.X, self.Y, x_label="Category", y_label="Value")
+        assert ax.get_ylabel() == "Category"
+        assert ax.get_xlabel() == "Value"
+
+    def test_barh_list_alpha(self):
+        """List alpha distributes one value per bar."""
+        alphas = [0.2, 0.5, 0.9]
+        ax = plot_barh(self.X, self.Y, bar_config={"alpha": alphas})
+        assert len(ax.containers) == len(self.X)
+        for container, expected in zip(ax.containers, alphas):
+            assert container[0].get_alpha() == pytest.approx(expected)
+
+    def test_barh_rgba_tuple_not_cycled(self):
+        """RGBA tuple color uses the single-call path for barh as well."""
+        ax = plot_barh(self.X, self.Y, bar_config={"color": (0.4, 0.5, 0.6, 0.8)})
+        assert len(ax.containers) == 1

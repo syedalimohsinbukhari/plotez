@@ -1,0 +1,94 @@
+<svg width="1280" height="640" viewBox="0 0 680 340" style="width:100%;height:auto;display:block;"
+     xmlns="http://www.w3.org/2000/svg" role="img">
+    <title>plotez — matplotlib, made effortless</title>
+    <desc>
+        Banner for plotez Python library: logo on the left, a Gaussian fit with scatter data and error bars on the
+        right
+    </desc>
+    <rect width="680" height="340" fill="#0D1117"/>
+    <g transform="translate(0 50)">
+    <line x1="270" y1="45" x2="270" y2="225" stroke="#1A2535" stroke-width="1"/>
+    <line x1="271" y1="45" x2="271" y2="225" stroke="#1A2535" stroke-width="1"/>
+    <line x1="272" y1="45" x2="272" y2="225" stroke="#1A2535" stroke-width="1"/>
+    <line x1="275" y1="45" x2="275" y2="225" stroke="#1A2535" stroke-width="1"/>
+    <line x1="278" y1="45" x2="278" y2="225" stroke="#1A2535" stroke-width="1"/>
+    <g stroke="#131C28" stroke-width="1">
+        <line x1="298" y1="90" x2="638" y2="90"/>
+        <line x1="298" y1="125" x2="638" y2="125"/>
+        <line x1="298" y1="160" x2="638" y2="160"/>
+        <line x1="298" y1="195" x2="638" y2="195"/>
+        <line x1="358" y1="50" x2="358" y2="220"/>
+        <line x1="418" y1="50" x2="418" y2="220"/>
+        <line x1="468" y1="50" x2="468" y2="220"/>
+        <line x1="518" y1="50" x2="518" y2="220"/>
+        <line x1="568" y1="50" x2="568" y2="220"/>
+        <line x1="618" y1="50" x2="618" y2="220"/>
+    </g>
+    <line x1="298" y1="50" x2="298" y2="222" stroke="#1E2D40" stroke-width="2"/>
+    <line x1="296" y1="220" x2="638" y2="220" stroke="#1E2D40" stroke-width="2"/>
+    <polygon
+            points="299,219 299,199 325,185 355,160 385,130 415,101 445,80 468,75 490,80 520,100 550,129 580,159 608,183 630,197 630,219"
+            fill="#F5A623" fill-opacity="0.15"/>
+    <polyline
+            points="299,199 325,185 355,160 385,130 415,101 445,80 468,75 490,80 520,100 550,129 580,159 608,183 630,197"
+            stroke="#F5A623" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <g stroke="#F5A623" stroke-width="1.1" opacity="0.55">
+        <line x1="312" y1="190" x2="312" y2="210"/>
+        <line x1="308" y1="190" x2="316" y2="190"/>
+        <line x1="308" y1="210" x2="316" y2="210"/>
+        <line x1="348" y1="166" x2="348" y2="190"/>
+        <line x1="344" y1="166" x2="352" y2="166"/>
+        <line x1="344" y1="190" x2="352" y2="190"/>
+        <line x1="378" y1="144" x2="378" y2="162"/>
+        <line x1="374" y1="144" x2="382" y2="144"/>
+        <line x1="374" y1="162" x2="382" y2="162"/>
+        <line x1="412" y1="93" x2="412" y2="113"/>
+        <line x1="408" y1="93" x2="416" y2="93"/>
+        <line x1="408" y1="113" x2="416" y2="113"/>
+        <line x1="445" y1="74" x2="445" y2="90"/>
+        <line x1="441" y1="74" x2="449" y2="74"/>
+        <line x1="441" y1="90" x2="449" y2="90"/>
+        <line x1="468" y1="65" x2="468" y2="79"/>
+        <line x1="464" y1="65" x2="472" y2="65"/>
+        <line x1="464" y1="79" x2="472" y2="79"/>
+        <line x1="492" y1="74" x2="492" y2="92"/>
+        <line x1="488" y1="74" x2="496" y2="74"/>
+        <line x1="488" y1="92" x2="496" y2="92"/>
+        <line x1="522" y1="92" x2="522" y2="112"/>
+        <line x1="518" y1="92" x2="526" y2="92"/>
+        <line x1="518" y1="112" x2="526" y2="112"/>
+        <line x1="555" y1="124" x2="555" y2="142"/>
+        <line x1="551" y1="124" x2="559" y2="124"/>
+        <line x1="551" y1="142" x2="559" y2="142"/>
+        <line x1="585" y1="152" x2="585" y2="172"/>
+        <line x1="581" y1="152" x2="589" y2="152"/>
+        <line x1="581" y1="172" x2="589" y2="172"/>
+        <line x1="615" y1="177" x2="615" y2="195"/>
+        <line x1="611" y1="177" x2="619" y2="177"/>
+        <line x1="611" y1="195" x2="619" y2="195"/>
+    </g>
+    <g fill="#F5A623">
+        <circle cx="312" cy="200" r="3"/>
+        <circle cx="348" cy="178" r="3"/>
+        <circle cx="378" cy="153" r="3"/>
+        <circle cx="412" cy="103" r="3"/>
+        <circle cx="445" cy="82" r="3"/>
+        <circle cx="468" cy="72" r="3"/>
+        <circle cx="492" cy="83" r="3"/>
+        <circle cx="522" cy="102" r="3"/>
+        <circle cx="555" cy="133" r="3"/>
+        <circle cx="585" cy="162" r="3"/>
+        <circle cx="615" cy="186" r="3"/>
+    </g>
+    <text x="42" y="148" font-family="'JetBrains Mono','Courier New',monospace" font-size="58" font-weight="700"
+          letter-spacing="-1" fill="#FFFFFF">plot<tspan fill="#F5A623">ez</tspan></text>
+    <text x="66" y="160" font-family="'JetBrains Mono','Courier New',monospace" font-size="11" fill="#56657A">
+        Mundane plotting made easy.
+    </text>
+    <rect x="38" y="168" width="210" height="20" rx="3" fill="#131C28"/>
+    <text x="44" y="181" font-family="'JetBrains Mono','Courier New',monospace" font-size="10" fill="#3FB950">$ pip
+        install plotez
+    </text>
+    </g>
+    <rect x="0" y="334" width="680" height="6" fill="#F5A623" opacity="0.68"/>
+</svg>

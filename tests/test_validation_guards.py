@@ -50,13 +50,7 @@ def test_errorbar_validates_1d_error_lengths(argument, value):
         plot_errorbar([1, 2, 3], [1, 2, 3], **{argument: value})
 
 
-@pytest.mark.parametrize(
-    ("argument", "value"),
-    [
-        ("x_err", np.ones((2, 2))),
-        ("y_err", np.ones((2, 2))),
-    ],
-)
+@pytest.mark.parametrize(("argument", "value"), [("x_err", np.ones((2, 2))), ("y_err", np.ones((2, 2)))])
 def test_errorbar_validates_asymmetric_error_lengths(argument, value):
     with pytest.raises(DataLengthError, match=argument):
         plot_errorbar([1, 2, 3], [1, 2, 3], **{argument: value})

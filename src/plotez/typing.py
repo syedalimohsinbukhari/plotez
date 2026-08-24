@@ -26,7 +26,7 @@ ArrayLike = _ArrayLike
 Axes = _Axes
 Figure = _Figure
 
-HatchStyle = Literal["/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"]
+HatchStyle = Literal["/", "\\", "///", "|", "-", "+", "x", "o", "O", ".", "*"]
 
 AxesReturn = Axes | tuple[Axes, Axes]
 

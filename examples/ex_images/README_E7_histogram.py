@@ -1,9 +1,9 @@
-"""Created on May 17 2026"""
+"""Created on May 17, 2026"""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import hgc, plot_hist
+from plotez import SAVE_DPI, hgc, plot_hist
 
 data = np.genfromtxt("../rtd_images/histogram_data.csv", delimiter=",", skip_header=1)
 normal_data = data[:, 1]  # second column is 'normal'
@@ -20,5 +20,5 @@ plot_hist(
 )
 
 # plt.show()
-plt.savefig("README_E7_histogram.png", dpi=300)
+plt.savefig("README_E7_histogram.png", dpi=SAVE_DPI)
 plt.close()

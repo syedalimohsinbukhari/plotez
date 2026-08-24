@@ -42,3 +42,11 @@ HistogramConfig
    :members:
    :undoc-members:
    :show-inheritance:
+
+BarPlotConfig
+-------------
+
+.. autoclass:: plotez.BarPlotConfig
+   :members:
+   :undoc-members:
+   :show-inheritance:

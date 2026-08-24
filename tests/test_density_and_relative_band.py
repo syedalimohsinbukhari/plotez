@@ -5,8 +5,7 @@ import numpy as np
 import pytest
 from matplotlib.axes import Axes
 
-from plotez import plot_density, plot_errorband_relative
-from plotez.backend.utilities import ErrorBandConfig, LinePlotConfig
+from plotez import ErrorBandConfig, LinePlotConfig, plot_density, plot_errorband_relative
 from plotez.errors import ConfigurationError
 
 
@@ -95,7 +94,7 @@ class TestPlotErrorbandRelative:
         x, y = xy
         fig, ax = plt.subplots()
         with pytest.warns(UserWarning):
-            result = plot_errorband_relative(x, y, y_upper=0.2, axis=ax, figure_kwargs={"figsize": (8, 4)})
+            result = plot_errorband_relative(x, y, y_upper=0.2, figure_kwargs={"figsize": (8, 4)}, axis=ax)
         assert result is ax
 
     def test_custom_labels(self, xy):

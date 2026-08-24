@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import ErrorBandConfig, LinePlotConfig, plot_errorband
+from plotez import SAVE_DPI, ErrorBandConfig, LinePlotConfig, plot_errorband
 
 x = np.linspace(0, 10, 50)
 y = np.sin(x)
@@ -20,5 +20,5 @@ plot_config = LinePlotConfig(color="gold", linewidth=2, linestyle="--", marker="
 plot_errorband(x, y, y_lower, y_upper, data_label="Measurement", band_config=band_config, line_config=plot_config)
 
 # plt.show()
-plt.savefig("README_E5-1_error_band.png", dpi=300)
+plt.savefig("README_E5-1_error_band.png", dpi=SAVE_DPI)
 plt.close()

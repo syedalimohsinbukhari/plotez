@@ -6,101 +6,88 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Starting with v0.3.3, each release lists incompatible API or behavior changes under a dedicated **Breaking Changes** heading.
 
-## [v0.3.3] - 12-Jun-2026
-
-### Added
-
-- **`DataLengthError` exception**: New `DataError` subclass for arrays that must have matching lengths. It is
-  available from the new `plotez.errors` module.
-- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Added specialized `ConfigurationError` subclasses for identifying
-  invalid x- and y-array dimensionality. Public plotting guards now consistently report these failures through the
-  broader `ShapeError` data exception.
-- **Shared validation utilities**: Added and exported `validate_1d` and `validate_equal_length`, with dedicated
-  helpers for error-bar arrays, absolute error-band bounds, and relative error-band offsets.
-- **Validation guards across plotting functions**:
-  - `plot_xy`, `plot_xyy`, `plot_xxy`, and direct `plot_with_dual_axes` calls now reject non-1D or mismatched data.
-  - `plot_errorbar` validates x/y data plus scalar, 1D symmetric, and `(2, N)` asymmetric error inputs.
-  - `plot_errorband` and `plot_errorband_relative` validate data, bounds, offsets, and inferred-band lengths before
-    performing NumPy arithmetic or calling matplotlib.
-  - `plot_hist` and `plot_density` now require a 1D `x_data` array.
-  - `n_plotter` now reports insufficient x/y datasets for the requested grid before indexing them.
-  - `plot_two_column_file` now raises `EmptyDataError` for empty or single-row files instead of leaking NumPy
-    indexing errors.
-- **Validation regression tests**: Added coverage for each guarded plotting path, including happy paths and the
-  regression where a 2D `plot_xy` input must raise `ShapeError` before matplotlib is called.
-- **Dedicated exception namespace**: Added `plotez.errors` as the sole public exception module. Import exceptions
-  with statements such as `from plotez.errors import ShapeError`; tracebacks and documentation now use names such
-  as `plotez.errors.ShapeError`.
+## [v0.4.0] - [UNDER CONSTRUCTION]
 
 ### Breaking Changes
 
-- **Histogram input contract**: `plot_hist` and `plot_density` no longer accept a 2D array as multiple histogram
-  datasets; callers must provide one 1D dataset per call.
-- **Validation error reporting**: Invalid shapes now raise `ShapeError`, incompatible lengths raise
-  `DataLengthError`, and empty file data raises `EmptyDataError`, replacing downstream matplotlib, NumPy, or
-  indexing exceptions with errors that identify the relevant argument.
-- **`PlotError` → `PlotEZError`**: The base exception class has been renamed to avoid shadowing the
-  common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.)
-  now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
-- **`AxesReturn` type alias simplified**: `NDArray` removed from the union; the alias is now
-  `Axes | tuple[Axes, Axes]` only, matching the actual return types of all public functions.
-- **Exception module**: All exceptions now live exclusively in `plotez.errors`. Imports through the top-level
-  package, `plotez.backend`, and the removed `plotez.backend.error_handling` module are no longer supported.
+- **Configuration import paths cleaned up**: Config classes are no longer re-exported from `plotez.backend` or `plotez.backend.utilities`. Import them from `plotez` for the public convenience API or from `plotez.configurations` for the canonical module path.
+- **Wrapper module path cleaned up**: Wrapper helpers now live in `plotez.backend.wrappers`; the old private `plotez.backend._wrappers` module has been removed. The top-level `plotez` wrapper imports remain supported.
+- **Backend package re-exports reduced**: `plotez.backend` no longer re-exports config classes or wrapper helpers. Import utilities from `plotez.backend` only when using backend validation or dispatch helpers directly.
+- **Styling is off by default**: `plotez` no longer applies its publication-ready `rcParams` convention automatically on import. Previously, importing `plotez` silently mutated matplotlib's global style for the whole process. Call `plotez.enable_style()` explicitly to opt in, or set `PLOTEZ_AUTO_STYLE=1` (or `true`/`yes`) before `import plotez` to restore the previous always-on behavior.
+
+### Added
+
+- **`enable_style()` / `disable_style()`**: New public functions (`plotez._plotez_constants`, re-exported from top-level `plotez`). `enable_style(grid=True)` (re-)applies plotez's convention; `disable_style()` calls `plt.rcdefaults()`.
+- **`grid` kwarg on `update_style()` / `enable_style()`**: `grid=False` keeps every other styling choice but leaves `axes.grid` off.
+- **`PLOTEZ_AUTO_STYLE` environment variable**: set to `1`/`true`/`yes` before `import plotez` to apply the styling convention automatically on import.
+- **Examples**: `examples/ex_images/README_E8_style_comparison.py` and `examples/rtd_images/RTD_E16_style_comparison.py` — 3-panel comparisons of default vs. `enable_style()` vs. `disable_style()`/`enable_style(grid=False)`.
+- **`plot_config` accepts a plain `dict`**: `plot_with_dual_axes` now accepts a plain `dict` for `plot_config` in addition to `LinePlotConfig`/`ScatterPlotConfig` instances. Previously a `dict` raised `AttributeError` (only `Config.get_dict()` was called). This also enables dict `plot_config` on every function built on top of it: `plot_xy`, `plot_xyy`, `plot_xxy`, `plot_two_column_file`, `two_subplots`, and `n_plotter`.
+- **`tests/test_dict_config_support.py`**: New test module covering the dict `plot_config` support above, plain-`dict` tests for `errorbar_config`/`band_config`/`line_config` on `plot_errorbar`/`plot_errorband`/`plot_errorband_relative` (previously only exercised with typed config objects), and first-ever coverage for `plot_xxy`.
 
 ### Changed
 
-- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now
-  correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
+- **Version bump**: Updated package version from `v0.3.3post1` to `v0.4.0`.
+- **Docs and examples**: Updated config examples to use top-level `plotez` imports.
 
 ### Fixed
 
-- **Backend circular import**: Validation utilities now import `ConfigurationError` directly from `plotez.errors`,
-  avoiding partially initialized backend modules while preserving the intended exception for missing error-band
-  bounds.
-- **Label collection normalization**: Label parameters continue to accept both `list[str]` and `tuple[str, ...]`
-  without deprecation. Grid labels are copied before padding or trimming, fixing short tuple inputs and preventing
-  mutation of caller-provided lists.
+- **Twin-axis double grid**: `plot_with_dual_axes` now calls `ax2.grid(False)` on `twinx()`/`twiny()` axes to avoid a second, misaligned grid overlay when plotez's style convention has grid enabled.
+- **`plot_errorband_relative` `band_config` type hint**: Was `ErrorBandConfig | None`, missing the `dict[str, Any]` union that `_config_handler` already accepted at runtime; corrected to `ErrorBandConfig | dict[str, Any] | None`.
+
+## [v0.3.3/v0.3.3.post1] - 12-Jun-2026
+
+### Added
+
+- **`DataLengthError` exception**: New `DataError` subclass for arrays that must have matching lengths. It is available from the new `plotez.errors` module.
+- **`XArrayNot1D` / `YArrayNot1D` exceptions**: Added specialized `ConfigurationError` subclasses for identifying invalid x- and y-array dimensionality. Public plotting guards now consistently report these failures through the broader `ShapeError` data exception.
+- **Shared validation utilities**: Added and exported `validate_1d` and `validate_equal_length`, with dedicated helpers for error-bar arrays, absolute error-band bounds, and relative error-band offsets.
+- **Validation guards across plotting functions**:
+  - `plot_xy`, `plot_xyy`, `plot_xxy`, and direct `plot_with_dual_axes` calls now reject non-1D or mismatched data.
+  - `plot_errorbar` validates x/y data plus scalar, 1D symmetric, and `(2, N)` asymmetric error inputs.
+  - `plot_errorband` and `plot_errorband_relative` validate data, bounds, offsets, and inferred-band lengths before performing NumPy arithmetic or calling matplotlib.
+  - `plot_hist` and `plot_density` now require a 1D `x_data` array.
+  - `n_plotter` now reports insufficient x/y datasets for the requested grid before indexing them.
+  - `plot_two_column_file` now raises `EmptyDataError` for empty or single-row files instead of leaking NumPy indexing errors.
+- **Validation regression tests**: Added coverage for each guarded plotting path, including happy paths and the regression where a 2D `plot_xy` input must raise `ShapeError` before matplotlib is called.
+- **Dedicated exception namespace**: Added `plotez.errors` as the sole public exception module. Import exceptions with statements such as `from plotez.errors import ShapeError`; tracebacks and documentation now use names such as `plotez.errors.ShapeError`.
+
+### Breaking Changes
+
+- **Histogram input contract**: `plot_hist` and `plot_density` no longer accept a 2D array as multiple histogram datasets; callers must provide one 1D dataset per call.
+- **Validation error reporting**: Invalid shapes now raise `ShapeError`, incompatible lengths raise `DataLengthError`, and empty file data raises `EmptyDataError`, replacing downstream matplotlib, NumPy, or indexing exceptions with errors that identify the relevant argument.
+- **`PlotError` → `PlotEZError`**: The base exception class has been renamed to avoid shadowing the common `PlotError` name in user code. All subclasses (`OrientationError`, `DataError`, `ConfigurationError`, etc.) now inherit from `PlotEZError`. Code that catches `PlotError` must be updated.
+- **`AxesReturn` type alias simplified**: `NDArray` removed from the union; the alias is now `Axes | tuple[Axes, Axes]` only, matching the actual return types of all public functions.
+- **Exception module**: All exceptions now live exclusively in `plotez.errors`. Imports through the top-level package, `plotez.backend`, and the removed `plotez.backend.error_handling` module are no longer supported.
+
+### Changed
+
+- **`plot_with_dual_axes` scatter default**: When `plot_config=None` and `is_scatter=True`, the function now correctly defaults to `ScatterPlotConfig()` instead of `LinePlotConfig()`.
+
+### Fixed
+
+- **Backend circular import**: Validation utilities now import `ConfigurationError` directly from `plotez.errors`, avoiding partially initialized backend modules while preserving the intended exception for missing error-band bounds.
+- **Label collection normalization**: Label parameters continue to accept both `list[str]` and `tuple[str, ...]` without deprecation. Grid labels are copied before padding or trimming, fixing short tuple inputs and preventing mutation of caller-provided lists.
 
 ### Infrastructure
 
-- **`requirements.txt` split**: `requirements.txt` now contains base runtime dependencies only
-  (`uv export --no-group dev`); a new `requirements[dev].txt` holds the full pinned dev environment
-  (`uv export`), matching how `pip install -e ".[dev]"` consumers vs. CI consumers use the files.
-- **Pre-commit hooks added**: `.pre-commit-config.yaml` gains two new local hooks —
-  `check-version-sync` (runs `scripts/check_version_sync.py` to assert `README.md` matches `version.py`) and
-  `uv-export` (runs `uv lock --upgrade && uv sync` then regenerates both requirements files on every commit).
-  The duplicate `pytest` hook entry was also removed.
+- **`requirements.txt` split**: `requirements.txt` now contains base runtime dependencies only (`uv export --no-group dev`); a new `requirements[dev].txt` holds the full pinned dev environment (`uv export`), matching how `pip install -e ".[dev]"` consumers vs. CI consumers use the files.
+- **Pre-commit hooks added**: `.pre-commit-config.yaml` gains two new local hooks — `check-version-sync` (runs `scripts/check_version_sync.py` to assert `README.md` matches `version.py`) and `uv-export` (runs `uv lock --upgrade && uv sync` then regenerates both requirements files on every commit). The duplicate `pytest` hook entry was also removed.
 
-## [v0.3.2/0.3.2.post1] - 20-May-2026
+## [v0.3.2/v0.3.2.post1] - 20-May-2026
 
 ### Fixed
 
-- **Mutable default arguments**: `data_labels`, `x_labels`, `y_labels`, `subplot_titles`, and `axis_labels`
-  parameters in `plot_xyy`, `plot_xxy`, `two_subplots`, and `plot_with_dual_axes` used bare `list` literals as
-  defaults — the classic Python mutable-default bug. All replaced with `None`; intended defaults are assigned inside
-  the function body, narrowing the type to `list[str]` immediately so downstream code has no `| None` complaints.
-- **Ghost `auto_label` docstring content**: Removed all references to the non-existent `auto_label` parameter from
-  the docstrings of `plot_errorbar`, `plot_with_dual_axes`, and `plot_hist`.
-- **Dead `_auto_handler` function**: Removed from `src/plotez/backend/utilities.py`; it was defined but never called
-  anywhere in the codebase. Its sole dependency `LabelConflictWarning` import was also cleaned up from that module.
-- **Internal `tight_layout` calls**: Removed `plt.tight_layout()` from `plot_with_dual_axes` and
-  `fig.tight_layout()` from `n_plotter`. Layout management is now fully at the caller's discretion.
+- **Mutable default arguments**: `data_labels`, `x_labels`, `y_labels`, `subplot_titles`, and `axis_labels` parameters in `plot_xyy`, `plot_xxy`, `two_subplots`, and `plot_with_dual_axes` used bare `list` literals as defaults — the classic Python mutable-default bug. All replaced with `None`; intended defaults are assigned inside the function body, narrowing the type to `list[str]` immediately so downstream code has no `| None` complaints.
+- **Ghost `auto_label` docstring content**: Removed all references to the non-existent `auto_label` parameter from the docstrings of `plot_errorbar`, `plot_with_dual_axes`, and `plot_hist`.
+- **Dead `_auto_handler` function**: Removed from `src/plotez/backend/utilities.py`; it was defined but never called anywhere in the codebase. Its sole dependency `LabelConflictWarning` import was also cleaned up from that module.
+- **Internal `tight_layout` calls**: Removed `plt.tight_layout()` from `plot_with_dual_axes` and `fig.tight_layout()` from `n_plotter`. Layout management is now fully at the caller's discretion.
 
 ### Changed
 
-- **Axes-only returns** (**Breaking**): All plot functions now return `Axes` (single-axis) or `tuple[Axes, Axes]`
-  (dual-axis) — never `(Figure, Axes)`. Figures are always accessible via `ax.get_figure()`.
-  `n_plotter` and `two_subplots` return a shaped `(n_rows, n_cols)` `ndarray` of `Axes` instead of
-  `(Figure, flat_ndarray)`.
-- **`subplot_title` → `subplot_titles`** (**Breaking**): The parameter in `n_plotter` and `two_subplots` has been
-  renamed from `subplot_title` (singular) to `subplot_titles` (plural) to match the `_label_sanitizer` internal
-  keyword and improve consistency.
-- **`AxesFigReturn` type alias retired**: `AxesFigReturn` in `src/plotez/typing.py` is now a deprecated alias for
-  `AxesReturn` and will be removed in a future release. `AxesReturn` is extended to
-  `Axes | tuple[Axes, Axes] | NDArray` to cover all return shapes uniformly.
-- **Internal list literals → tuples**: All internal calls that constructed `axis_labels=[...]` before passing to
-  `plot_with_dual_axes` (in `plot_xy`, `plot_xyy`, `plot_xxy`) now use `tuple` literals, eliminating spurious
-  `DeprecationWarning`s from within the library itself.
+- **Axes-only returns** (**Breaking**): All plot functions now return `Axes` (single-axis) or `tuple[Axes, Axes]` (dual-axis) — never `(Figure, Axes)`. Figures are always accessible via `ax.get_figure()`. `n_plotter` and `two_subplots` return a shaped `(n_rows, n_cols)` `ndarray` of `Axes` instead of `(Figure, flat_ndarray)`.
+- **`subplot_title` → `subplot_titles`** (**Breaking**): The parameter in `n_plotter` and `two_subplots` has been renamed from `subplot_title` (singular) to `subplot_titles` (plural) to match the `_label_sanitizer` internal keyword and improve consistency.
+- **`AxesFigReturn` type alias retired**: `AxesFigReturn` in `src/plotez/typing.py` is now a deprecated alias for `AxesReturn` and will be removed in a future release. `AxesReturn` is extended to `Axes | tuple[Axes, Axes] | NDArray` to cover all return shapes uniformly.
+- **Internal list literals → tuples**: All internal calls that constructed `axis_labels=[...]` before passing to `plot_with_dual_axes` (in `plot_xy`, `plot_xyy`, `plot_xxy`) now use `tuple` literals, eliminating spurious `DeprecationWarning`s from within the library itself.
 - **Examples**: Updated all examples to use correct return types.
 
 ## [v0.3.1] - 17-May-2026

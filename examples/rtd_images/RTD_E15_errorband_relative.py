@@ -1,9 +1,9 @@
-"""Created on May 17 2026"""
+"""Created on May 17, 2026"""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import ebc, lpc, plot_errorband_relative
+from plotez import SAVE_DPI, ebc, lpc, plot_errorband_relative
 
 x = np.linspace(0, 10, 200)
 y = np.cos(x) + x * 0.25
@@ -29,5 +29,5 @@ ax = plot_errorband_relative(
 plt.tight_layout()
 
 # plt.show()
-plt.savefig("RTD_E15_errorband_relative.png", dpi=300)
+plt.savefig("RTD_E15_errorband_relative.png", dpi=SAVE_DPI)
 plt.close()

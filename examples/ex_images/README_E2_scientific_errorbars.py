@@ -3,8 +3,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import SAVE_DPI, ErrorPlotConfig, plot_errorbar
 
 rng = np.random.default_rng(1234)
 
@@ -16,5 +15,5 @@ ep = ErrorPlotConfig(color="darkblue", marker="o", capsize=5, ecolor="red", mark
 plot_errorbar(x, y, y_err=y_err, data_label="X vs Y\n(with errors)", errorbar_config=ep)
 
 # plt.show()
-plt.savefig("README_E2_scientific_errorbars.png", dpi=300)
+plt.savefig("README_E2_scientific_errorbars.png", dpi=SAVE_DPI)
 plt.close()

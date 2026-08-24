@@ -104,33 +104,14 @@ def main() -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--dir",
-        default="examples",
-        metavar="DIR",
-        help="Root directory to search (default: examples/)",
+        "--dir", default="examples", metavar="DIR", help="Root directory to search (default: examples/)"
     )
     parser.add_argument(
-        "--pattern",
-        default="**/*.py",
-        metavar="PAT",
-        help="Glob pattern relative to --dir (default: **/*.py)",
+        "--pattern", default="**/*.py", metavar="PAT", help="Glob pattern relative to --dir (default: **/*.py)"
     )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print files that would be run without executing them.",
-    )
-    parser.add_argument(
-        "--stop-on-error",
-        action="store_true",
-        help="Abort after the first failure.",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show per-file output / tracebacks inline.",
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Print files that would be run without executing them.")
+    parser.add_argument("--stop-on-error", action="store_true", help="Abort after the first failure.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Show per-file output / tracebacks inline.")
     args = parser.parse_args()
 
     # Resolve root relative to *this* script's location so the runner works regardless of the calling working directory.

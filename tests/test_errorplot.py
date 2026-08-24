@@ -1,6 +1,6 @@
 """Test ErrorPlotConfig functionality for the test suite."""
 
-from plotez.backend.utilities import ErrorPlotConfig
+from plotez import ErrorPlotConfig
 
 
 class TestErrorPlot:

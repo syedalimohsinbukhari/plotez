@@ -1,4 +1,4 @@
-"""Tests for wrapper/convenience functions in the _wrappers module."""
+"""Tests for wrapper/convenience functions."""
 
 from plotez import (
     ErrorBandConfig,

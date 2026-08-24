@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plotez import plot_errorband
-from plotez.backend import ErrorBandConfig, LinePlotConfig
+from plotez import SAVE_DPI, ErrorBandConfig, LinePlotConfig, plot_errorband
 
 x = np.linspace(0, 10, 200)  # Dense sampling
 y = np.sin(x)
@@ -25,5 +24,5 @@ plot_errorband(
 )
 
 # plt.show()
-plt.savefig("RTD_E7_errorbands.png", dpi=300)
+plt.savefig("RTD_E7_errorbands.png", dpi=SAVE_DPI)
 plt.close()

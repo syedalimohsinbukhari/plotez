@@ -1,3 +1,5 @@
+![BANNER](plotez_readme_banner.svg)
+
 # plotEZ
 
 **Mundane plotting made easy.**
@@ -20,7 +22,7 @@ with minimal boilerplate code.
 
 | Item           | Status                                                                                  |
 |----------------|-----------------------------------------------------------------------------------------|
-| Latest version | v0.3.3.post1                                                                            |
+| Latest version | v0.4.0                                                                                  |
 | Python support | 3.10 · 3.11 · 3.12                                                                      |
 | Test coverage  | 85%+                                                                                    |
 | Type hints     | PEP 561 compliant (`py.typed`)                                                          |
@@ -39,6 +41,9 @@ with minimal boilerplate code.
 - **Multi-Panel Layouts**: Flexible subplot arrangements with automatic labeling
 - **File Integration**: Direct plotting from CSV files
 - **Extensive Customization**: Full control over plot appearance via parameter classes
+- **Opt-In Styling**: Publication-ready style convention is off by default (importing plotez never
+  mutates your project's matplotlib rcParams); opt in via `plotez.enable_style()` at runtime or the
+  `PLOTEZ_AUTO_STYLE` environment variable at import time
 - **Custom Exceptions**: Domain-specific exceptions for clear, catchable error handling
 - **Early Input Validation**: Clear `ShapeError`, `DataLengthError`, and `EmptyDataError` failures before matplotlib
 - **Type Safety**: Complete type hints for better IDE support and type checking (PEP 561 compliant)
@@ -87,8 +92,7 @@ That's it. Three lines for a labeled plot.
 
 ```python
 import numpy as np
-from plotez import plot_errorbar
-from plotez.backend import ErrorPlotConfig
+from plotez import ErrorPlotConfig, plot_errorbar
 
 rng = np.random.default_rng(1234)
 
@@ -132,9 +136,9 @@ Dual axes done right. No `ax.twinx()` gymnastics.
 import numpy as np
 from plotez import n_plotter
 
-x_data = np.linspace(0, 10, 100)
-y_data = [np.sin(x_data), np.cos(x_data),
-          np.tan(x_data / 5), x_data ** 2 / 100]
+x_data = [np.linspace(0, 10, 100) for _ in range(4)]
+y_data = [np.sin(x_data[0]), np.cos(x_data[1]),
+          np.tan(x_data[2] / 5), x_data[3] ** 2 / 100]
 
 n_plotter(x_data, y_data, n_rows=2, n_cols=2)
 ```
@@ -151,8 +155,7 @@ Use `ErrorBandConfig` and `LinePlotConfig` for explicit, IDE-friendly configurat
 
 ```python
 import numpy as np
-from plotez import plot_errorband
-from plotez.backend import ErrorBandConfig, LinePlotConfig
+from plotez import ErrorBandConfig, LinePlotConfig, plot_errorband
 
 x = np.linspace(0, 10, 50)
 y = np.sin(x)
@@ -196,8 +199,7 @@ plot_errorband(x, y, y_lower, y_upper,
 
 ```python
 import numpy as np
-from plotez import plot_xyy
-from plotez.backend import LinePlotConfig
+from plotez import LinePlotConfig, plot_xyy
 
 x = np.linspace(0, 10, 50)
 y1, y2 = np.sin(x), np.cos(x)
@@ -243,6 +245,49 @@ plot_hist(data, x_label="Value", y_label="Counts",
 ![README_E7_histogram](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E7_histogram.png)
 
 Swap `plot_hist` for `plot_density` to get the probability density on the y-axis.
+
+### Opt-In Styling
+
+plotez never changes your project's global matplotlib style just because you imported it. Call
+`plotez.enable_style()` to apply its publication-ready convention (serif fonts, grid, tick geometry) at
+runtime, and `plotez.disable_style()` to revert to matplotlib's own defaults — or set
+`PLOTEZ_AUTO_STYLE=1` in the environment before `import plotez` to apply it automatically.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+import plotez
+from plotez import plot_errorbar
+
+rng = np.random.default_rng(7)
+
+x = np.linspace(0, 10, 20)
+y = np.sin(x)
+y_err = 0.2 * rng.random(size=y.shape)
+
+
+fig = plt.figure(figsize=(15, 4.5))
+
+ax1 = fig.add_subplot(1, 3, 1)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="Default (no plotez style)", axis=ax1)
+
+plotez.enable_style()
+ax2 = fig.add_subplot(1, 3, 2)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="After enable_style()", axis=ax2)
+
+plotez.disable_style()
+ax3 = fig.add_subplot(1, 3, 3)
+plot_errorbar(x, y, y_err=y_err,
+              plot_title="After disable_style()", axis=ax3)
+```
+
+![README_E8_style_comparison](https://raw.githubusercontent.com/syedalimohsinbukhari/plotez/refs/heads/master/examples/ex_images/README_E8_style_comparison.png)
+
+Set `PLOTEZ_AUTO_STYLE=1` before `import plotez` to skip the explicit `enable_style()` call and apply the
+convention globally for the process.
 
 ## Development
 

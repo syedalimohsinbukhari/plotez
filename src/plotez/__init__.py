@@ -4,12 +4,10 @@ PlotEZ - Mundane plotting made easy.
 A Python library for simplified matplotlib plotting.
 """
 
-from .backend import (
-    ErrorBandConfig,
-    ErrorPlotConfig,
-    HistogramConfig,
-    LinePlotConfig,
-    ScatterPlotConfig,
+import os
+
+from ._plotez_constants import SAVE_DPI, disable_style, enable_style, update_style
+from .backend.wrappers import (
     ebc,
     epc,
     error_band_configuration,
@@ -21,8 +19,18 @@ from .backend import (
     scatter_plot_configuration,
     spc,
 )
+from .configurations import (
+    BarPlotConfig,
+    ErrorBandConfig,
+    ErrorPlotConfig,
+    HistogramConfig,
+    LinePlotConfig,
+    ScatterPlotConfig,
+)
 from .plotez import (
     n_plotter,
+    plot_bar,
+    plot_barh,
     plot_density,
     plot_errorband,
     plot_errorband_relative,
@@ -37,6 +45,13 @@ from .plotez import (
 )
 from .version import __version__
 
+# Set PLOTEZ_AUTO_STYLE=1 (or "true"/"yes") before importing plotez to apply its
+# rcParams convention on import. Off by default so importing plotez in a larger
+# project never silently changes that project's own matplotlib style; call
+# `plotez.enable_style()` explicitly if you want plotez's look.
+if os.environ.get("PLOTEZ_AUTO_STYLE", "0").strip().lower() in ("1", "true", "yes"):
+    update_style()
+
 __all__ = [
     # Plotting functions
     "plot_two_column_file",
@@ -46,9 +61,11 @@ __all__ = [
     "plot_with_dual_axes",
     "two_subplots",
     "n_plotter",
+    "plot_bar",
     "plot_errorbar",
     "plot_errorband",
     "plot_errorband_relative",
+    "plot_barh",
     "plot_hist",
     "plot_density",
     # Config classes
@@ -57,6 +74,7 @@ __all__ = [
     "LinePlotConfig",
     "ScatterPlotConfig",
     "HistogramConfig",
+    "BarPlotConfig",
     # Convenience / wrapper functions (long-form)
     "line_plot_configuration",
     "error_plot_configuration",
@@ -69,6 +87,11 @@ __all__ = [
     "ebc",
     "spc",
     "hgc",
+    # Style convention
+    "update_style",
+    "enable_style",
+    "disable_style",
+    "SAVE_DPI",
     # Version
     "__version__",
 ]

@@ -52,3 +52,60 @@ def test_old_exception_namespaces_are_removed():
 
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module("plotez.backend.error_handling")
+
+
+def test_old_config_and_wrapper_paths_are_removed():
+    removed_backend_names = {
+        "BarPlotConfig",
+        "ErrorBandConfig",
+        "ErrorPlotConfig",
+        "HistogramConfig",
+        "LinePlotConfig",
+        "ScatterPlotConfig",
+        "ebc",
+        "epc",
+        "error_band_configuration",
+        "error_plot_configuration",
+        "hgc",
+        "histogram_config",
+        "line_plot_configuration",
+        "lpc",
+        "scatter_plot_configuration",
+        "spc",
+    }
+    removed_utility_names = {
+        "BarPlotConfig",
+        "ErrorBandConfig",
+        "ErrorPlotConfig",
+        "HistogramConfig",
+        "LinePlotConfig",
+        "ScatterPlotConfig",
+    }
+
+    for name in removed_backend_names:
+        assert not hasattr(plotez.backend, name)
+
+    utilities = importlib.import_module("plotez.backend.utilities")
+    for name in removed_utility_names:
+        assert not hasattr(utilities, name)
+
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("plotez.backend._wrappers")
+
+
+def test_supported_config_and_wrapper_paths_remain_available():
+    configurations = importlib.import_module("plotez.configurations")
+    wrappers = importlib.import_module("plotez.backend.wrappers")
+
+    assert plotez.LinePlotConfig is configurations.LinePlotConfig
+    assert plotez.ErrorPlotConfig is configurations.ErrorPlotConfig
+    assert plotez.ErrorBandConfig is configurations.ErrorBandConfig
+    assert plotez.ScatterPlotConfig is configurations.ScatterPlotConfig
+    assert plotez.HistogramConfig is configurations.HistogramConfig
+    assert plotez.BarPlotConfig is configurations.BarPlotConfig
+
+    assert plotez.lpc is wrappers.lpc
+    assert plotez.epc is wrappers.epc
+    assert plotez.ebc is wrappers.ebc
+    assert plotez.spc is wrappers.spc
+    assert plotez.hgc is wrappers.hgc

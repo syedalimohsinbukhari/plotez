@@ -12,6 +12,7 @@ Every example corresponds to a runnable script in the ``examples/`` directory.
    quickstart_child/multi_panel_layouts
    quickstart_child/configuration_validation
    quickstart_child/data_workflows
+   quickstart_child/styling
 
 .. contents:: Sections
    :local:
@@ -67,4 +68,5 @@ Continue Learning
 * :doc:`quickstart_child/multi_panel_layouts` covers two-panel figures, arbitrary grids, shared axes, layout management, and return shapes.
 * :doc:`quickstart_child/configuration_validation` covers reusable config objects, shorthand helpers, exceptions, validation, and label collections.
 * :doc:`quickstart_child/data_workflows` covers histograms, density plots, two-column files, and integration with existing matplotlib axes.
+* :doc:`quickstart_child/styling` covers plotez's opt-in styling convention and the two ways to enable it.
 * :doc:`api` contains complete function signatures and parameter details.
