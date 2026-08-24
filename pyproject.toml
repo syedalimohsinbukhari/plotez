@@ -44,7 +44,6 @@ dev = [
     "flake8",
     "pylint",
     "pre-commit",
-    "tomli",
     "build",
     "sphinx-copybutton",
     "myst-parser",
