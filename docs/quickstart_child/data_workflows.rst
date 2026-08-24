@@ -20,7 +20,7 @@ arguments and get a ``HistogramConfig`` back.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E13_histogram.py
    :language: python
-   :lines: 3-21
+   :lines: 3-20
 
 .. image:: ../../examples/rtd_images/RTD_E13_histogram.png
 
@@ -36,7 +36,7 @@ The same 1D input requirement applies.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E14_density.py
    :language: python
-   :lines: 3-21
+   :lines: 3-20
 
 .. image:: ../../examples/rtd_images/RTD_E14_density.png
 
@@ -52,7 +52,7 @@ style each bar individually; a scalar applies to every bar.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E17_bar_plot.py
    :language: python
-   :lines: 3-26
+   :lines: 3-24
 
 .. image:: ../../examples/rtd_images/RTD_E17_bar_plot.png
 
@@ -67,7 +67,7 @@ Empty and single-row files raise ``EmptyDataError``.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E11_from_files.py
    :language: python
-   :lines: 3-17
+   :lines: 3-16
 
 .. image:: ../../examples/rtd_images/RTD_E11_from_files.png
 
@@ -89,6 +89,6 @@ The parent ``Figure`` is always accessible through ``ax.get_figure()``.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E12_matplotlib_integration.py
    :language: python
-   :lines: 3-20
+   :lines: 3-19
 
 .. image:: ../../examples/rtd_images/RTD_E12_matplotlib_integration.png

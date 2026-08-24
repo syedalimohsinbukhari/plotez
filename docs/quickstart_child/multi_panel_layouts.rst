@@ -45,7 +45,7 @@ is shorter than the panel count.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E9_grid_of_four.py
    :language: python
-   :lines: 3-22
+   :lines: 3-20
 
 .. image:: ../../examples/rtd_images/RTD_E9_grid_of_four.png
 

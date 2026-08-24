@@ -35,7 +35,7 @@ resolves them.
 
 .. literalinclude:: ../../examples/rtd_images/RTD_E5-2_errorbar_customized.py
    :language: python
-   :lines: 3-33
+   :lines: 3-32
 
 .. image:: ../../examples/rtd_images/RTD_E5-2_errorbar_customized.png
 

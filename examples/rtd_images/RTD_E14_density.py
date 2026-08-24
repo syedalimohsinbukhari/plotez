@@ -19,8 +19,6 @@ ax = plot_density(
     hist_config=h_cfg,
 )
 
-plt.tight_layout()
-
 # plt.show()
 plt.savefig("RTD_E14_density.png", dpi=SAVE_DPI)
 plt.close()
