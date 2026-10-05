@@ -251,7 +251,7 @@ typing-extensions==4.16.0
     #   mypy
     #   pydata-sphinx-theme
     #   virtualenv
-urllib3==2.7.0
+urllib3==2.8.0
     # via requests
 virtualenv==21.7.4
     # via pre-commit
